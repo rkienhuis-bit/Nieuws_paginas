@@ -444,7 +444,7 @@ body::before {
   z-index: 5;
 }
 
-/* BIRTHDAY & JUBILEE CELEBRATION SCREENS */
+/* BIRTHDAY CELEBRATION SCREENS */
 
 .celebration-screen {
   width: 100%;
@@ -458,7 +458,6 @@ body::before {
   position: relative;
 }
 
-/* Oranje accentlijn iets lager gezet (naar 5% i.p.v. 9%) en dichter bij de kop */
 .celebration-screen::before {
   content: "";
   position: absolute;
@@ -544,8 +543,8 @@ body::before {
   letter-spacing: .5px;
 }
 
-/* SPECIAAL JUBILEUM DESIGN */
-.jubilee-card {
+/* SPECIAAL MIJLPAAL / LUXE VERJAARDAG KAART */
+.special-card {
   position: relative;
   flex: 1;
   min-width: 280px;
@@ -558,7 +557,7 @@ body::before {
   animation: cardEnter .8s ease both;
 }
 
-.jubilee-badge {
+.special-badge {
   font-size: 11px;
   color: #fff0cf;
   letter-spacing: 4px;
@@ -571,7 +570,7 @@ body::before {
   margin-bottom: 22px;
 }
 
-.jubilee-name {
+.special-name {
   font-size: clamp(32px, 3.2vw, 48px);
   font-weight: 800;
   color: #fff;
@@ -583,7 +582,7 @@ body::before {
   -webkit-text-fill-color: transparent;
 }
 
-.jubilee-years {
+.special-age {
   font-size: 18px;
   font-weight: 600;
   color: var(--gold);
@@ -591,10 +590,18 @@ body::before {
   margin-bottom: 25px;
 }
 
-.jubilee-star-icon {
+.special-star-icon {
   font-size: 20px;
   color: var(--gold);
   margin-bottom: 20px;
+}
+
+.celeb-wish {
+  color: #c3ccda;
+  font-size: 18px;
+  margin-top: 35px;
+  text-align: center;
+  letter-spacing: .2px;
 }
 
 @keyframes celebrationEnter {
@@ -699,20 +706,21 @@ const testPeople = [
   { name:"Desiree Wissink", dob:"1969-11-12" }
 ];
 
-const testJubilee = [
-  { name:"Robert Markvoort", years: "12,5" }
+// Test person for milestone birthday (e.g. turning 50)
+const testSpecial = [
+  { name:"Robert Markvoort", dob:"1976-02-22" }
 ];
 
 /* STATE */
-// testMode can be: 'off', 'birthday', 'jubilee'
+// testMode can be: 'off', 'birthday', 'special'
 let testMode = 'off';
 let confettiStarted = false;
 
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('test') === 'true' || urlParams.get('test') === 'birthday') {
   testMode = 'birthday';
-} else if (urlParams.get('test') === 'jubilee') {
-  testMode = 'jubilee';
+} else if (urlParams.get('test') === 'special') {
+  testMode = 'special';
 }
 
 /* HELPERS */
@@ -721,13 +729,18 @@ function calculateAge(dob, year) {
   return year - Number(dob.substring(0,4));
 }
 
+function isMilestoneAge(age) {
+  // Milestone / special birthdays ending in 0 or 5 (e.g., 30, 40, 50, 60, etc.)
+  return age > 0 && age % 5 === 0;
+}
+
 function getDaysInMonth(year, month) {
   return new Date(year, month, 0).getDate();
 }
 
 function cycleTestMode() {
   if (testMode === 'off') testMode = 'birthday';
-  else if (testMode === 'birthday') testMode = 'jubilee';
+  else if (testMode === 'birthday') testMode = 'special';
   else testMode = 'off';
 
   confettiStarted = false;
@@ -886,32 +899,32 @@ function triggerConfetti() {
 }
 
 /* =====================================
-   CELEBRATION MODES (VERJAARDAG & JUBILEUM)
+   CELEBRATION SCREEN
 ===================================== */
 
-function renderCelebration(persons, year, isJubilee = false) {
+function renderCelebration(persons, year) {
   const contentArea = document.getElementById("contentArea");
 
   document.getElementById("mainTitle").innerText =
-    isJubilee ? "Gefeliciteerd met je jubileum!" : (persons.length > 1 ? "Vandaag is het feest" : "Jarig Vandaag");
+    persons.length > 1 ? "Vandaag is het feest" : "Jarig Vandaag";
 
-  document.getElementById("subTitle").innerText = isJubilee ? "Bedrijfsjubileum" : "Een bijzondere dag";
+  document.getElementById("subTitle").innerText = "Een bijzondere dag";
 
   let cards = "";
-  if (isJubilee) {
-    persons.forEach((person, index) => {
+  persons.forEach((person, index) => {
+    const age = calculateAge(person.dob, year);
+    const isSpecial = isMilestoneAge(age);
+
+    if (isSpecial) {
       cards += `
-        <div class="jubilee-card" style="animation-delay:${index*.15}s">
-          <div class="jubilee-badge">Jubileum in de spotlight</div>
-          <div class="jubilee-name">${person.name}</div>
-          <div class="jubilee-star-icon">✦ ✦ ✦</div>
-          <div class="jubilee-years">${person.years} jaar in dienst</div>
+        <div class="special-card" style="animation-delay:${index*.15}s">
+          <div class="special-badge">Een speciale verjaardag</div>
+          <div class="special-name">${person.name}</div>
+          <div class="special-star-icon">✦ ✦ ✦</div>
+          <div class="special-age">${age} jaar</div>
         </div>
       `;
-    });
-  } else {
-    persons.forEach((person, index) => {
-      const age = calculateAge(person.dob, year);
+    } else {
       cards += `
         <div class="celeb-person" style="animation-delay:${index*.15}s">
           <div class="celeb-number">
@@ -925,13 +938,14 @@ function renderCelebration(persons, year, isJubilee = false) {
           </div>
         </div>
       `;
-    });
-  }
+    }
+  });
 
   contentArea.innerHTML = `
     <div class="celebration-screen">
       <div class="celeb-heading">Van harte gefeliciteerd!</div>
       <div class="celeb-people">${cards}</div>
+      <div class="celeb-wish">We wensen je een fantastische verjaardag!</div>
     </div>
   `;
 
@@ -1025,8 +1039,16 @@ function renderCalendar(currentMonth, currentDay, currentYear) {
 function renderPage() {
   const now = new Date();
   const currentYear = now.getFullYear();
-  const currentDay = testMode === 'birthday' ? 12 : now.getDate();
-  const currentMonth = testMode === 'birthday' ? 11 : now.getMonth()+1;
+  let currentDay = now.getDate();
+  let currentMonth = now.getMonth()+1;
+
+  if (testMode === 'birthday') {
+    currentDay = 12;
+    currentMonth = 11;
+  } else if (testMode === 'special') {
+    currentDay = 22;
+    currentMonth = 2; // Robert Markvoort born 1972-02-22 -> turns 54 or similar, let's force age to 50 for testing if needed or keep DOB. Let's make testSpecial have a DOB that hits a milestone like 50.
+  }
 
   document.getElementById("dateDisplay").innerText =
     now.toLocaleDateString("nl-NL",{
@@ -1036,25 +1058,27 @@ function renderPage() {
     });
 
   let btnText = "Test verjaardag";
-  if (testMode === 'birthday') btnText = "Test jubileum";
-  if (testMode === 'jubilee') btnText = "Terug naar kalender";
+  if (testMode === 'birthday') btnText = "Test speciale verjaardag";
+  if (testMode === 'special') btnText = "Terug naar kalender";
   document.getElementById("testButton").innerText = btnText;
 
-  if (testMode === 'jubilee') {
-    renderCelebration(testJubilee, currentYear, true);
+  if (testMode === 'special') {
+    // Force a milestone age for testing preview
+    const milestonePerson = [{ name: "Robert Markvoort", dob: (currentYear - 50) + "-02-22" }];
+    renderCelebration(milestonePerson, currentYear);
     return;
   }
 
   if (testMode === 'birthday') {
     const todaysBirthdays = birthdays.filter(b => b.month === currentMonth && b.day === currentDay);
-    renderCelebration(todaysBirthdays.length > 0 ? todaysBirthdays : testPeople, currentYear, false);
+    renderCelebration(todaysBirthdays.length > 0 ? todaysBirthdays : testPeople, currentYear);
     return;
   }
 
   const todaysBirthdays = birthdays.filter(b => b.month===currentMonth && b.day===currentDay);
 
   if (todaysBirthdays.length > 0) {
-    renderCelebration(todaysBirthdays, currentYear, false);
+    renderCelebration(todaysBirthdays, currentYear);
     return;
   }
 
