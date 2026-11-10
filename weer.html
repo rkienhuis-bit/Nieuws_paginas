@@ -2,233 +2,305 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <title>Apple Style Weer Enter</title>
+  <title>NOS Weer Dashboard Enter</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       width: 100%;
       height: 100vh;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: #0b1329;
+      background: #0f131a;
       color: #ffffff;
+      padding: 24px 20px;
     }
 
-    /* FULLSCREEN ATMOSPHERIC ANIMATION CANVAS */
-    #weatherCanvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-    }
+    /* CUSTOM SCROLLBAR FOR DASHBOARD */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
 
-    /* APPLE-STYLE LIQUID GLASS LAYOUT CONTAINER */
-    .glass-container {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      height: 100vh;
-      padding: 38px 32px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    /* TOP HEADER */
-    .header-group {
+    /* TOP HERO CARD */
+    .hero-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 16px;
+      backdrop-filter: blur(10px);
     }
 
-    .location-title {
-      font-size: 28px;
+    .hero-left h1 {
+      font-size: 24px;
       font-weight: 700;
-      letter-spacing: 0.3px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
     }
 
-    .location-sub {
-      font-size: 13px;
-      color: rgba(255, 255, 255, 0.6);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-top: 2px;
-    }
-
-    .condition-badge {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #ffffff;
-      font-size: 13px;
+    .condition-title {
+      font-size: 20px;
       font-weight: 600;
-      text-transform: uppercase;
-      padding: 8px 16px;
-      border-radius: 20px;
-      letter-spacing: 1px;
-    }
-
-    /* HERO TEMPERATURE CARD (LIQUID GLASS) */
-    .hero-glass-card {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 24px;
-      padding: 26px 30px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    }
-
-    .temp-main {
-      font-size: 74px;
-      font-weight: 700;
-      line-height: 1;
-      letter-spacing: -2px;
-    }
-
-    .temp-desc {
-      font-size: 18px;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.9);
-      margin-top: 6px;
-    }
-
-    .temp-feels {
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.6);
-      margin-top: 6px;
-    }
-
-    /* SECTION TITLE */
-    .section-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: rgba(255, 255, 255, 0.5);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
+      color: #e30613; /* NOS Red accent or bright white */
       margin-bottom: 8px;
     }
 
-    /* HOURLY FORECAST STRIP (LIQUID GLASS) */
-    .hourly-strip {
-      display: flex;
-      justify-content: space-between;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 16px 20px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    .temp-large {
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -1px;
     }
 
-    .hourly-item {
+    .feels-like {
+      font-size: 11px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 6px;
+    }
+
+    .hero-right {
+      text-align: right;
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      padding-left: 20px;
+    }
+
+    .date-text {
+      font-size: 13px;
+      color: #cccccc;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .time-text {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+
+    .hero-sub-info {
+      font-size: 12px;
+      color: #888888;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    /* HOURLY FORECAST STRIP */
+    .hourly-container {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      overflow-x: auto;
+      margin-bottom: 16px;
+    }
+
+    .hourly-col {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      min-width: 45px;
     }
-    .hourly-time { font-size: 12px; color: rgba(255, 255, 255, 0.6); font-weight: 500; }
-    .hourly-temp { font-size: 15px; font-weight: 600; color: #ffffff; }
 
-    /* METRICS GRID (LIQUID GLASS CARDS) */
+    .hourly-time { font-size: 11px; color: #888; font-weight: 600; }
+    .hourly-icon { font-size: 18px; }
+    .hourly-temp { font-size: 14px; font-weight: 700; }
+
+    /* STATS GRID (2 COLUMNS) */
     .stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 16px;
+      margin-bottom: 20px;
     }
 
-    .stat-glass-card {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 16px 20px;
+    .stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      padding: 20px;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
+      min-height: 130px;
     }
 
-    .stat-label {
-      font-size: 11px;
-      color: rgba(255, 255, 255, 0.6);
+    .stat-header {
+      font-size: 10px;
+      font-weight: 700;
+      color: #888888;
       text-transform: uppercase;
-      font-weight: 700;
       letter-spacing: 1px;
-      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .stat-value {
-      font-size: 22px;
+    .stat-main-val {
+      font-size: 32px;
       font-weight: 700;
-      color: #ffffff;
+      line-height: 1.1;
+      margin: 8px 0 4px 0;
     }
 
-    .stat-sub {
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.5);
-      margin-top: 4px;
+    .stat-footer-text {
+      font-size: 11px;
+      color: #999999;
+    }
+
+    /* CUSTOM COMPASS WIDGET */
+    .compass-box {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      align-self: flex-end;
+      margin-top: -35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .compass-needle {
+      width: 4px;
+      height: 24px;
+      background: #e30613;
+      border-radius: 2px;
+      transform-origin: bottom center;
+      position: absolute;
+      bottom: 23px;
+    }
+
+    /* CUSTOM SUN ARC WIDGET */
+    .sun-arc-container {
+      position: relative;
+      height: 35px;
+      margin-top: 10px;
+    }
+    .sun-curve {
+      width: 100%;
+      height: 20px;
+      border-bottom: 2px solid rgba(255,255,255,0.2);
+      border-radius: 0 0 50% 50%;
+    }
+
+    /* AIR QUALITY SLIDER BAR */
+    .aqi-bar {
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, #4cd137, #fbc531, #e84118);
+      border-radius: 3px;
+      position: relative;
+      margin-top: 12px;
+    }
+    .aqi-pointer {
+      width: 12px;
+      height: 12px;
+      background: #ffffff;
+      border: 2px solid #0f131a;
+      border-radius: 50%;
+      position: absolute;
+      top: -3px;
+      left: 40%; /* Dynamic position based on AQI */
     }
   </style>
 </head>
 <body>
 
-  <!-- AMBIENT ATMOSPHERIC CANVAS -->
-  <canvas id="weatherCanvas"></canvas>
+  <!-- TOP HERO CARD -->
+  <div class="hero-card">
+    <div class="hero-left">
+      <h1>📍 Enter</h1>
+      <div class="condition-title" id="condMain">Bewolkt</div>
+      <div class="temp-large" id="tempMain">5°C</div>
+      <div class="feels-like" id="feelsMain">GEVOELSTEMPERATUUR: 5°C</div>
+    </div>
+    <div class="hero-right">
+      <div class="date-text" id="dateText">dinsdag, 10 nov. 2026</div>
+      <div class="time-text" id="timeText">11:38 AM</div>
+      <div class="hero-sub-info">
+        <span id="subCond">☁️ Bewolkt</span>
+        <span id="subRain">🌧️ Regen - 0%</span>
+      </div>
+    </div>
+  </div>
 
-  <!-- LIQUID GLASS UI CONTAINER -->
-  <div class="glass-container">
-    <!-- HEADER -->
-    <div class="header-group">
+  <!-- HOURLY STRIP -->
+  <div class="hourly-container" id="hourlyStrip">
+    <!-- Populated via JS -->
+  </div>
+
+  <!-- STATS GRID 2x4 -->
+  <div class="stats-grid">
+    <!-- LUCHTVOCHTIGHEID -->
+    <div class="stat-card">
+      <div class="stat-header">💧 Luchtvochtigheid</div>
       <div>
-        <div class="location-title">Enter</div>
-        <div class="location-sub">Overijssel</div>
+        <div class="stat-main-val" id="humidityVal">96%</div>
+        <div class="stat-footer-text" id="dewPoint">Het dauwpunt is 4°C op dit moment</div>
       </div>
-      <div class="condition-badge" id="condBadge">Laden...</div>
     </div>
 
-    <!-- HERO CARD -->
-    <div class="hero-glass-card">
-      <div class="temp-main" id="tempMain">--°C</div>
-      <div class="temp-desc" id="tempDesc">--</div>
-      <div class="temp-feels" id="tempFeels">Gevoelstemperatuur: --°C</div>
+    <!-- NEERSLAG -->
+    <div class="stat-card">
+      <div class="stat-header">🌧️ Neerslag</div>
+      <div>
+        <div class="stat-main-val" id="precipVal">0%</div>
+        <div class="stat-footer-text">Droog weer verwacht</div>
+      </div>
     </div>
 
-    <!-- HOURLY STRIP -->
-    <div>
-      <div class="section-title">Verwachting komende uren</div>
-      <div class="hourly-strip" id="hourlyStrip"></div>
+    <!-- WIND -->
+    <div class="stat-card">
+      <div class="stat-header">💨 Wind</div>
+      <div>
+        <div class="stat-main-val" id="windVal" style="font-size: 24px;">11 km/h</div>
+        <div class="stat-footer-text" id="windText">Windstoten 11 km/h bij 137° SE</div>
+      </div>
+      <div class="compass-box">
+        <div class="compass-needle" id="compassNeedle"></div>
+      </div>
     </div>
 
-    <!-- METRICS GRID -->
-    <div class="stats-grid">
-      <div class="stat-glass-card">
-        <span class="stat-label">Luchtvochtigheid</span>
-        <span class="stat-value" id="humidity">--%</span>
-        <span class="stat-sub">Relatief</span>
+    <!-- DAGLICHT -->
+    <div class="stat-card">
+      <div class="stat-header">☀️ Daglicht</div>
+      <div>
+        <div class="sun-arc-container">
+          <div class="sun-curve"></div>
+        </div>
       </div>
-
-      <div class="stat-glass-card">
-        <span class="stat-label">Neerslagkans</span>
-        <span class="stat-value" id="precipProb">--%</span>
-        <span class="stat-sub" id="precipVal">0 mm nu</span>
+      <div style="display: flex; justify-content: space-between; font-size: 10px; color: #aaa; margin-top: 4px;">
+        <span>Opkomst: <b>07:45</b></span>
+        <span>Ondergang: <b>16:49</b></span>
       </div>
+    </div>
 
-      <div class="stat-glass-card">
-        <span class="stat-label">Wind</span>
-        <span class="stat-value" id="windSpeed">-- km/h</span>
-        <span class="stat-sub" id="windDir">Richting: --</span>
+    <!-- ZICHT -->
+    <div class="stat-card">
+      <div class="stat-header">👁️ Zicht</div>
+      <div>
+        <div class="stat-main-val">10 km</div>
+        <div class="stat-footer-text">Uitstekend zicht</div>
       </div>
+    </div>
 
-      <div class="stat-glass-card">
-        <span class="stat-label">UV Index</span>
-        <span class="stat-value" id="uvIndex">--</span>
-        <span class="stat-sub" id="uvRisk">Laag</span>
+    <!-- LUCHTKWALITEIT -->
+    <div class="stat-card">
+      <div class="stat-header">🍃 Luchtkwaliteit</div>
+      <div>
+        <div class="stat-main-val" style="font-size: 26px;">3 <span style="font-size: 14px; font-weight: 500; color:#fbc531;">Matig</span></div>
+        <div class="aqi-bar">
+          <div class="aqi-pointer" style="left: 35%;"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -236,131 +308,87 @@
   <script>
     const LAT = 52.2961;
     const LON = 6.5786;
-    const API_URL = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relativehumidity_2m&daily=uv_index_max,precipitation_probability_max&timezone=Europe%2FAmsterdam`;
+    const API_URL = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,weather_code,precipitation_probability&daily=sunrise,sunset,uv_index_max&timezone=Europe%2FAmsterdam`;
 
-    let activeCondition = 'cloud';
-    const canvas = document.getElementById('weatherCanvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-
-    function resizeCanvas() {
-      canvas.width = window.innerWidth || 400;
-      canvas.height = window.innerHeight || 800;
-      initParticles();
+    function updateClockAndDate() {
+      const now = new Date();
+      const optionsDate = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+      document.getElementById('dateText').innerText = now.toLocaleDateString('nl-NL', optionsDate);
+      document.getElementById('timeText').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     }
-    window.addEventListener('resize', resizeCanvas);
+    setInterval(updateClockAndDate, 1000);
+    updateClockAndDate();
 
-    function initParticles() {
-      particles = [];
-      const count = 30;
-      for (let i = 0; i < count; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          size: Math.random() * 120 + 60,
-          speedX: Math.random() * 0.3 + 0.1,
-          speedY: Math.random() * 0.2 - 0.1,
-          opacity: Math.random() * 0.3 + 0.15
-        });
-      }
+    function getWeatherIcon(code) {
+      if (code === 0) return '☀️';
+      if (code >= 1 && code <= 3) return '☁️';
+      if (code >= 45 && code <= 48) return '🌫️';
+      if (code >= 51 && code <= 67) return '🌧️';
+      if (code >= 80 && code <= 82) return '🌦️';
+      if (code >= 95) return '⚡';
+      return '☁️';
     }
 
-    function drawAtmosphere() {
-      // Apple-style smooth atmospheric gradient background
-      const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      grad.addColorStop(0, '#1d2b4f');
-      grad.addColorStop(0.5, '#121c38');
-      grad.addColorStop(1, '#080d1a');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Render smooth floating atmospheric light orbs (Liquid Glass Ambiance)
-      particles.forEach(p => {
-        ctx.beginPath();
-        const radial = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
-        radial.addColorStop(0, `rgba(100, 150, 255, ${p.opacity})`);
-        radial.addColorStop(1, 'rgba(100, 150, 255, 0)');
-        ctx.fillStyle = radial;
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-
-        p.x += p.speedX;
-        p.y += p.speedY;
-
-        if (p.x > canvas.width + 100) p.x = -100;
-        if (p.y > canvas.height + 100) p.y = -100;
-      });
+    function getWeatherLabel(code) {
+      if (code === 0) return 'Zonnig';
+      if (code >= 1 && code <= 3) return 'Bewolkt';
+      if (code >= 45 && code <= 48) return 'Mistig';
+      if (code >= 51 && code <= 67) return 'Regen';
+      if (code >= 80 && code <= 82) return 'Buien';
+      if (code >= 95) return 'Onweer';
+      return 'Bewolkt';
     }
 
-    function animate() {
-      drawAtmosphere();
-      requestAnimationFrame(animate);
-    }
-
-    function parseWeather(code) {
-      if (code === 0) return { label: 'Zonnig' };
-      if (code >= 1 && code <= 3) return { label: 'Bewolkt' };
-      if (code >= 45 && code <= 48) return { label: 'Mistig' };
-      if (code >= 51 && code <= 67) return { label: 'Regenachtig' };
-      if (code >= 80 && code <= 82) return { label: 'Buien' };
-      if (code >= 95) return { label: 'Onweer' };
-      return { label: 'Bewolkt' };
-    }
-
-    function windDegToText(deg) {
-      const dirs = ['N', 'NO', 'O', 'ZO', 'Z', 'ZW', 'W', 'NW'];
-      return dirs[Math.round(deg / 45) % 8];
-    }
-
-    async function fetchWeather() {
+    async function fetchWeatherData() {
       try {
         const res = await fetch(API_URL);
         const data = await res.json();
-        const current = data.current_weather;
+        const cur = data.current;
 
-        const weatherInfo = parseWeather(current.weathercode);
+        const label = getWeatherLabel(cur.weather_code);
+        const icon = getWeatherIcon(cur.weather_code);
 
-        document.getElementById('condBadge').innerText = weatherInfo.label;
-        document.getElementById('tempDesc').innerText = weatherInfo.label;
-        document.getElementById('tempMain').innerText = `${Math.round(current.temperature)}°C`;
-        document.getElementById('tempFeels').innerText = `Gevoelstemperatuur: ${Math.round(current.temperature - 1)}°C`;
+        document.getElementById('condMain').innerText = label;
+        document.getElementById('tempMain').innerText = `${Math.round(cur.temperature_2m)}°C`;
+        document.getElementById('feelsMain').innerText = `GEVOELSTEMPERATUUR: ${Math.round(cur.apparent_temperature)}°C`;
+        document.getElementById('subCond').innerText = `${icon} ${label}`;
+        document.getElementById('subRain').innerText = `🌧️ Regen - ${cur.precipitation > 0 ? 'Ja' : '0%'}`;
 
-        document.getElementById('humidity').innerText = `${data.hourly?.relativehumidity_2m?.[0] ?? 80}%`;
+        document.getElementById('humidityVal').innerText = `${cur.relative_humidity_2m}%`;
+        document.getElementById('windVal').innerText = `${Math.round(cur.wind_speed_10m)} km/h`;
+        document.getElementById('windText').innerText = `Richting: ${cur.wind_direction_10m}°`;
         
-        const precipProb = data.daily?.precipitation_probability_max?.[0] ?? 10;
-        document.getElementById('precipProb').innerText = `${precipProb}%`;
+        // Rotate compass needle
+        document.getElementById('compassNeedle').style.transform = `rotate(${cur.wind_direction_10m}deg)`;
 
-        document.getElementById('windSpeed').innerText = `${Math.round(current.windspeed)} km/h`;
-        document.getElementById('windDir').innerText = `Richting: ${windDegToText(current.winddirection)}`;
-
-        const uv = data.daily?.uv_index_max?.[0] ?? 2.0;
-        document.getElementById('uvIndex').innerText = uv.toFixed(1);
-        document.getElementById('uvRisk').innerText = uv > 5 ? 'Hoog' : (uv > 2 ? 'Matig' : 'Laag');
-
-        const currentHour = new Date().getHours();
+        // Hourly Strip (Next 9 hours)
+        const currentHourIndex = new Date().getHours();
         const hourlyStrip = document.getElementById('hourlyStrip');
         hourlyStrip.innerHTML = '';
 
-        for (let i = 1; i <= 5; i++) {
-          const hIdx = currentHour + i;
-          if (data.hourly && data.hourly.temperature_2m[hIdx]) {
+        for (let i = 0; i < 9; i++) {
+          const idx = currentHourIndex + i;
+          if (data.hourly && data.hourly.temperature_2m[idx]) {
+            const timeLabel = i === 0 ? 'Nu' : `${(currentHourIndex + i) % 24}:00`;
+            const tempVal = `${Math.round(data.hourly.temperature_2m[idx])}°`;
+            const hIcon = getWeatherIcon(data.hourly.weather_code[idx]);
+
             hourlyStrip.innerHTML += `
-              <div class="hourly-item">
-                <span class="hourly-time">${(currentHour + i) % 24}:00</span>
-                <span class="hourly-temp">${Math.round(data.hourly.temperature_2m[hIdx])}°</span>
+              <div class="hourly-col">
+                <span class="hourly-time">${timeLabel}</span>
+                <span class="hourly-icon">${hIcon}</span>
+                <span class="hourly-temp">${tempVal}</span>
               </div>
             `;
           }
         }
       } catch (err) {
-        document.getElementById('condBadge').innerText = 'Lokaal Weer';
+        console.error(err);
       }
     }
 
-    resizeCanvas();
-    animate();
-    fetchWeather();
-    setInterval(fetchWeather, 15 * 60 * 1000);
+    fetchWeatherData();
+    setInterval(fetchWeatherData, 15 * 60 * 1000);
   </script>
 </body>
 </html>
