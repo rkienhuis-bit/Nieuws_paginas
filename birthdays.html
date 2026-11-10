@@ -36,7 +36,7 @@
       z-index: 2;
       width: 100%;
       height: 100vh;
-      padding: 50px 70px;
+      padding: 45px 60px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -48,11 +48,11 @@
       justify-content: space-between;
       align-items: flex-end;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 24px;
+      padding-bottom: 20px;
     }
 
     .title-box h1 {
-      font-size: 38px;
+      font-size: 36px;
       font-weight: 700;
       letter-spacing: -0.5px;
       color: #ffffff;
@@ -90,70 +90,109 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px 0;
+      padding: 10px 0;
+      overflow: hidden;
     }
 
-    /* EXCITING MONTHLY GRID (VIBRANT EDITORIAL CARDS) */
-    .monthly-grid {
+    /* DUOLINGO-STYLE PATH / TIMELINE MAP */
+    .path-container {
       width: 100%;
-      max-height: 100%;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 720px;
       overflow-y: auto;
-      padding: 4px;
+      padding: 20px;
+      position: relative;
     }
 
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.2); border-radius: 4px; }
 
-    .person-card {
+    .path-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+    }
+
+    /* Alternate zig-zag layout for path feel */
+    .path-row:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+
+    .path-node {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 22px 24px;
+      border-radius: 18px;
+      padding: 16px 24px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 16px;
+      width: 360px;
       backdrop-filter: blur(12px);
-      transition: transform 0.2s, border-color 0.2s;
+      transition: all 0.3s ease;
     }
 
-    .person-card:hover {
-      transform: translateY(-2px);
+    .path-node.birthday-node {
+      background: rgba(245, 158, 11, 0.08);
       border-color: rgba(245, 158, 11, 0.4);
+      box-shadow: 0 10px 30px rgba(245, 158, 11, 0.15);
+      animation: pulseNode 3s infinite alternate;
     }
 
-    .name-stack {
+    @keyframes pulseNode {
+      0% { box-shadow: 0 10px 20px rgba(245, 158, 11, 0.1); }
+      100% { box-shadow: 0 15px 35px rgba(245, 158, 11, 0.25); }
+    }
+
+    .node-badge {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #94a3b8;
+      flex-shrink: 0;
+    }
+
+    .path-node.birthday-node .node-badge {
+      background: #f59e0b;
+      color: #0b0f19;
+      border-color: #f59e0b;
+      font-size: 18px;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+    }
+
+    .node-info {
       display: flex;
       flex-direction: column;
     }
 
-    .first-name {
-      font-size: 19px;
+    .node-first {
+      font-size: 17px;
       font-weight: 700;
       color: #ffffff;
       line-height: 1.2;
     }
 
-    .last-name {
-      font-size: 13px;
+    .node-last {
+      font-size: 12px;
       font-weight: 500;
       color: #94a3b8;
       letter-spacing: 0.5px;
-      line-height: 1.2;
-      margin-top: 3px;
+      margin-top: 2px;
     }
 
-    .date-badge {
-      font-size: 14px;
-      font-weight: 700;
+    .path-node.birthday-node .node-first {
       color: #f59e0b;
-      background: rgba(245, 158, 11, 0.1);
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      padding: 6px 12px;
-      border-radius: 10px;
-      font-variant-numeric: tabular-nums;
     }
 
     /* TODAY CELEBRATION FEATURE VIEW */
@@ -383,21 +422,24 @@
         if (monthlyBirthdays.length === 0) {
           contentArea.innerHTML = `<div style="color: #64748b; font-size: 16px;">Geen verjaardagen in deze maand.</div>`;
         } else {
-          let gridHtml = `<div class="monthly-grid">`;
+          // Build Duolingo-style zig-zag path map of birthdays
+          let pathHtml = `<div class="path-container">`;
           monthlyBirthdays.forEach(person => {
             const { first, last } = splitName(person.name);
-            gridHtml += `
-              <div class="person-card">
-                <div class="name-stack">
-                  <span class="first-name">${first}</span>
-                  <span class="last-name">${last}</span>
+            pathHtml += `
+              <div class="path-row">
+                <div class="path-node birthday-node">
+                  <div class="node-badge">🎈</div>
+                  <div class="node-info">
+                    <span class="node-first">${first} ${last}</span>
+                    <span class="node-last">${person.day} ${dutchMonths[currentMonth - 1]}</span>
+                  </div>
                 </div>
-                <div class="date-badge">${person.day} ${dutchMonths[currentMonth - 1].slice(0,3)}.</div>
               </div>
             `;
           });
-          gridHtml += `</div>`;
-          contentArea.innerHTML = gridHtml;
+          pathHtml += `</div>`;
+          contentArea.innerHTML = pathHtml;
         }
       }
     }
