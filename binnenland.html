@@ -12,20 +12,27 @@
       overflow: hidden;
       height: 100vh;
       display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .news-card {
+      position: relative;
       display: flex;
       flex-direction: row;
       width: 100%;
       height: 100vh;
-      background: rgba(17, 17, 17, 0.85);
+      background: rgba(17, 17, 17, 0.90);
       overflow: hidden;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.6s ease, transform 0.6s ease;
     }
 
-    /* AFBEELDING: 30% van het scherm in plaats van 50% */
+    .news-card.fade-out {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    /* IMAGE STYLING */
     .news-image-container {
       width: 30%;
       height: 100%;
@@ -39,68 +46,112 @@
       object-fit: cover;
     }
 
+    /* CONTENT LAYOUT - TOP ALIGNED */
     .news-content {
       width: 70%;
-      padding: 50px;
+      padding: 60px 80px 40px 60px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-    }
-    .news-category {
-      color: #e30613;
-      font-size: 22px;
-      font-weight: bold;
-      text-transform: uppercase;
-      margin-bottom: 15px;
-      letter-spacing: 1.5px;
-    }
-    .news-title {
-      font-size: 42px;
-      font-weight: 700;
-      line-height: 1.25;
-      margin-bottom: 20px;
-      color: #ffffff;
-    }
-    .news-description {
-      font-size: 26px;
-      line-height: 1.45;
-      color: #dddddd;
-      display: -webkit-box;
-      -webkit-line-clamp: 4;
-      -webkit-box-orient: vertical;
+      justify-content: flex-start;
       overflow: hidden;
     }
 
-    .fade {
-      transition: opacity 0.8s ease-in-out;
-      opacity: 1;
+    .news-category {
+      color: #e30613;
+      font-size: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+      letter-spacing: 2px;
     }
-    .fade-out {
-      opacity: 0;
+
+    .news-title {
+      font-size: 38px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 25px;
+      color: #ffffff;
+    }
+
+    /* SCROLLING BODY TEXT */
+    .news-desc-wrapper {
+      position: relative;
+      flex-grow: 1;
+      overflow: hidden;
+      max-height: 55vh;
+    }
+
+    .news-description {
+      position: absolute;
+      width: 100%;
+      font-size: 20px; /* Reduced font size */
+      line-height: 1.5;
+      color: #dddddd;
+      top: 0;
+      transition: transform linear;
+    }
+
+    /* DYNAMIC QR CODE */
+    .qr-container {
+      position: absolute;
+      top: 35px;
+      right: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      z-index: 10;
+    }
+
+    .qr-code {
+      width: 90px;
+      height: 90px;
+    }
+
+    .qr-label {
+      color: #111;
+      font-size: 10px;
+      font-weight: 700;
+      margin-top: 5px;
+      letter-spacing: 0.5px;
     }
   </style>
 </head>
 <body>
 
-  <div class="news-card fade" id="newsCard">
-    <div class="news-image-container" id="imgContainer">
-      <img id="newsImg" class="news-image" src="" alt="Nieuws afbeelding" style="display:none;" />
+  <div class="news-card" id="newsCard">
+    <!-- QR CODE BOX -->
+    <div class="qr-container" id="qrContainer" style="display:none;">
+      <img id="qrImg" class="qr-code" src="" alt="Scan QR" />
+      <span class="qr-label">LEES MEER</span>
     </div>
+
+    <!-- MAIN NEWS CONTENT -->
+    <div class="news-image-container" id="imgContainer">
+      <img id="newsImg" class="news-image" src="" alt="Afbeelding" style="display:none;" />
+    </div>
+
     <div class="news-content">
       <div class="news-category" id="newsCat">BINNENLAND</div>
       <h1 class="news-title" id="newsTitle">NOS Nieuws laden...</h1>
-      <p class="news-description" id="newsDesc"></p>
+      <div class="news-desc-wrapper" id="descWrapper">
+        <p class="news-description" id="newsDesc"></p>
+      </div>
     </div>
   </div>
 
   <script>
     const RSS_URL = 'https://feeds.nos.nl/nosnieuwsbinnenland'; 
     const CATEGORY_LABEL = 'BINNENLAND';
-    const DISPLAY_DURATION = 15000; // 15 seconden per bericht
+    const STORY_DURATION = 16000; // Total time per news item (16 sec)
 
     const API_URL = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS_URL);
     let items = [];
     let currentIndex = 0;
+    let scrollTimeout = null;
 
     function extractImage(item) {
       if (item.thumbnail) return item.thumbnail;
@@ -130,6 +181,7 @@
 
     function showNextStory() {
       if (items.length === 0) return;
+      
       const card = document.getElementById('newsCard');
       card.classList.add('fade-out');
 
@@ -137,7 +189,12 @@
         const item = items[currentIndex];
         const imgUrl = extractImage(item);
         const imgEl = document.getElementById('newsImg');
+        const descEl = document.getElementById('newsDesc');
+        const descWrapper = document.getElementById('descWrapper');
+        const qrContainer = document.getElementById('qrContainer');
+        const qrImg = document.getElementById('qrImg');
 
+        // Image Handling
         if (imgUrl) {
           imgEl.src = imgUrl;
           imgEl.style.display = 'block';
@@ -147,19 +204,31 @@
           document.getElementById('imgContainer').style.display = 'none';
         }
 
+        // QR Code Handling
+        const storyUrl = item.link || item.guid;
+        if (storyUrl) {
+          qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(storyUrl);
+          qrContainer.style.display = 'flex';
+        } else {
+          qrContainer.style.display = 'none';
+        }
+
+        // Content & Header
         document.getElementById('newsCat').innerText = CATEGORY_LABEL;
         document.getElementById('newsTitle').innerText = item.title;
-        document.getElementById('newsDesc').innerText = cleanText(item.description);
+        
+        // Reset Text Scroll Position
+        descEl.style.transition = 'none';
+        descEl.style.transform = 'translateY(0px)';
+        descEl.innerText = cleanText(item.description);
 
         card.classList.remove('fade-out');
-        currentIndex = (currentIndex + 1) % items.length;
-      }, 800);
-    }
 
-    fetchRSS();
-    setInterval(showNextStory, DISPLAY_DURATION);
-    setInterval(fetchRSS, 15 * 60 * 1000);
-  </script>
-
-</body>
-</html>
+        // Readable Auto-Scroll Logic for Long Body Text
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          const textHeight = descEl.offsetHeight;
+          const containerHeight = descWrapper.offsetHeight;
+          
+          if (textHeight > containerHeight) {
+            const scrollDistance = textHeight - container
