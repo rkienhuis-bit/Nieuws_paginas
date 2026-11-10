@@ -11,7 +11,7 @@
       --bg-color: #f8fafc;
       --card-bg: #ffffff;
       --text-main: #1e293b;
-      --text-muted: #64748b;
+      --text-muted: #475569;
       --border-color: #e2e8f0;
       --primary-blue: #2563eb;
       --target-line: #f59e0b;
@@ -59,9 +59,9 @@
     }
 
     .chart-title {
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       font-weight: 700;
-      color: #475569;
+      color: #334155;
       margin-bottom: 6px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -73,12 +73,12 @@
       width: 100%;
     }
 
-    /* Middle Column: Dynamic Text from Google Sheet */
+    /* Middle Column: Larger fonts & spacing for high legibility */
     .middle-column {
       flex: 0.95;
       background: var(--card-bg);
       border-radius: 16px;
-      padding: 24px;
+      padding: 28px;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
       border: 1px solid var(--border-color);
       display: flex;
@@ -88,44 +88,32 @@
     }
 
     .middle-column h2 {
-      font-size: 1.6rem;
+      font-size: 1.9rem;
       font-weight: 800;
       color: #0f172a;
-      margin-bottom: 14px;
+      margin-bottom: 18px;
       line-height: 1.2;
     }
 
     .middle-column p, .middle-column li {
-      font-size: 0.9rem;
+      font-size: 1.05rem;
       color: var(--text-muted);
-      line-height: 1.5;
-      margin-bottom: 10px;
+      line-height: 1.65;
+      margin-bottom: 14px;
     }
 
     .middle-column ul {
-      margin-left: 18px;
-      margin-bottom: 10px;
+      margin-left: 20px;
+      margin-bottom: 14px;
     }
 
-    /* Extra Info Box inside Middle Column for additional room */
-    .extra-info-box {
-      margin-top: auto;
-      background: #f1f5f9;
-      border-left: 4px solid var(--primary-blue);
-      padding: 12px 14px;
-      border-radius: 0 8px 8px 0;
-      font-size: 0.85rem;
-      color: #334155;
-      line-height: 1.4;
-    }
-
-    /* Right Column: Educational Info Panel */
+    /* Right Column: Larger fonts & spacing for panel readability */
     .right-column {
       flex: 1.1;
       background: var(--right-panel-bg);
       color: var(--right-panel-text);
       border-radius: 16px;
-      padding: 24px;
+      padding: 28px;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
       display: flex;
       flex-direction: column;
@@ -135,18 +123,18 @@
     }
 
     .right-column h3 {
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       font-weight: 700;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
       color: #ffffff;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      padding-bottom: 10px;
     }
 
     .right-column p {
-      font-size: 0.82rem;
-      line-height: 1.45;
-      margin-bottom: 8px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
       color: #cbd5e1;
     }
 
@@ -183,10 +171,6 @@
       <li id="sheetBullet1"></li>
       <li id="sheetBullet2"></li>
     </ul>
-    <!-- Extra Room utilized for additional information from the sheet -->
-    <div id="sheetExtraBox" class="extra-info-box" style="display: none;">
-      <strong>Extra Inzicht:</strong> <span id="sheetExtraText"></span>
-    </div>
   </div>
 
   <!-- Right Column: Original Info Panel -->
@@ -250,7 +234,7 @@
             datalabels: {
               align: 'top',
               anchor: 'end',
-              font: { size: 9, weight: 'bold' },
+              font: { size: 10, weight: 'bold' },
               color: '#334155',
               formatter: (val) => val !== null ? val.toFixed(2).replace('.', ',') + '%' : ''
             }
@@ -271,7 +255,7 @@
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+          x: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } },
           y: { min: 0, max: 4.5, ticks: { stepSize: 1, callback: (v) => v.toFixed(1).replace('.', ',') + '%' } }
         }
       }
@@ -292,7 +276,7 @@
             datalabels: {
               align: 'top',
               anchor: 'end',
-              font: { size: 9, weight: 'bold' },
+              font: { size: 10, weight: 'bold' },
               color: '#334155',
               formatter: (val) => val !== null ? val.toFixed(2).replace('.', ',') + '%' : ''
             }
@@ -313,7 +297,7 @@
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+          x: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } },
           y: { min: 0, max: 1.8, ticks: { stepSize: 0.4, callback: (v) => v.toFixed(1).replace('.', ',') + '%' } }
         }
       }
@@ -332,12 +316,10 @@
         const regelsData = [];
         const meta = {};
 
-        // Parse CSV lines
         lines.forEach(line => {
           if (line.trim() !== '') {
             const cols = line.split(',').map(c => c.replace(/"/g, '').trim());
             
-            // Collect chart data (Columns A, B, C)
             if (cols.length >= 3 && cols[0] && !isNaN(parseFloat(cols[1]))) {
               const formattedMonth = formatConsistentMonth(cols[0]);
               const fVal = parseFloat(cols[1].replace('%', '').replace(',', '.'));
@@ -350,14 +332,12 @@
               }
             }
 
-            // Collect text meta data (Columns E & F)
             if (cols.length >= 6 && cols[4]) {
               meta[cols[4].toLowerCase()] = cols[5];
             }
           }
         });
 
-        // Update Charts
         facturenChart.data.labels = labels;
         facturenChart.data.datasets[0].data = facturenData;
         facturenChart.data.datasets[1].data = Array(labels.length).fill(1.5);
@@ -368,19 +348,12 @@
         regelsChart.data.datasets[1].data = Array(labels.length).fill(0.7);
         regelsChart.update();
 
-        // Update Middle Text dynamically from Sheet
         if (meta['title']) document.getElementById('sheetTitle').innerText = meta['title'];
         if (meta['intro']) document.getElementById('sheetIntro').innerText = meta['intro'];
         if (meta['totalkaps']) document.getElementById('sheetTotal').innerText = meta['totalkaps'];
         if (meta['period']) document.getElementById('sheetPeriod').innerText = meta['period'];
         if (meta['bullet1']) document.getElementById('sheetBullet1').innerText = meta['bullet1'];
         if (meta['bullet2']) document.getElementById('sheetBullet2').innerText = meta['bullet2'];
-        
-        // Handle Extra Room Content if provided in Sheet
-        if (meta['extrainfo']) {
-          document.getElementById('sheetExtraText').innerText = meta['extrainfo'];
-          document.getElementById('sheetExtraBox').style.display = 'block';
-        }
 
       } catch (err) {
         console.error('Error loading KAP data:', err);
