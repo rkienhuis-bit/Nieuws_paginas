@@ -937,11 +937,9 @@ function createSatellites(people, currentYear, column) {
   const count = people.length;
   const radius = 62;
 
-  // Screen awareness: if in columns 6 or 7 (near right edge), flip text and satellites to the left!
   const isNearRightEdge = column >= 6;
 
   people.forEach((person, index) => {
-    // Adjust angles if near right edge so satellites point leftwards
     let baseAngle = count === 1 ? -38 : (-48 + 96 * (index / (count - 1)));
     const angle = isNearRightEdge ? 180 - baseAngle : baseAngle;
     const radians = angle * Math.PI / 180;
@@ -952,13 +950,12 @@ function createSatellites(people, currentYear, column) {
     const initial = person.name.trim().charAt(0).toUpperCase();
     const lineLength = radius - 12;
 
-    // Smart label placement based on screen column side
     let labelX, alignClass;
     if (isNearRightEdge) {
-      labelX = orbX - 175; // Position text to the left of the orb
+      labelX = orbX - 175;
       alignClass = "align-left";
     } else {
-      labelX = orbX + 32;  // Position text to the right of the orb
+      labelX = orbX + 32;
       alignClass = "align-right";
     }
     const labelY = orbY + 2;
@@ -991,7 +988,7 @@ function createSatellites(people, currentYear, column) {
           animation-delay:${index*.12}s;
         ">
         <span class="sat-name">${person.name}</span>
-        <span class="sat-sub">${age} jaar</span>
+        <span class="sat-sub">wordt ${age} jaar</span>
       </div>
     `;
   });
