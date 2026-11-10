@@ -142,7 +142,7 @@ body::before {
   color: #fff;
 }
 
-.test-button, .upload-btn {
+.test-button {
   border: 1px solid rgba(217,170,96,.5);
   background: rgba(217,170,96,.07);
   color: var(--gold-light);
@@ -154,14 +154,38 @@ body::before {
   border-radius: 4px;
   cursor: pointer;
   transition: all .25s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
 }
 
-.test-button:hover, .upload-btn:hover {
+.test-button:hover {
   background: rgba(217,170,96,.18);
   border-color: var(--gold);
+}
+
+/* DISCREET HIDDEN CSV UPLOAD ICON IN CORNER */
+.hidden-upload-icon {
+  position: fixed;
+  bottom: 15px;
+  left: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.25;
+  transition: opacity .3s ease, transform .3s ease;
+  z-index: 100;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.hidden-upload-icon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.hidden-upload-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 #csvFileInput {
@@ -418,10 +442,17 @@ body::before {
   z-index: 6;
   display: flex;
   flex-direction: column;
-  text-align: left;
   white-space: nowrap;
   pointer-events: none;
   animation: satelliteAppear .7s cubic-bezier(.2,.8,.3,1.2) both;
+}
+
+.satellite-label.align-right {
+  text-align: left;
+}
+
+.satellite-label.align-left {
+  text-align: right;
 }
 
 .sat-name {
@@ -676,6 +707,12 @@ body::before {
 <canvas id="confettiCanvas"></canvas>
 <div class="drag-overlay" id="dragOverlay">Sleep CSV-bestand hiernaartoe om te uploaden</div>
 
+<!-- DISCREET IPEX ICON IN CORNER FOR CSV UPLOAD -->
+<div class="hidden-upload-icon" title="CSV Uploaden" onclick="document.getElementById('csvFileInput').click()">
+  <img src="data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='100' cy='100' r='100' fill='%23152541'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='60' fill='%23d9aa60'%3EIPEX%3C/text%3E%3C/svg%3E" alt="Upload">
+</div>
+<input type="file" id="csvFileInput" accept=".csv" onchange="handleFileUpload(event)">
+
 <div class="screen-wrapper">
 
   <div class="header-group">
@@ -707,12 +744,6 @@ body::before {
       <button class="test-button" id="testButton" onclick="cycleTestMode()">
         Test verjaardag
       </button>
-
-      <!-- CSV Upload Button -->
-      <button class="upload-btn" onclick="document.getElementById('csvFileInput').click()">
-        📁 CSV Uploaden
-      </button>
-      <input type="file" id="csvFileInput" accept=".csv" onchange="handleFileUpload(event)">
     </div>
   </div>
 
@@ -835,7 +866,6 @@ function parseCSV(text) {
 
     if (name && rawDob) {
       let dob = rawDob;
-      // Convert DD-MM-YYYY to YYYY-MM-DD if needed
       if (rawDob.includes("-") && rawDob.split("-")[0].length === 2) {
         const parts = rawDob.split("-");
         dob = `${parts[2]}-${parts[1]}-${parts[0]}`;
@@ -897,18 +927,23 @@ window.addEventListener("drop", (e) => {
 });
 
 /* =====================================
-   SATELLITE ORBS
+   SATELLITE ORBS (SCREEN-AWARE POSITIONING)
 ===================================== */
 
-function createSatellites(people, currentYear) {
+function createSatellites(people, currentYear, column) {
   if (!people || people.length === 0) return "";
 
   let html = "";
   const count = people.length;
   const radius = 62;
 
+  // Screen awareness: if in columns 6 or 7 (near right edge), flip text and satellites to the left!
+  const isNearRightEdge = column >= 6;
+
   people.forEach((person, index) => {
-    const angle = count === 1 ? -38 : (-48 + 96 * (index / (count - 1)));
+    // Adjust angles if near right edge so satellites point leftwards
+    let baseAngle = count === 1 ? -38 : (-48 + 96 * (index / (count - 1)));
+    const angle = isNearRightEdge ? 180 - baseAngle : baseAngle;
     const radians = angle * Math.PI / 180;
 
     const orbX = 26.5 + Math.cos(radians) * radius - 12;
@@ -917,7 +952,15 @@ function createSatellites(people, currentYear) {
     const initial = person.name.trim().charAt(0).toUpperCase();
     const lineLength = radius - 12;
 
-    const labelX = orbX + 32;
+    // Smart label placement based on screen column side
+    let labelX, alignClass;
+    if (isNearRightEdge) {
+      labelX = orbX - 175; // Position text to the left of the orb
+      alignClass = "align-left";
+    } else {
+      labelX = orbX + 32;  // Position text to the right of the orb
+      alignClass = "align-right";
+    }
     const labelY = orbY + 2;
 
     const age = calculateAge(person.dob, currentYear);
@@ -940,10 +983,11 @@ function createSatellites(people, currentYear) {
         ">
         ${initial}
       </span>
-      <div class="satellite-label"
+      <div class="satellite-label ${alignClass}"
         style="
           left:${labelX}px;
           top:${labelY}px;
+          width: 140px;
           animation-delay:${index*.12}s;
         ">
         <span class="sat-name">${person.name}</span>
@@ -1153,7 +1197,7 @@ function renderCalendar(currentMonth, currentDay, currentYear) {
       title = "Vandaag";
     }
 
-    const satelliteHtml = hasBirthday ? createSatellites(people, currentYear) : "";
+    const satelliteHtml = hasBirthday ? createSatellites(people, currentYear, column) : "";
 
     pathHtml += `
       <div class="path-node ${statusClass}" style="grid-column:${column};grid-row:${row+1};">
@@ -1223,7 +1267,6 @@ function renderPage() {
     return;
   }
 
-  // Only show celebration full-screen if current real-time day has a birthday and no month override is selected
   const todaysBirthdays = (selectedMonthOverride === 'current') 
     ? birthdays.filter(b => b.month === currentMonth && b.day === currentDay)
     : [];
