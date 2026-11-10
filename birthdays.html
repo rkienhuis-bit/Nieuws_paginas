@@ -322,14 +322,14 @@ body::before {
   }
 }
 
-/* INDIVIDUAL PERSON SATELLITE ORBS */
+/* SATELLITE ORBS & SKETCHED LABELS */
 
 .satellite {
   position: absolute;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  z-index: 4;
+  z-index: 5;
 
   display: flex;
   align-items: center;
@@ -339,7 +339,7 @@ body::before {
   border: 1.5px solid #fff0cf;
 
   color: #263044;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 800;
 
   box-shadow:
@@ -360,8 +360,37 @@ body::before {
   height: 1.5px;
   background: rgba(217,170,96,.65);
   transform-origin: left center;
-  z-index: 1;
+  z-index: 3;
   pointer-events: none;
+}
+
+/* SATELLITE LABEL (AS SKETCHED: NAME + "wordt -- jaar" NEXT TO ORB) */
+
+.satellite-label {
+  position: absolute;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: satelliteAppear .7s cubic-bezier(.2,.8,.3,1.2) both;
+}
+
+.sat-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold-light);
+  line-height: 1.15;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+
+.sat-sub {
+  font-size: 9px;
+  font-weight: 500;
+  color: #aab6c8;
+  line-height: 1.15;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
 @keyframes satelliteAppear {
@@ -375,7 +404,7 @@ body::before {
   }
 }
 
-/* NODE TEXT */
+/* NODE TEXT (FOR SINGLE BIRTHDAYS OR NORMAL DAYS) */
 
 .node-text {
   width: 100%;
@@ -390,7 +419,7 @@ body::before {
   font-size: 11px;
   font-weight: 650;
   color: #cbd4e1;
-  line-height: 1.2;
+  line-height: 1.25;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -634,9 +663,9 @@ body::before {
     margin-top: 2px;
   }
   .satellite {
-    width: 18px;
-    height: 18px;
-    font-size: 8px;
+    width: 20px;
+    height: 20px;
+    font-size: 9px;
   }
   .celeb-heading {
     margin-bottom: 22px;
@@ -715,7 +744,7 @@ const birthdays = [
   { name:"Kevin Keizer", dob:"1995-08-03", month:8, day:3 },
   { name:"Iné van Dijk", dob:"2004-08-06", month:8, day:6 },
   { name:"Peter Karssies", dob:"1964-09-06", month:9, day:6 },
-  { name: "Gerwin Meilink", dob:"1973-09-09", month:9, day:9 },
+  { name:"Gerwin Meilink", dob:"1973-09-09", month:9, day:9 },
   { name:"Raymond van Dijk", dob:"1976-09-24", month:9, day:24 },
   { name:"Kevin van Elven", dob:"1998-10-10", month:10, day:10 },
   { name:"Tim Zwiers", dob:"1998-10-11", month:10, day:11 },
@@ -733,7 +762,6 @@ const dutchMonths = [
   "juli","augustus","september","oktober","november","december"
 ];
 
-// Test people using actual double date matching (Nov 12 -> Gilbert Rada & Desiree Wissink)
 const testPeople = [
   { name:"Gilbert Rada", dob:"1973-11-12" },
   { name:"Desiree Wissink", dob:"1969-11-12" }
@@ -744,7 +772,6 @@ const testPeople = [
 let previewMode = false;
 let confettiStarted = false;
 
-// Check URL parameters for ?test=true automatically
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('test') === 'true') {
   previewMode = true;
@@ -778,25 +805,37 @@ function toggleTestMode() {
 }
 
 /* =====================================
-   INDIVIDUAL ORBS / SATELLITES FOR MULTIPLE BIRTHDAYS
+   INDIVIDUAL ORBS / SATELLITES WITH SKETCHED LABELS
 ===================================== */
 
-function createSatellites(people) {
-  if (!people || people.length <= 1) return "";
+function createSatellites(people, currentYear) {
+  if (!people || people.length === 0) return "";
 
   let html = "";
   const count = people.length;
-  const startAngle = -60;
-  const endAngle = 60;
-  const radius = 44;
+  const radius = 52; // distance from center of main day circle
 
   people.forEach((person, index) => {
-    const angle = startAngle + (endAngle - startAngle) * (index / (count - 1));
+    // If 1 person, put them top/right (-35 deg). If multiple, fan them out (e.g. -45 and +45)
+    const angle = count === 1 ? -38 : (-45 + 90 * (index / (count - 1)));
     const radians = angle * Math.PI / 180;
-    const x = 26.5 + Math.cos(radians) * radius - 11;
-    const y = 26.5 + Math.sin(radians) * radius - 11;
+
+    // Center of main circle is 26.5px, orb width is 24px (radius 12)
+    const orbX = 26.5 + Math.cos(radians) * radius - 12;
+    const orbY = 26.5 + Math.sin(radians) * radius - 12;
+    
     const initial = person.name.trim().charAt(0).toUpperCase();
-    const lineLength = radius - 10;
+    const lineLength = radius - 12;
+
+    // Label positioning next to orb
+    // Place text to the right of the orb, stacked vertically
+    const labelX = orbX + 30;
+    const labelY = orbY + 2;
+
+    const firstName = splitName(person.name).first;
+    const lastName = splitName(person.name).last;
+    const displayName = lastName ? `${firstName} ${lastName.charAt(0)}.` : firstName;
+    const age = calculateAge(person.dob, currentYear);
 
     html += `
       <span class="satellite-line"
@@ -810,12 +849,21 @@ function createSatellites(people) {
       <span class="satellite"
         title="${person.name}"
         style="
-          left:${x}px;
-          top:${y}px;
+          left:${orbX}px;
+          top:${orbY}px;
           animation-delay:${index*.12}s;
         ">
         ${initial}
       </span>
+      <div class="satellite-label"
+        style="
+          left:${labelX}px;
+          top:${labelY}px;
+          animation-delay:${index*.12}s;
+        ">
+        <span class="sat-name">${displayName}</span>
+        <span class="sat-sub">wordt ${age} jaar</span>
+      </div>
     `;
   });
 
@@ -938,7 +986,7 @@ function renderCelebration(persons, year) {
           ${person.name}
         </div>
         <div class="celeb-age">
-          Wordt ${age} jaar
+          wordt ${age} jaar
         </div>
       </div>
     `;
@@ -1007,20 +1055,14 @@ function renderCalendar(currentMonth, currentDay, currentYear) {
     let title = "";
     let sub = "";
 
-    if (hasBirthday) {
-      if (people.length === 1) {
-        title = splitName(people[0].name).first;
-        sub = `Wordt ${calculateAge(people[0].dob, currentYear)} jaar`;
-      } else {
-        // MULTIPLE BIRTHDAYS: List names & ages directly under/next to the orb
-        title = people.map(p => splitName(p.name).first).join(" & ");
-        sub = people.map(p => `Wordt ${calculateAge(p.dob, currentYear)}`).join(" • ");
-      }
-    } else if (isToday) {
+    // If it's a birthday node with single person, satellite handles it or we show normal title if desired.
+    // But since the user wants the sketched satellite layout for birthdays (with initial orb + name + "wordt -- jaar" next to it),
+    // let's use satellites for ANY birthday person!
+    if (isToday && !hasBirthday) {
       title = "Vandaag";
     }
 
-    const satelliteHtml = hasBirthday ? createSatellites(people) : "";
+    const satelliteHtml = hasBirthday ? createSatellites(people, currentYear) : "";
 
     pathHtml += `
       <div class="path-node ${statusClass}" style="grid-column:${column};grid-row:${row+1};">
@@ -1056,7 +1098,6 @@ function renderCalendar(currentMonth, currentDay, currentYear) {
 function renderPage() {
   const now = new Date();
   const currentYear = now.getFullYear();
-  // When preview/test mode is active, override month/day to November 12 (where Gilbert & Desiree share a birthday)
   const currentDay = previewMode ? 12 : now.getDate();
   const currentMonth = previewMode ? 11 : now.getMonth()+1;
 
