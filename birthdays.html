@@ -238,7 +238,7 @@ body::before {
 
 .node-circle {
   position: relative;
-  z-index: 2;
+  z-index: 4; /* Keeps main day circle on top */
   width: 53px;
   height: 53px;
   border-radius: 50%;
@@ -322,14 +322,23 @@ body::before {
   }
 }
 
-/* SATELLITE ORBS & SKETCHED LABELS */
+/* SATELLITE ORBS & LINES (BEHIND THE MAIN DATE CIRCLE) */
+
+.satellite-line {
+  position: absolute;
+  height: 1.5px;
+  background: rgba(217,170,96,.65);
+  transform-origin: left center;
+  z-index: 1; /* Behind node-circle */
+  pointer-events: none;
+}
 
 .satellite {
   position: absolute;
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  z-index: 5;
+  z-index: 2; /* Behind node-circle */
 
   display: flex;
   align-items: center;
@@ -355,16 +364,7 @@ body::before {
   color: white;
 }
 
-.satellite-line {
-  position: absolute;
-  height: 1.5px;
-  background: rgba(217,170,96,.65);
-  transform-origin: left center;
-  z-index: 3;
-  pointer-events: none;
-}
-
-/* SATELLITE LABEL (AS SKETCHED: NAME + "wordt -- jaar" NEXT TO ORB) */
+/* SATELLITE LABEL */
 
 .satellite-label {
   position: absolute;
@@ -404,7 +404,7 @@ body::before {
   }
 }
 
-/* NODE TEXT (FOR SINGLE BIRTHDAYS OR NORMAL DAYS) */
+/* NODE TEXT */
 
 .node-text {
   width: 100%;
@@ -432,18 +432,6 @@ body::before {
   color: #78879e;
   margin-top: 2px;
   white-space: nowrap;
-}
-
-.path-node.birthday .node-title {
-  color: var(--gold-light);
-}
-
-.path-node.birthday .node-sub {
-  color: #b9a17c;
-}
-
-.path-node.today .node-title {
-  color: #83c6ee;
 }
 
 .milestone-star {
@@ -628,53 +616,6 @@ body::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* RESPONSIVE */
-
-@media (max-height:800px) {
-  .screen-wrapper {
-    padding: 22px 35px 18px;
-  }
-  .header-group {
-    padding-bottom: 15px;
-  }
-  .title-box h1 {
-    font-size: 29px;
-  }
-  .main-content {
-    padding-top: 10px;
-  }
-  .node-circle {
-    width: 43px;
-    height: 43px;
-    font-size: 14px;
-  }
-  .orb-cluster {
-    width: 43px;
-    height: 43px;
-  }
-  .path-node {
-    gap: 5px;
-  }
-  .node-title {
-    font-size: 10px;
-  }
-  .node-sub {
-    font-size: 8px;
-    margin-top: 2px;
-  }
-  .satellite {
-    width: 20px;
-    height: 20px;
-    font-size: 9px;
-  }
-  .celeb-heading {
-    margin-bottom: 22px;
-  }
-  .celeb-person {
-    padding: 25px 20px;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;
@@ -779,13 +720,6 @@ if (urlParams.get('test') === 'true') {
 
 /* HELPERS */
 
-function splitName(fullName) {
-  const parts = fullName.trim().split(" ");
-  if (parts.length === 1) return { first:parts[0], last:"" };
-  const last = parts.pop();
-  return { first:parts.join(" "), last };
-}
-
 function calculateAge(dob, year) {
   return year - Number(dob.substring(0,4));
 }
@@ -794,10 +728,6 @@ function getDaysInMonth(year, month) {
   return new Date(year, month, 0).getDate();
 }
 
-/* =====================================
-   TEST BUTTON
-===================================== */
-
 function toggleTestMode() {
   previewMode = !previewMode;
   confettiStarted = false;
@@ -805,7 +735,7 @@ function toggleTestMode() {
 }
 
 /* =====================================
-   INDIVIDUAL ORBS / SATELLITES WITH SKETCHED LABELS
+   SATELLITE ORBS & FULL NAME LABELS (BEHIND NODE CIRCLE)
 ===================================== */
 
 function createSatellites(people, currentYear) {
@@ -813,28 +743,23 @@ function createSatellites(people, currentYear) {
 
   let html = "";
   const count = people.length;
-  const radius = 52; // distance from center of main day circle
+  const radius = 62; // Increased distance for comfortable breathing room
 
   people.forEach((person, index) => {
-    // If 1 person, put them top/right (-35 deg). If multiple, fan them out (e.g. -45 and +45)
-    const angle = count === 1 ? -38 : (-45 + 90 * (index / (count - 1)));
+    // Fan out angles cleanly around the circle
+    const angle = count === 1 ? -38 : (-48 + 96 * (index / (count - 1)));
     const radians = angle * Math.PI / 180;
 
-    // Center of main circle is 26.5px, orb width is 24px (radius 12)
+    // Center is 26.5px, orb width is 24px (radius 12)
     const orbX = 26.5 + Math.cos(radians) * radius - 12;
     const orbY = 26.5 + Math.sin(radians) * radius - 12;
     
     const initial = person.name.trim().charAt(0).toUpperCase();
     const lineLength = radius - 12;
 
-    // Label positioning next to orb
-    // Place text to the right of the orb, stacked vertically
-    const labelX = orbX + 30;
+    const labelX = orbX + 32;
     const labelY = orbY + 2;
 
-    const firstName = splitName(person.name).first;
-    const lastName = splitName(person.name).last;
-    const displayName = lastName ? `${firstName} ${lastName.charAt(0)}.` : firstName;
     const age = calculateAge(person.dob, currentYear);
 
     html += `
@@ -861,7 +786,7 @@ function createSatellites(people, currentYear) {
           top:${labelY}px;
           animation-delay:${index*.12}s;
         ">
-        <span class="sat-name">${displayName}</span>
+        <span class="sat-name">${person.name}</span>
         <span class="sat-sub">wordt ${age} jaar</span>
       </div>
     `;
@@ -1053,11 +978,6 @@ function renderCalendar(currentMonth, currentDay, currentYear) {
     ].filter(Boolean).join(" ");
 
     let title = "";
-    let sub = "";
-
-    // If it's a birthday node with single person, satellite handles it or we show normal title if desired.
-    // But since the user wants the sketched satellite layout for birthdays (with initial orb + name + "wordt -- jaar" next to it),
-    // let's use satellites for ANY birthday person!
     if (isToday && !hasBirthday) {
       title = "Vandaag";
     }
@@ -1067,16 +987,15 @@ function renderCalendar(currentMonth, currentDay, currentYear) {
     pathHtml += `
       <div class="path-node ${statusClass}" style="grid-column:${column};grid-row:${row+1};">
         <div class="orb-cluster">
+          ${satelliteHtml}
           <div class="node-circle">
             ${day}
             ${hasBirthday && people.length===1 ? '<span class="milestone-star">★</span>' : ''}
           </div>
-          ${satelliteHtml}
         </div>
         ${title ? `
           <div class="node-text">
             <span class="node-title">${title}</span>
-            <span class="node-sub">${sub}</span>
           </div>
         ` : ""}
       </div>
