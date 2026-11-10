@@ -124,59 +124,6 @@ body::before {
   letter-spacing: .3px;
 }
 
-/* DISCREET HIDDEN CSV UPLOAD ICON IN CORNER */
-.hidden-upload-icon {
-  position: fixed;
-  bottom: 15px;
-  left: 20px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  overflow: hidden;
-  cursor: pointer;
-  opacity: 0.25;
-  transition: opacity .3s ease, transform .3s ease;
-  z-index: 100;
-  border: 1px solid rgba(255,255,255,0.2);
-}
-
-.hidden-upload-icon:hover {
-  opacity: 1;
-  transform: scale(1.1);
-}
-
-.hidden-upload-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-#csvFileInput {
-  display: none;
-}
-
-/* DRAG OVERLAY */
-.drag-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(9,14,25,0.9);
-  border: 3px dashed var(--gold);
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  color: var(--gold-light);
-  font-weight: 700;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .2s ease;
-}
-
-.drag-overlay.active {
-  opacity: 1;
-}
-
 /* MAIN CONTENT */
 
 .main-content {
@@ -668,13 +615,6 @@ body::before {
 
 <div class="bg-glow"></div>
 <canvas id="confettiCanvas"></canvas>
-<div class="drag-overlay" id="dragOverlay">Sleep CSV-bestand hiernaartoe om te uploaden</div>
-
-<!-- DISCREET IPEX ICON IN CORNER FOR CSV UPLOAD -->
-<div class="hidden-upload-icon" title="CSV Uploaden" onclick="document.getElementById('csvFileInput').click()">
-  <img src="data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='100' cy='100' r='100' fill='%23152541'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='60' fill='%23d9aa60'%3EIPEX%3C/text%3E%3C/svg%3E" alt="Upload">
-</div>
-<input type="file" id="csvFileInput" accept=".csv" onchange="handleFileUpload(event)">
 
 <div class="screen-wrapper">
 
@@ -695,51 +635,7 @@ body::before {
 
 <script>
 
-/* =====================================
-   BIRTHDAY DATA
-===================================== */
-
-let birthdays = [
-  { name:"Laila van Oversteeg", dob:"2005-01-19", month:1, day:19 },
-  { name:"Malgorzata Witczak", dob:"1994-02-09", month:2, day:9 },
-  { name:"Wendy Slag", dob:"1979-02-13", month:2, day:13 },
-  { name:"Robert Markvoort", dob:"1972-02-22", month:2, day:22 },
-  { name:"Sander Bremer", dob:"1975-03-05", month:3, day:5 },
-  { name:"Arjan Dijkstra", dob:"1974-03-16", month:3, day:16 },
-  { name:"Anja Hoevink-Zwijnenberg", dob:"1970-03-25", month:3, day:25 },
-  { name:"Florus van den Berge", dob:"1979-04-02", month:4, day:2 },
-  { name:"Remco Grondhuis", dob:"1988-04-10", month:4, day:10 },
-  { name:"Christoph Ahlers", dob:"1967-04-19", month:4, day:19 },
-  { name:"Lieke van Horssen", dob:"2000-04-23", month:4, day:23 },
-  { name:"Pim van Oppen", dob:"1973-05-04", month:5, day:4 },
-  { name:"Jeroen Schuitemaker", dob:"1991-05-09", month:5, day:9 },
-  { name:"Manfred Zeides", dob:"1965-05-12", month:5, day:12 },
-  { name:"Martijn Steunenberg", dob:"1975-05-14", month:5, day:14 },
-  { name:"Laurents ten Voorde", dob:"1962-05-15", month:5, day:15 },
-  { name:"Antoinette Geels", dob:"1968-05-25", month:5, day:25 },
-  { name:"Levan Hendriks", dob:"2007-06-07", month:6, day:7 },
-  { name:"Maud Meilink", dob:"2006-06-17", month:6, day:17 },
-  { name:"Linda Drost", dob:"1987-06-18", month:6, day:18 },
-  { name:"Tico van der Linde", dob:"1984-06-19", month:6, day:19 },
-  { name:"Gerald Wijnen", dob:"1970-06-19", month:6, day:19 },
-  { name:"Ansjelo Gerritsen", dob:"1998-07-01", month:7, day:1 },
-  { name:"Marwan hersi", dob:"1986-07-08", month:7, day:8 },
-  { name:"Edwin Hüsing", dob:"1966-07-29", month:7, day:29 },
-  { name:"Kevin Keizer", dob:"1995-08-03", month:8, day:3 },
-  { name:"Iné van Dijk", dob:"2004-08-06", month:8, day:6 },
-  { name:"Peter Karssies", dob:"1964-09-06", month:9, day:6 },
-  { name:"Gerwin Meilink", dob:"1973-09-09", month:9, day:9 },
-  { name:"Raymond van Dijk", dob:"1976-09-24", month:9, day:24 },
-  { name:"Kevin van Elven", dob:"1998-10-10", month:10, day:10 },
-  { name:"Tim Zwiers", dob:"1998-10-11", month:10, day:11 },
-  { name:"Stefan Boekhorst", dob:"1973-10-16", month:10, day:16 },
-  { name:"Gilbert Rada", dob:"1973-11-12", month:11, day:12 },
-  { name:"Desiree Wissink", dob:"1969-11-12", month:11, day:12 },
-  { name:"Marco Vooijs", dob:"1991-11-30", month:11, day:30 },
-  { name:"Roy Kienhuis", dob:"1993-12-24", month:12, day:24 },
-  { name:"Fenny Voortman - Lohuis", dob:"1966-12-30", month:12, day:30 },
-  { name:"Ilona Pigge - Maatje", dob:"1981-12-31", month:12, day:31 }
-];
+let birthdays = [];
 
 const dutchMonths = [
   "januari","februari","maart","april","mei","juni",
@@ -763,8 +659,22 @@ function getDaysInMonth(year, month) {
 }
 
 /* =====================================
-   CSV AUTOMATIC IMPORT & PARSER
+   FETCH CSV DIRECTLY FROM GITHUB
 ===================================== */
+
+async function loadBirthdaysFromCSV() {
+  try {
+    // CHANGE THIS URL to your raw GitHub link for verjaardagen.csv
+    // e.g., "https://raw.githubusercontent.com/ jouw-gebruikersnaam / jouw-repo / main/verjaardagen.csv"
+    const csvUrl = 'verjaardagen.csv'; 
+
+    const response = await fetch(csvUrl);
+    const text = await response.text();
+    parseCSV(text);
+  } catch (error) {
+    console.error("Kon CSV niet laden vanaf GitHub, gebruik fallback data.", error);
+  }
+}
 
 function parseCSV(text) {
   const lines = text.split(/\r\n|\n/);
@@ -807,43 +717,9 @@ function parseCSV(text) {
 
   if (parsed.length > 0) {
     birthdays = parsed;
-    alert(`Succesvol ${parsed.length} verjaardagen geïmporteerd uit het CSV-bestand!`);
     renderPage();
-  } else {
-    alert("Kon geen geldige verjaardagen vinden in het CSV-bestand.");
   }
 }
-
-function handleFileUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (event) => parseCSV(event.target.result);
-  reader.readAsText(file);
-}
-
-// DRAG AND DROP HANDLERS
-window.addEventListener("dragover", (e) => {
-  e.preventDefault();
-  document.getElementById("dragOverlay").classList.add("active");
-});
-
-window.addEventListener("dragleave", (e) => {
-  if (e.clientX === 0 && e.clientY === 0) {
-    document.getElementById("dragOverlay").classList.remove("active");
-  }
-});
-
-window.addEventListener("drop", (e) => {
-  e.preventDefault();
-  document.getElementById("dragOverlay").classList.remove("active");
-  const files = e.dataTransfer.files;
-  if (files.length > 0 && files[0].name.endsWith(".csv")) {
-    const reader = new FileReader();
-    reader.onload = (event) => parseCSV(event.target.result);
-    reader.readAsText(files[0]);
-  }
-});
 
 /* =====================================
    SATELLITE ORBS (SCREEN-AWARE POSITIONING)
@@ -1176,12 +1052,12 @@ function renderPage() {
 
 /* INITIALIZE */
 
-renderPage();
+// Load CSV from GitHub repository on startup, then render
+loadBirthdaysFromCSV();
 
 window.addEventListener("resize", drawSnakeRoute);
-setTimeout(drawSnakeRoute, 100);
 
-// Check once every minute for date changes
+// Refresh every minute to stay in sync
 setInterval(renderPage, 60000);
 
 </script>
