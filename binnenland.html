@@ -152,15 +152,23 @@
     </div>
   </div>
 
-  <script>
-    const RSS_URL = 'https://feeds.nos.nl/nosnieuwsbinnenland'; 
-    const CATEGORY_LABEL = 'BINNENLAND';
+<script>
+    const RSS_URL = 'https://feeds.nos.nl/nosnieuwsbinnenland'; // Change per category file
+    const CATEGORY_LABEL = 'BINNENLAND';                         // Change per category file
+    const STORAGE_KEY_INDEX = 'nos_cat_index_binnenland';        // Use a unique key per category (e.g. _buitenland, _politiek, _sport)
+    const STORAGE_KEY_ITEMS = 'nos_cat_items_binnenland';
 
     const API_URL = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS_URL);
     let items = [];
     let currentIndex = 0;
     let timerId = null;
     let scrollTimeout = null;
+
+    // Load saved index from browser memory if it exists
+    const savedIndex = localStorage.getItem(STORAGE_KEY_INDEX);
+    if (savedIndex !== null) {
+      currentIndex = parseInt(savedIndex, 10);
+    }
 
     function extractImage(item) {
       if (item.thumbnail) return item.thumbnail;
@@ -183,39 +191,29 @@
         .join('');
     }
 
-    // CALCULATE PROPORTIONAL READING TIME
     function calculateReadingDuration(title, descriptionHtml) {
       const div = document.createElement("div");
       div.innerHTML = descriptionHtml;
       const plainText = div.textContent || div.innerText || "";
       const wordCount = (title + " " + plainText).split(/\s+/).length;
       
-      // Base time + scale dynamically with word count (~300ms per word)
       let durationMs = 12000; 
       durationMs += wordCount * 300; 
       
-      if (durationMs < 14000) durationMs = 14000; // Minimum 14 seconds
-      if (durationMs > 35000) durationMs = 35000; // Maximum 35 seconds for very long pieces
+      if (durationMs < 14000) durationMs = 14000;
+      if (durationMs > 35000) durationMs = 35000;
       return durationMs;
     }
 
-    async function fetchRSS() {
-      try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
-        if (data.status === 'ok' && data.items.length > 0) {
-          items = data.items;
-          showNextStory();
-        }
-      } catch (err) {
-        document.getElementById('newsTitle').innerText = 'Fout bij het laden van het nieuws.';
-      }
-    }
-
-    function showNextStory() {
+    function renderCurrentStory() {
       if (items.length === 0) return;
       if (timerId) clearTimeout(timerId);
       
+      // Ensure index is within bounds of the fetched items array
+      if (currentIndex >= items.length) {
+        currentIndex = 0;
+      }
+
       const card = document.getElementById('newsCard');
       card.classList.add('slide-out');
 
@@ -261,10 +259,9 @@
         void card.offsetWidth;
         card.classList.remove('slide-in');
 
-        // Get unique duration for this specific news item
         const currentStoryDuration = calculateReadingDuration(item.title, item.description);
 
-        // FULLY PROPORTIONAL CRAWL SPEED
+        // Proportional Scroll Logic
         if (scrollTimeout) clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
           const textHeight = descEl.offsetHeight;
@@ -272,22 +269,57 @@
           
           if (textHeight > containerHeight) {
             const scrollDistance = textHeight - containerHeight + 25;
-            
-            // Proportional scroll time: scales cleanly based on how long the slide stays open
             const scrollTime = Math.max(8, (currentStoryDuration - 6000) / 1000); 
             
             descEl.style.transition = `transform ${scrollTime}s linear`;
             descEl.style.transform = `translateY(-${scrollDistance}px)`;
           }
-        }, 4500); // 4.5 second pause at the top before scrolling begins
+        }, 4500);
 
+        // Advance to next index and save it to memory
         currentIndex = (currentIndex + 1) % items.length;
-        timerId = setTimeout(showNextStory, currentStoryDuration);
+        localStorage.setItem(STORAGE_KEY_INDEX, currentIndex);
+
+        timerId = setTimeout(renderCurrentStory, currentStoryDuration);
       }, 800);
     }
 
+    async function fetchRSS() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        if (data.status === 'ok' && data.items.length > 0) {
+          items = data.items;
+          localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(items));
+          
+          // If stories haven't started playing yet, trigger the first render
+          if (!timerId) {
+            renderCurrentStory();
+          }
+        } else {
+          loadCachedData();
+        }
+      } catch (err) {
+        loadCachedData();
+      }
+    }
+
+    function loadCachedData() {
+      const cached = localStorage.getItem(STORAGE_KEY_ITEMS);
+      if (cached) {
+        items = JSON.parse(cached);
+        if (!timerId) {
+          renderCurrentStory();
+        }
+      } else {
+        document.getElementById('newsTitle').innerText = 'Fout bij het laden van het nieuws.';
+      }
+    }
+
+    // Initialize instantly from local cache if available, then fetch fresh data in background
+    loadCachedData();
     fetchRSS();
-    setInterval(fetchRSS, 10 * 60 * 1000);
+    setInterval(fetchRSS, 10 * 60 * 1000); // Check for feed updates every 10 minutes
   </script>
 
 </body>
