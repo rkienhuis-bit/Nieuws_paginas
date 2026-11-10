@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <title>Verjaardagen</title>
+  <title>Verjaardagen Pad</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -14,12 +14,10 @@
       color: #ffffff;
     }
 
-    /* VIBRANT AMBIENT BACKGROUND & CONFETTI CANVAS */
     .bg-gradient {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.08) 0%, rgba(11, 15, 25, 1) 70%),
-                  radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.06) 0%, rgba(11, 15, 25, 1) 70%);
+      background: radial-gradient(circle at 50% 30%, rgba(245, 158, 11, 0.07) 0%, rgba(11, 15, 25, 1) 80%);
       z-index: 1;
       pointer-events: none;
     }
@@ -30,19 +28,17 @@
       pointer-events: none;
     }
 
-    /* FULL-SCREEN EDITORIAL CONTAINER */
     .screen-wrapper {
       position: relative;
       z-index: 2;
       width: 100%;
       height: 100vh;
-      padding: 45px 60px;
+      padding: 40px 60px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
 
-    /* EDITORIAL HEADER */
     .header-group {
       display: flex;
       justify-content: space-between;
@@ -52,7 +48,7 @@
     }
 
     .title-box h1 {
-      font-size: 36px;
+      font-size: 34px;
       font-weight: 700;
       letter-spacing: -0.5px;
       color: #ffffff;
@@ -60,7 +56,7 @@
     }
 
     .title-box p {
-      font-size: 13px;
+      font-size: 12px;
       color: #f59e0b;
       text-transform: uppercase;
       letter-spacing: 2px;
@@ -68,13 +64,11 @@
     }
 
     .date-display {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 500;
       color: #94a3b8;
-      letter-spacing: 0.5px;
     }
 
-    /* TEST MODE BANNER */
     .test-banner {
       position: fixed;
       top: 15px; left: 50%; transform: translateX(-50%);
@@ -84,7 +78,6 @@
       display: none;
     }
 
-    /* MAIN CONTENT AREA */
     .main-content {
       flex-grow: 1;
       display: flex;
@@ -94,104 +87,128 @@
       overflow: hidden;
     }
 
-    /* DUOLINGO-STYLE PATH / TIMELINE MAP */
-    .path-container {
+    /* DUOLINGO-STYLE PATH MAP CONTAINER */
+    .path-map-container {
       width: 100%;
-      max-width: 900px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+      max-width: 1000px;
+      height: 100%;
       max-height: 720px;
       overflow-y: auto;
-      padding: 20px;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
       position: relative;
     }
 
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.2); border-radius: 4px; }
 
+    /* ROW FOR ZIG-ZAG PATH */
     .path-row {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 24px;
       width: 100%;
+      gap: 40px;
     }
 
-    /* Alternate zig-zag layout for path feel */
-    .path-row:nth-child(even) {
-      flex-direction: row-reverse;
-    }
+    .path-row.left { justify-content: flex-start; padding-left: 15%; }
+    .path-row.center { justify-content: center; }
+    .path-row.right { justify-content: flex-end; padding-right: 15%; }
 
-    .path-node {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 18px;
-      padding: 16px 24px;
+    /* ORB / NODE STYLES */
+    .node-item {
       display: flex;
       align-items: center;
       gap: 16px;
-      width: 360px;
-      backdrop-filter: blur(12px);
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      width: 320px;
       transition: all 0.3s ease;
     }
 
-    .path-node.birthday-node {
+    /* PAST NODES */
+    .node-item.past {
+      opacity: 0.4;
+      border-color: rgba(255, 255, 255, 0.03);
+    }
+    .node-item.past .node-orb {
+      background: rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* TODAY NODE */
+    .node-item.today {
+      background: rgba(56, 189, 248, 0.06);
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .node-item.today .node-orb {
+      background: #38bdf8;
+      color: #0b0f19;
+      border-color: #38bdf8;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+    }
+
+    /* BIRTHDAY NODE */
+    .node-item.birthday {
       background: rgba(245, 158, 11, 0.08);
-      border-color: rgba(245, 158, 11, 0.4);
+      border-color: rgba(245, 158, 11, 0.5);
       box-shadow: 0 10px 30px rgba(245, 158, 11, 0.15);
-      animation: pulseNode 3s infinite alternate;
+    }
+    .node-item.birthday .node-orb {
+      background: #f59e0b;
+      color: #0b0f19;
+      border-color: #f59e0b;
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.7);
+      animation: pulseOrb 2s infinite alternate;
     }
 
-    @keyframes pulseNode {
-      0% { box-shadow: 0 10px 20px rgba(245, 158, 11, 0.1); }
-      100% { box-shadow: 0 15px 35px rgba(245, 158, 11, 0.25); }
+    @keyframes pulseOrb {
+      0% { transform: scale(1); box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
+      100% { transform: scale(1.08); box-shadow: 0 0 30px rgba(245, 158, 11, 0.8); }
     }
 
-    .node-badge {
-      width: 46px;
-      height: 46px;
+    .node-orb {
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 700;
       color: #94a3b8;
       flex-shrink: 0;
     }
 
-    .path-node.birthday-node .node-badge {
-      background: #f59e0b;
-      color: #0b0f19;
-      border-color: #f59e0b;
-      font-size: 18px;
-      box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
-    }
-
-    .node-info {
+    .node-content {
       display: flex;
       flex-direction: column;
     }
 
-    .node-first {
-      font-size: 17px;
+    .node-title {
+      font-size: 16px;
       font-weight: 700;
       color: #ffffff;
       line-height: 1.2;
     }
 
-    .node-last {
+    .node-sub {
       font-size: 12px;
       font-weight: 500;
       color: #94a3b8;
-      letter-spacing: 0.5px;
       margin-top: 2px;
     }
 
-    .path-node.birthday-node .node-first {
+    .node-item.birthday .node-title {
       color: #f59e0b;
     }
 
@@ -209,11 +226,8 @@
     .celebration-feature::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 120px;
-      height: 3px;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 120px; height: 3px;
       background: linear-gradient(90deg, transparent, #f59e0b, transparent);
       border-radius: 2px;
     }
@@ -228,12 +242,24 @@
     }
 
     .celeb-name-large {
-      font-size: 64px;
+      font-size: 60px;
       font-weight: 800;
       color: #ffffff;
       letter-spacing: -1px;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
       line-height: 1.1;
+    }
+
+    .celeb-age-badge {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #f59e0b;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 20px;
     }
 
     .celeb-wish-text {
@@ -272,45 +298,45 @@
 
   <script>
     const birthdays = [
-      { name: "Laila van Oversteeg", month: 1, day: 19 },
-      { name: "Malgorzata Witczak", month: 2, day: 9 },
-      { name: "Wendy Slag", month: 2, day: 13 },
-      { name: "Robert Markvoort", month: 2, day: 22 },
-      { name: "Sander Bremer", month: 3, day: 5 },
-      { name: "Arjan Dijkstra", month: 3, day: 16 },
-      { name: "Anja Hoevink-Zwijnenberg", month: 3, day: 25 },
-      { name: "Florus van den Berge", month: 4, day: 2 },
-      { name: "Remco Grondhuis", month: 4, day: 10 },
-      { name: "Christoph Ahlers", month: 4, day: 19 },
-      { name: "Lieke van Horssen", month: 4, day: 23 },
-      { name: "Pim van Oppen", month: 5, day: 4 },
-      { name: "Jeroen Schuitemaker", month: 5, day: 9 },
-      { name: "Manfred Zeides", month: 5, day: 12 },
-      { name: "Martijn Steunenberg", month: 5, day: 14 },
-      { name: "Laurents ten Voorde", month: 5, day: 15 },
-      { name: "Antoinette Geels", month: 5, day: 25 },
-      { name: "Levan Hendriks", month: 6, day: 7 },
-      { name: "Maud Meilink", month: 6, day: 17 },
-      { name: "Linda Drost", month: 6, day: 18 },
-      { name: "Tico van der Linde", month: 6, day: 19 },
-      { name: "Gerald Wijnen", month: 6, day: 19 },
-      { name: "Ansjelo Gerritsen", month: 7, day: 1 },
-      { name: "Marwan hersi", month: 7, day: 8 },
-      { name: "Edwin Hüsing", month: 7, day: 29 },
-      { name: "Kevin Keizer", month: 8, day: 3 },
-      { name: "Iné van Dijk", month: 8, day: 6 },
-      { name: "Peter Karssies", month: 9, day: 6 },
-      { name: "Gerwin Meilink", month: 9, day: 9 },
-      { name: "Raymond van Dijk", month: 9, day: 24 },
-      { name: "Kevin van Elven", month: 10, day: 10 },
-      { name: "Tim Zwiers", month: 10, day: 11 },
-      { name: "Stefan Boekhorst", month: 10, day: 16 },
-      { name: "Gilbert Rada", month: 11, day: 12 },
-      { name: "Desiree Wissink", month: 11, day: 12 },
-      { name: "Marco Vooijs", month: 11, day: 30 },
-      { name: "Roy Kienhuis", month: 12, day: 24 },
-      { name: "Fenny Voortman - Lohuis", month: 12, day: 30 },
-      { name: "Ilona Pigge - Maatje", month: 12, day: 31 }
+      { name: "Laila van Oversteeg", dob: "2005-01-19", month: 1, day: 19 },
+      { name: "Malgorzata Witczak", dob: "1994-02-09", month: 2, day: 9 },
+      { name: "Wendy Slag", dob: "1979-02-13", month: 2, day: 13 },
+      { name: "Robert Markvoort", dob: "1972-02-22", month: 2, day: 22 },
+      { name: "Sander Bremer", dob: "1975-03-05", month: 3, day: 5 },
+      { name: "Arjan Dijkstra", dob: "1974-03-16", month: 3, day: 16 },
+      { name: "Anja Hoevink-Zwijnenberg", dob: "1970-03-25", month: 3, day: 25 },
+      { name: "Florus van den Berge", dob: "1979-04-02", month: 4, day: 2 },
+      { name: "Remco Grondhuis", dob: "1988-04-10", month: 4, day: 10 },
+      { name: "Christoph Ahlers", dob: "1967-04-19", month: 4, day: 19 },
+      { name: "Lieke van Horssen", dob: "2000-04-23", month: 4, day: 23 },
+      { name: "Pim van Oppen", dob: "1973-05-04", month: 5, day: 4 },
+      { name: "Jeroen Schuitemaker", dob: "1991-05-09", month: 5, day: 9 },
+      { name: "Manfred Zeides", dob: "1965-05-12", month: 5, day: 12 },
+      { name: "Martijn Steunenberg", dob: "1975-05-14", month: 5, day: 14 },
+      { name: "Laurents ten Voorde", dob: "1962-05-15", month: 5, day: 15 },
+      { name: "Antoinette Geels", dob: "1968-05-25", month: 5, day: 25 },
+      { name: "Levan Hendriks", dob: "2007-06-07", month: 6, day: 7 },
+      { name: "Maud Meilink", dob: "2006-06-17", month: 6, day: 17 },
+      { name: "Linda Drost", dob: "1987-06-18", month: 6, day: 18 },
+      { name: "Tico van der Linde", dob: "1984-06-19", month: 6, day: 19 },
+      { name: "Gerald Wijnen", dob: "1970-06-19", month: 6, day: 19 },
+      { name: "Ansjelo Gerritsen", dob: "1998-07-01", month: 7, day: 1 },
+      { name: "Marwan hersi", dob: "1986-07-08", month: 7, day: 8 },
+      { name: "Edwin Hüsing", dob: "1966-07-29", month: 7, day: 29 },
+      { name: "Kevin Keizer", dob: "1995-08-03", month: 8, day: 3 },
+      { name: "Iné van Dijk", dob: "2004-08-06", month: 8, day: 6 },
+      { name: "Peter Karssies", dob: "1964-09-06", month: 9, day: 6 },
+      { name: "Gerwin Meilink", dob: "1973-09-09", month: 9, day: 9 },
+      { name: "Raymond van Dijk", dob: "1976-09-24", month: 9, day: 24 },
+      { name: "Kevin van Elven", dob: "1998-10-10", month: 10, day: 10 },
+      { name: "Tim Zwiers", dob: "1998-10-11", month: 10, day: 11 },
+      { name: "Stefan Boekhorst", dob: "1973-10-16", month: 10, day: 16 },
+      { name: "Gilbert Rada", dob: "1973-11-12", month: 11, day: 12 },
+      { name: "Desiree Wissink", dob: "1969-11-12", month: 11, day: 12 },
+      { name: "Marco Vooijs", dob: "1991-11-30", month: 11, day: 30 },
+      { name: "Roy Kienhuis", dob: "1993-12-24", month: 12, day: 24 },
+      { name: "Fenny Voortman - Lohuis", dob: "1966-12-30", month: 12, day: 30 },
+      { name: "Ilona Pigge - Maatje", dob: "1981-12-31", month: 12, day: 31 }
     ];
 
     const dutchMonths = [
@@ -324,6 +350,15 @@
       const last = parts.pop();
       const first = parts.join(' ');
       return { first, last };
+    }
+
+    function calculateAge(dobString, currentYear) {
+      const birthYear = new Date(dobString).getFullYear();
+      return currentYear - birthYear;
+    }
+
+    function getDaysInMonth(year, month) {
+      return new Date(year, month, 0).getDate();
     }
 
     function triggerConfetti() {
@@ -386,6 +421,7 @@
       }
 
       const now = new Date();
+      const currentYear = now.getFullYear();
       const currentDay = isTestMode ? 12 : now.getDate();
       const currentMonth = isTestMode ? 11 : now.getMonth() + 1;
 
@@ -402,10 +438,12 @@
         let html = '';
         todaysBirthdays.forEach(person => {
           const { first, last } = splitName(person.name);
+          const age = calculateAge(person.dob, currentYear);
           html += `
             <div class="celebration-feature">
               <div class="celeb-tag">Vandaag in de spotlight</div>
               <div class="celeb-name-large">${first} <span style="color:#f59e0b; display:block; font-size:42px; margin-top:4px;">${last}</span></div>
+              <div class="celeb-age-badge">Wordt ${age} jaar</div>
               <div class="celeb-wish-text">Van harte gefeliciteerd met je verjaardag!</div>
             </div>
           `;
@@ -417,30 +455,59 @@
         document.getElementById('subTitle').innerText = dutchMonths[currentMonth - 1].toUpperCase();
 
         const monthlyBirthdays = birthdays.filter(b => b.month === currentMonth);
-        monthlyBirthdays.sort((a, b) => a.day - b.day);
+        const totalDays = getDaysInMonth(currentYear, currentMonth);
 
-        if (monthlyBirthdays.length === 0) {
-          contentArea.innerHTML = `<div style="color: #64748b; font-size: 16px;">Geen verjaardagen in deze maand.</div>`;
-        } else {
-          // Build Duolingo-style zig-zag path map of birthdays
-          let pathHtml = `<div class="path-container">`;
-          monthlyBirthdays.forEach(person => {
-            const { first, last } = splitName(person.name);
-            pathHtml += `
-              <div class="path-row">
-                <div class="path-node birthday-node">
-                  <div class="node-badge">🎈</div>
-                  <div class="node-info">
-                    <span class="node-first">${first} ${last}</span>
-                    <span class="node-last">${person.day} ${dutchMonths[currentMonth - 1]}</span>
+        // Map birthdays by day for quick lookup
+        const birthdayMap = {};
+        monthlyBirthdays.forEach(b => {
+          if (!birthdayMap[b.day]) birthdayMap[b.day] = [];
+          birthdayMap[b.day].push(b);
+        });
+
+        let pathHtml = `<div class="path-map-container">`;
+        
+        // Build path nodes for every day of the month or milestone days
+        for (let day = 1; day <= totalDays; day++) {
+          const hasBday = birthdayMap[day];
+          const isPast = day < currentDay;
+          const isToday = day === currentDay;
+          const alignClass = day % 3 === 1 ? 'left' : (day % 3 === 2 ? 'center' : 'right');
+
+          if (hasBday) {
+            hasBday.forEach(person => {
+              const { first, last } = splitName(person.name);
+              const age = calculateAge(person.dob, currentYear);
+              pathHtml += `
+                <div class="path-row ${alignClass}">
+                  <div class="node-item birthday">
+                    <div class="node-orb">🎈</div>
+                    <div class="node-content">
+                      <span class="node-title">${first} ${last}</span>
+                      <span class="node-sub">${day} ${dutchMonths[currentMonth - 1]} • Wordt ${age}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            `;
-          });
-          pathHtml += `</div>`;
-          contentArea.innerHTML = pathHtml;
+              `;
+            });
+          } else {
+            // Optional: show subtle node or skip non-birthday days to keep it clean. Let's show notable or all days if desired, but for narrowcasting showing days with birthdays + today keeps it punchy. Let's show today's node if no birthday!
+            if (isToday) {
+              pathHtml += `
+                <div class="path-row ${alignClass}">
+                  <div class="node-item today">
+                    <div class="node-orb">${day}</div>
+                    <div class="node-content">
+                      <span class="node-title" style="color:#38bdf8;">Vandaag</span>
+                      <span class="node-sub">${day} ${dutchMonths[currentMonth - 1]}</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }
+          }
         }
+        pathHtml += `</div>`;
+        contentArea.innerHTML = pathHtml;
       }
     }
 
