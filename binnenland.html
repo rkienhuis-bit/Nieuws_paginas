@@ -20,16 +20,15 @@
       flex-direction: row;
       width: 100%;
       height: 100vh;
-      background: rgba(17, 17, 17, 0.90);
+      /* Background matches dark overlay to prevent any white flashes */
+      background: #111111;
       overflow: hidden;
       opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      transition: opacity 1.2s ease-in-out; /* Smooth gentle fade */
     }
 
     .news-card.fade-out {
       opacity: 0;
-      transform: translateY(10px);
     }
 
     /* IMAGE STYLING */
@@ -49,11 +48,12 @@
     /* CONTENT LAYOUT - TOP ALIGNED */
     .news-content {
       width: 70%;
-      padding: 60px 80px 40px 60px;
+      padding: 50px 80px 40px 60px;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       overflow: hidden;
+      position: relative;
     }
 
     .news-category {
@@ -61,54 +61,58 @@
       font-size: 20px;
       font-weight: 700;
       text-transform: uppercase;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       letter-spacing: 2px;
     }
 
     .news-title {
-      font-size: 38px;
+      font-size: 36px;
       font-weight: 700;
       line-height: 1.2;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       color: #ffffff;
     }
 
-    /* SCROLLING BODY TEXT */
+    /* SCROLLING BODY TEXT WITH PARAGRAPH SUPPORT */
     .news-desc-wrapper {
       position: relative;
       flex-grow: 1;
       overflow: hidden;
-      max-height: 55vh;
+      max-height: 52vh;
     }
 
     .news-description {
       position: absolute;
       width: 100%;
-      font-size: 20px; /* Reduced font size */
+      font-size: 20px;
       line-height: 1.5;
       color: #dddddd;
       top: 0;
       transition: transform linear;
     }
 
-    /* DYNAMIC QR CODE */
+    .news-description p {
+      margin-bottom: 14px; /* Proper paragraph line spacing */
+    }
+
+    /* DYNAMIC QR CODE - BOTTOM RIGHT */
     .qr-container {
       position: absolute;
-      top: 35px;
-      right: 40px;
+      bottom: 40px;
+      right: 50px;
       display: flex;
       flex-direction: column;
       align-items: center;
       background: rgba(255, 255, 255, 0.95);
       padding: 10px;
       border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
       z-index: 10;
     }
 
     .qr-code {
-      width: 90px;
-      height: 90px;
+      width: 85px;
+      height: 85px;
     }
 
     .qr-label {
@@ -123,12 +127,6 @@
 <body>
 
   <div class="news-card" id="newsCard">
-    <!-- QR CODE BOX -->
-    <div class="qr-container" id="qrContainer" style="display:none;">
-      <img id="qrImg" class="qr-code" src="" alt="Scan QR" />
-      <span class="qr-label">LEES MEER</span>
-    </div>
-
     <!-- MAIN NEWS CONTENT -->
     <div class="news-image-container" id="imgContainer">
       <img id="newsImg" class="news-image" src="" alt="Afbeelding" style="display:none;" />
@@ -138,7 +136,13 @@
       <div class="news-category" id="newsCat">BINNENLAND</div>
       <h1 class="news-title" id="newsTitle">NOS Nieuws laden...</h1>
       <div class="news-desc-wrapper" id="descWrapper">
-        <p class="news-description" id="newsDesc"></p>
+        <div class="news-description" id="newsDesc"></div>
+      </div>
+      
+      <!-- QR CODE BOX (BOTTOM RIGHT) -->
+      <div class="qr-container" id="qrContainer" style="display:none;">
+        <img id="qrImg" class="qr-code" src="" alt="Scan QR" />
+        <span class="qr-label">LEES MEER</span>
       </div>
     </div>
   </div>
@@ -146,7 +150,7 @@
   <script>
     const RSS_URL = 'https://feeds.nos.nl/nosnieuwsbinnenland'; 
     const CATEGORY_LABEL = 'BINNENLAND';
-    const STORY_DURATION = 16000; // Total time per news item (16 sec)
+    const STORY_DURATION = 20000; // Increased total time per story to 20 seconds for slow reading
 
     const API_URL = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS_URL);
     let items = [];
@@ -160,10 +164,21 @@
       return imgMatch ? imgMatch[1] : null;
     }
 
-    function cleanText(html) {
+    // Formats text cleanly with paragraph breaks instead of squashed text
+    function formatDescription(html) {
+      if (!html) return '';
       const div = document.createElement("div");
-      div.innerHTML = html || "";
-      return div.textContent || div.innerText || "";
+      div.innerHTML = html;
+      
+      // Look for paragraphs or split by sentences/newlines to build proper <p> elements
+      const text = div.textContent || div.innerText || "";
+      const paragraphs = text.split(/\r?\n\r?/);
+      
+      return paragraphs
+        .map(p => p.trim())
+        .filter(p => p.length > 0)
+        .map(p => `<p>${p}</p>`)
+        .join('');
     }
 
     async function fetchRSS() {
@@ -204,7 +219,7 @@
           document.getElementById('imgContainer').style.display = 'none';
         }
 
-        // QR Code Handling
+        // QR Code Handling (Bottom Right)
         const storyUrl = item.link || item.guid;
         if (storyUrl) {
           qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(storyUrl);
@@ -217,29 +232,30 @@
         document.getElementById('newsCat').innerText = CATEGORY_LABEL;
         document.getElementById('newsTitle').innerText = item.title;
         
-        // Reset Text Scroll Position
+        // Reset Text Scroll Position & Apply Paragraphs
         descEl.style.transition = 'none';
         descEl.style.transform = 'translateY(0px)';
-        descEl.innerText = cleanText(item.description);
+        descEl.innerHTML = formatDescription(item.description);
 
         card.classList.remove('fade-out');
 
-        // Readable Auto-Scroll Logic for Long Body Text
+        // Much Slower, Readable Auto-Scroll Logic for Long Body Text
         if (scrollTimeout) clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
           const textHeight = descEl.offsetHeight;
           const containerHeight = descWrapper.offsetHeight;
           
           if (textHeight > containerHeight) {
-            const scrollDistance = textHeight - containerHeight + 30;
-            const scrollTime = (STORY_DURATION - 5000) / 1000; // Smooth slow crawl duration
+            const scrollDistance = textHeight - containerHeight + 20;
+            // Takes 12 full seconds just to perform the gentle crawl
+            const scrollTime = 12; 
             descEl.style.transition = `transform ${scrollTime}s linear`;
             descEl.style.transform = `translateY(-${scrollDistance}px)`;
           }
-        }, 2000); // Wait 2s before scrolling starts
+        }, 2500); // Wait 2.5s before crawling starts so users can read the top lines first
 
         currentIndex = (currentIndex + 1) % items.length;
-      }, 600);
+      }, 1200); // Matches the 1.2s dark crossfade duration
     }
 
     fetchRSS();
