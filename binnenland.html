@@ -63,10 +63,10 @@
       line-height: 1.2;
       margin-bottom: 25px;
       color: #ffffff;
-      max-width: calc(100% - 310px); /* Leaves clear breathing room for the static circle */
+      max-width: calc(100% - 310px);
     }
 
-    /* STATIC CIRCULAR IMAGE BADGE (LOCKED IN TOP RIGHT) */
+    /* STATIC VISUAL IMAGE BADGE (TOP RIGHT) */
     .news-image-circle {
       position: absolute;
       top: 45px;
@@ -75,10 +75,11 @@
       height: 270px;
       border-radius: 50%;
       overflow: hidden;
-      border: 5px solid #e30613; /* NOS Red accent border */
+      border: 5px solid #e30613;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
       background-color: #0b0b0b;
       z-index: 5;
+      pointer-events: none;
     }
 
     .news-image-circle img {
@@ -88,12 +89,12 @@
       object-position: center center;
     }
 
-    /* ISOLATED SCROLLING TEXT CONTAINER */
+    /* SCROLLING TEXT CONTAINER */
     .news-desc-wrapper {
       position: relative;
       flex-grow: 1;
       overflow: hidden;
-      max-height: 52vh;
+      max-height: 60vh;
       margin-bottom: 20px;
     }
 
@@ -105,6 +106,17 @@
       color: #dddddd;
       top: 0;
       transition: transform linear;
+    }
+
+    /* FLOATING INVISIBLE SHAPE THAT FORCES TEXT TO WRAP AROUND CIRCLE */
+    .shape-wrap-spacer {
+      float: right;
+      width: 270px;
+      height: 270px;
+      border-radius: 50%;
+      shape-outside: circle(50%);
+      margin-left: 35px;
+      margin-bottom: 15px;
     }
 
     .news-description p {
@@ -144,7 +156,7 @@
 
   <div class="news-card" id="newsCard">
     <div class="news-content">
-      <!-- STATIC CIRCULAR IMAGE BADGE (LOCKED IN TOP RIGHT) -->
+      <!-- FIXED VISUAL BADGE -->
       <div class="news-image-circle" id="imgContainer" style="display:none;">
         <img id="newsImg" src="" alt="Afbeelding" />
       </div>
@@ -152,12 +164,15 @@
       <div class="news-category" id="newsCat">BINNENLAND</div>
       <h1 class="news-title" id="newsTitle">NOS Nieuws laden...</h1>
       
-      <!-- ONLY THIS TEXT BOX SCROLLS -->
+      <!-- SCROLLING TEXT AREA WITH DYNAMIC CIRCULAR WRAPPING -->
       <div class="news-desc-wrapper" id="descWrapper">
-        <div class="news-description" id="newsDesc"></div>
+        <div class="news-description" id="newsDesc">
+          <div class="shape-wrap-spacer" id="shapeSpacer" style="display:none;"></div>
+          <div id="textBody"></div>
+        </div>
       </div>
       
-      <!-- QR CODE BOX (BOTTOM RIGHT) -->
+      <!-- QR CODE BOX -->
       <div class="qr-container" id="qrContainer" style="display:none;">
         <img id="qrImg" class="qr-code" src="" alt="Scan QR" />
         <span class="qr-label">LEES MEER</span>
@@ -233,17 +248,21 @@
         const imgUrl = extractImage(item);
         const imgEl = document.getElementById('newsImg');
         const imgContainer = document.getElementById('imgContainer');
+        const shapeSpacer = document.getElementById('shapeSpacer');
         const descEl = document.getElementById('newsDesc');
+        const textBody = document.getElementById('textBody');
         const descWrapper = document.getElementById('descWrapper');
         const qrContainer = document.getElementById('qrContainer');
         const qrImg = document.getElementById('qrImg');
 
-        // Circular Image Handling
+        // Circular Image & Wrap Spacer Handling
         if (imgUrl) {
           imgEl.src = imgUrl;
           imgContainer.style.display = 'block';
+          shapeSpacer.style.display = 'block';
         } else {
           imgContainer.style.display = 'none';
+          shapeSpacer.style.display = 'none';
         }
 
         // QR Code Handling
@@ -262,7 +281,7 @@
         // Reset Scroll & Insert Description Text
         descEl.style.transition = 'none';
         descEl.style.transform = 'translateY(0px)';
-        descEl.innerHTML = formatDescription(item.description);
+        textBody.innerHTML = formatDescription(item.description);
 
         card.classList.add('slide-in');
         card.classList.remove('slide-out');
