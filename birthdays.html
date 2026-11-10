@@ -10,13 +10,12 @@
 :root {
   --bg: #090e19;
   --navy: #152541;
-  --blue: #294c78;
-  --blue-bright: #3b82b9;
+  --blue: #315a88;
+  --blue-light: #4b86b8;
   --gold: #d9aa60;
   --gold-light: #f1d29b;
   --text: #f1f3f7;
   --muted: #8995a9;
-  --line: #26344b;
 }
 
 * {
@@ -37,19 +36,29 @@ html, body {
 
 body {
   background:
-    radial-gradient(ellipse at 50% 40%, #14223a 0%, transparent 65%),
-    linear-gradient(135deg, #090e19, #0c1423);
+    radial-gradient(ellipse at 50% 45%, rgba(39,67,104,.28), transparent 65%),
+    linear-gradient(135deg, #090e19, #0c1525);
 }
 
-/* BACKGROUND DETAILS */
+/* AMBIENT BACKGROUND */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .12;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.2'/%3E%3C/svg%3E");
+  z-index: 1;
+}
 
 .bg-glow {
   position: fixed;
-  width: 650px;
-  height: 650px;
+  width: 700px;
+  height: 700px;
   border-radius: 50%;
   background: rgba(217,170,96,.035);
-  filter: blur(100px);
+  filter: blur(110px);
   right: -300px;
   bottom: -350px;
   pointer-events: none;
@@ -71,7 +80,7 @@ body {
   z-index: 2;
   width: 100%;
   height: 100vh;
-  padding: 32px 48px 28px;
+  padding: 32px 48px 25px;
   display: flex;
   flex-direction: column;
 }
@@ -103,6 +112,12 @@ body {
   margin-top: 7px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
 .date-display {
   font-size: 15px;
   font-weight: 500;
@@ -110,21 +125,23 @@ body {
   letter-spacing: .3px;
 }
 
-.test-banner {
-  position: fixed;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--gold);
-  color: #171d29;
-  font-size: 11px;
-  font-weight: 800;
+.test-button {
+  border: 1px solid rgba(217,170,96,.5);
+  background: rgba(217,170,96,.07);
+  color: var(--gold-light);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 6px 16px;
+  padding: 10px 15px;
   border-radius: 3px;
-  z-index: 999;
-  display: none;
+  cursor: pointer;
+  transition: all .25s ease;
+}
+
+.test-button:hover {
+  background: rgba(217,170,96,.18);
+  border-color: var(--gold);
 }
 
 /* MAIN CONTENT */
@@ -140,7 +157,7 @@ body {
   position: relative;
 }
 
-/* FULL WIDTH SNAKE GRID */
+/* CALENDAR GRID */
 
 .snake-grid {
   position: relative;
@@ -155,7 +172,7 @@ body {
   overflow: hidden;
 }
 
-/* CONNECTING LINES */
+/* CONNECTING ROUTE */
 
 .snake-route {
   position: absolute;
@@ -170,24 +187,31 @@ body {
 .route-shadow {
   fill: none;
   stroke: rgba(0,0,0,.4);
-  stroke-width: 9;
+  stroke-width: 10;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .route-line {
   fill: none;
-  stroke: #354660;
-  stroke-width: 4;
+  stroke: #344966;
+  stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .route-highlight {
   fill: none;
-  stroke: rgba(255,255,255,.08);
-  stroke-width: 1;
+  stroke: rgba(217,170,96,.5);
+  stroke-width: 2;
   stroke-linecap: round;
+  stroke-dasharray: 3 35;
+  animation: routeFlow 24s linear infinite;
+}
+
+@keyframes routeFlow {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -760; }
 }
 
 /* DAY NODES */
@@ -204,10 +228,20 @@ body {
   text-align: center;
 }
 
-.node-circle {
+.orb-cluster {
   width: 53px;
   height: 53px;
+  position: relative;
   flex-shrink: 0;
+  overflow: visible;
+  z-index: 2;
+}
+
+.node-circle {
+  position: relative;
+  z-index: 2;
+  width: 53px;
+  height: 53px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -223,8 +257,6 @@ body {
   color: #aab6c8;
   font-size: 16px;
   font-weight: 700;
-
-  position: relative;
   transition: all .3s ease;
 }
 
@@ -233,7 +265,6 @@ body {
 .path-node.past .node-circle {
   background: linear-gradient(145deg, #315b8d, #203e66);
   border: 2px solid #416b9c;
-
   color: #e4edf8;
 
   box-shadow:
@@ -246,7 +277,6 @@ body {
 .path-node.today .node-circle {
   background: linear-gradient(145deg, #4d91c0, #286b9d);
   border: 2px solid #a5d1ed;
-
   color: #fff;
 
   box-shadow:
@@ -256,66 +286,98 @@ body {
   transform: scale(1.12);
 }
 
-/* BIRTHDAY MILESTONE */
+/* BIRTHDAY */
 
 .path-node.birthday .node-circle {
   background: linear-gradient(145deg, #d9b477, #a97939);
   border: 2px solid #f0d3a0;
-
   color: #1c2330;
 
   box-shadow:
     0 5px 0 #644a2b,
     0 0 20px rgba(217,170,96,.17);
-  
-  transform: scale(1.1);
-}
 
-/* PAST BIRTHDAY */
+  animation: goldPulse 4s ease-in-out infinite;
+}
 
 .path-node.past.birthday .node-circle {
   background: linear-gradient(145deg, #315b8d, #203e66);
-  border: 2px solid #d9aa60;
-  color: #fff;
-
-  box-shadow:
-    0 5px 0 #142945,
-    0 7px 13px rgba(0,0,0,.3);
+  border: 2px solid var(--gold);
+  color: white;
 }
-
-/* TODAY BIRTHDAY */
 
 .path-node.today.birthday .node-circle {
   background: linear-gradient(145deg, #e6bd79, #c18a43);
   border: 2px solid #fff0cf;
   color: #1c2330;
-
-  box-shadow:
-    0 5px 0 #785326,
-    0 0 28px rgba(217,170,96,.4);
 }
 
-/* SMALL BIRTHDAY INDICATOR */
+@keyframes goldPulse {
+  0%,100% {
+    box-shadow: 0 5px 0 #644a2b,
+                0 0 12px rgba(217,170,96,.12);
+  }
+  50% {
+    box-shadow: 0 5px 0 #644a2b,
+                0 0 27px rgba(217,170,96,.38);
+  }
+}
 
-.milestone-star {
+/* INDIVIDUAL PERSON ORBS */
+
+.satellite {
   position: absolute;
-  top: -8px;
-  right: -9px;
-
   width: 20px;
   height: 20px;
   border-radius: 50%;
-
-  background: var(--gold);
-  border: 2px solid var(--bg);
+  z-index: 4;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
+  background: linear-gradient(145deg, #f1d29b, #c28c47);
+  border: 1.5px solid #fff0cf;
+
   color: #263044;
-  font-size: 10px;
-  font-weight: 900;
+  font-size: 9px;
+  font-weight: 800;
+
+  box-shadow:
+    0 2px 5px rgba(0,0,0,.5),
+    0 0 9px rgba(217,170,96,.2);
+
+  animation: satelliteAppear .7s cubic-bezier(.2,.8,.3,1.2) both;
+}
+
+/* Satellites on past birthdays remain blue with gold edges */
+
+.path-node.past .satellite {
+  background: linear-gradient(145deg, #6592bd, #315b8d);
+  border-color: var(--gold-light);
+  color: white;
+}
+
+/* Satellite connector */
+
+.satellite-line {
+  position: absolute;
+  height: 1.5px;
+  background: rgba(217,170,96,.65);
+  transform-origin: left center;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes satelliteAppear {
+  from {
+    opacity: 0;
+    transform: scale(.1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* NODE TEXT */
@@ -334,7 +396,6 @@ body {
   font-weight: 650;
   color: #cbd4e1;
   line-height: 1.25;
-
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -361,86 +422,193 @@ body {
   color: #83c6ee;
 }
 
-/* BIRTHDAY CELEBRATION */
+/* SMALL BIRTHDAY MARKER FOR SINGLE BIRTHDAYS */
 
-.celebration-feature {
-  width: 100%;
-  text-align: center;
-  margin: auto;
-  padding: 40px 20px;
-
-  background:
-    radial-gradient(ellipse at 50% 35%,
-    rgba(217,170,96,.11), transparent 65%);
-
-  position: relative;
-  animation: bounceIn 1s ease forwards;
+.milestone-star {
+  position: absolute;
+  top: -8px;
+  right: -9px;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #263044;
+  font-size: 10px;
+  font-weight: 900;
+  z-index: 5;
 }
 
-.celebration-feature::before {
-  content: '';
+/* BIRTHDAY CELEBRATION SCREEN */
+
+.celebration-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 20px;
+  animation: celebrationEnter 1s ease both;
+  position: relative;
+}
+
+.celebration-screen::before {
+  content: "";
   position: absolute;
-  top: 0;
+  top: 9%;
   left: 50%;
   transform: translateX(-50%);
-  width: 130px;
+  width: 170px;
   height: 2px;
-  background: linear-gradient(
-    90deg, transparent, var(--gold), transparent
-  );
+  background: linear-gradient(90deg,transparent,var(--gold),transparent);
 }
 
 .celeb-tag {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--gold);
   text-transform: uppercase;
-  letter-spacing: 4px;
-  margin-bottom: 25px;
+  letter-spacing: 5px;
+  margin-bottom: 14px;
 }
 
-.celeb-name-large {
-  font-size: 65px;
+.celeb-heading {
+  font-size: 42px;
+  font-weight: 650;
+  color: #fff;
+  letter-spacing: -1px;
+  margin-bottom: 38px;
+  text-align: center;
+}
+
+.celeb-people {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 30px;
+  width: 100%;
+  max-width: 1150px;
+  flex-wrap: wrap;
+}
+
+.celeb-person {
+  position: relative;
+  flex: 1;
+  min-width: 260px;
+  max-width: 480px;
+  padding: 35px 30px 32px;
+  text-align: center;
+
+  background:
+    linear-gradient(145deg,
+      rgba(38,55,79,.75),
+      rgba(15,25,42,.8));
+
+  border: 1px solid rgba(217,170,96,.3);
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,.25),
+    inset 0 1px 0 rgba(255,255,255,.06);
+
+  animation: cardEnter .8s ease both;
+}
+
+.celeb-person::before,
+.celeb-person::after {
+  content: "";
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  border-color: rgba(217,170,96,.55);
+  border-style: solid;
+}
+
+.celeb-person::before {
+  top: 9px;
+  left: 9px;
+  border-width: 1px 0 0 1px;
+}
+
+.celeb-person::after {
+  bottom: 9px;
+  right: 9px;
+  border-width: 0 1px 1px 0;
+}
+
+.celeb-number {
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.celeb-name {
+  font-size: clamp(30px, 3vw, 46px);
   font-weight: 750;
   color: #fff;
-  letter-spacing: -1.5px;
+  letter-spacing: -1px;
+  line-height: 1.15;
   margin-bottom: 20px;
-  line-height: 1.1;
 }
 
-.celeb-age-badge {
+.celeb-age {
   display: inline-block;
-  background: rgba(217,170,96,.12);
-  border: 1px solid rgba(217,170,96,.4);
+  padding: 9px 24px;
+  border: 1px solid rgba(217,170,96,.45);
+  background: rgba(217,170,96,.1);
   color: var(--gold-light);
-  font-size: 16px;
-  font-weight: 700;
-  padding: 10px 24px;
-  border-radius: 30px;
-  margin-bottom: 22px;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: .5px;
 }
 
-.celeb-wish-text {
-  font-size: 23px;
+.celeb-wish {
   color: #c3ccda;
-  font-weight: 400;
-  line-height: 1.5;
+  font-size: 18px;
+  margin-top: 35px;
+  text-align: center;
+  letter-spacing: .2px;
 }
 
-@keyframes bounceIn {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.celebration-decoration {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 26px;
+  color: var(--gold);
+  font-size: 14px;
 }
 
-/* SMALLER SCREENS */
+.celebration-decoration::before,
+.celebration-decoration::after {
+  content: "";
+  width: 55px;
+  height: 1px;
+  background: linear-gradient(90deg,transparent,var(--gold));
+}
 
-@media (max-height: 800px) {
+.celebration-decoration::after {
+  transform: rotate(180deg);
+}
+
+@keyframes celebrationEnter {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* RESPONSIVE */
+
+@media (max-height:800px) {
   .screen-wrapper {
     padding: 22px 35px 18px;
   }
@@ -463,6 +631,11 @@ body {
     font-size: 14px;
   }
 
+  .orb-cluster {
+    width: 43px;
+    height: 43px;
+  }
+
   .path-node {
     gap: 5px;
   }
@@ -475,6 +648,27 @@ body {
     font-size: 9px;
     margin-top: 2px;
   }
+
+  .satellite {
+    width: 18px;
+    height: 18px;
+    font-size: 8px;
+  }
+
+  .celeb-heading {
+    margin-bottom: 22px;
+  }
+
+  .celeb-person {
+    padding: 25px 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 
 </style>
@@ -483,22 +677,24 @@ body {
 <body>
 
 <div class="bg-glow"></div>
-
-<div class="test-banner" id="testBanner">
-  Test Mode Actief
-</div>
-
 <canvas id="confettiCanvas"></canvas>
 
 <div class="screen-wrapper">
 
   <div class="header-group">
+
     <div class="title-box">
       <h1 id="mainTitle">Verjaardagen deze maand</h1>
       <p id="subTitle">Team Overzicht</p>
     </div>
 
-    <div class="date-display" id="dateDisplay">--</div>
+    <div class="header-actions">
+      <div class="date-display" id="dateDisplay">--</div>
+      <button class="test-button" id="testButton" onclick="toggleTestMode()">
+        Test verjaardag
+      </button>
+    </div>
+
   </div>
 
   <div class="main-content" id="contentArea"></div>
@@ -507,7 +703,9 @@ body {
 
 <script>
 
-/* BIRTHDAY DATA */
+/* =====================================
+   BIRTHDAY DATA
+===================================== */
 
 const birthdays = [
   { name:"Laila van Oversteeg", dob:"2005-01-19", month:1, day:19 },
@@ -556,6 +754,20 @@ const dutchMonths = [
   "juli","augustus","september","oktober","november","december"
 ];
 
+/* TEST PEOPLE */
+
+const testPeople = [
+  { name:"Voorbeeld Persoon", dob:"1994-11-12" },
+  { name:"Tweede Jarige", dob:"1988-11-12" }
+];
+
+/* STATE */
+
+let previewMode = false;
+let confettiStarted = false;
+
+/* HELPERS */
+
 function splitName(fullName) {
   const parts = fullName.trim().split(" ");
   if (parts.length === 1) return { first:parts[0], last:"" };
@@ -571,7 +783,80 @@ function getDaysInMonth(year,month) {
   return new Date(year,month,0).getDate();
 }
 
-/* STRAIGHT CONNECTING ROUTE */
+/* =====================================
+   TEST BUTTON
+===================================== */
+
+function toggleTestMode() {
+  previewMode = !previewMode;
+  confettiStarted = false;
+  renderPage();
+}
+
+/* =====================================
+   INDIVIDUAL ORBS
+===================================== */
+
+function createSatellites(people) {
+
+  if (!people || people.length <= 1) return "";
+
+  let html = "";
+
+  const count = people.length;
+
+  // Fan out the satellites around the main circle.
+  // Each person receives their own orb and initial.
+
+  const startAngle = -55;
+  const endAngle = 55;
+  const radius = 43;
+
+  people.forEach((person,index) => {
+
+    const angle = count === 1
+      ? 0
+      : startAngle + (endAngle-startAngle) * (index/(count-1));
+
+    const radians = angle * Math.PI / 180;
+
+    const x = 26.5 + Math.cos(radians)*radius - 10;
+    const y = 26.5 + Math.sin(radians)*radius - 10;
+
+    const initial = person.name.trim().charAt(0).toUpperCase();
+
+    // Small connector between the main orb and the person orb.
+
+    const lineLength = radius - 10;
+
+    html += `
+      <span class="satellite-line"
+        style="
+          left:26.5px;
+          top:26.5px;
+          width:${lineLength}px;
+          transform:rotate(${angle}deg);
+        ">
+      </span>
+
+      <span class="satellite"
+        title="${person.name}"
+        style="
+          left:${x}px;
+          top:${y}px;
+          animation-delay:${index*.12}s;
+        ">
+        ${initial}
+      </span>
+    `;
+  });
+
+  return html;
+}
+
+/* =====================================
+   DRAW ROUTE
+===================================== */
 
 function drawSnakeRoute() {
 
@@ -611,7 +896,9 @@ function drawSnakeRoute() {
   });
 }
 
-/* CONFETTI */
+/* =====================================
+   CONFETTI
+===================================== */
 
 function triggerConfetti() {
 
@@ -631,9 +918,10 @@ function triggerConfetti() {
     "#a9b8ce"
   ];
 
-  for (let i=0;i<90;i++) {
+  for (let i=0;i<100;i++) {
+
     particles.push({
-      x:canvas.width/2+(Math.random()-.5)*250,
+      x:canvas.width/2+(Math.random()-.5)*300,
       y:canvas.height/2,
       vx:(Math.random()-.5)*12,
       vy:Math.random()*-14-4,
@@ -651,6 +939,7 @@ function triggerConfetti() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     particles.forEach(p => {
+
       p.x+=p.vx;
       p.y+=p.vy;
       p.vy+=p.gravity;
@@ -658,6 +947,7 @@ function triggerConfetti() {
       p.opacity-=.008;
 
       if (p.opacity>0) {
+
         ctx.save();
         ctx.translate(p.x,p.y);
         ctx.rotate(p.rotation*Math.PI/180);
@@ -676,90 +966,83 @@ function triggerConfetti() {
   update();
 }
 
-/* TODAY'S BIRTHDAY */
+/* =====================================
+   CELEBRATION MODE
+===================================== */
 
 function renderCelebration(persons,year) {
 
   const contentArea = document.getElementById("contentArea");
 
-  document.getElementById("mainTitle").innerText = "Jarig Vandaag";
-  document.getElementById("subTitle").innerText = "";
+  document.getElementById("mainTitle").innerText =
+    persons.length > 1
+      ? "Vandaag is het feest"
+      : "Jarig Vandaag";
 
-  let html = "";
+  document.getElementById("subTitle").innerText =
+    "Een bijzondere dag";
 
-  persons.forEach(person => {
+  let cards = "";
 
-    const {first,last} = splitName(person.name);
+  persons.forEach((person,index) => {
+
     const age = calculateAge(person.dob,year);
 
-    html += `
-      <div class="celebration-feature">
+    cards += `
+      <div class="celeb-person"
+           style="animation-delay:${index*.15}s">
 
-        <div class="celeb-tag">
-          Vandaag in de spotlight
+        <div class="celeb-number">
+          ${persons.length > 1 ? `Jarige ${index+1}` : "Vandaag in de spotlight"}
         </div>
 
-        <div class="celeb-name-large">
-          ${first}
-          <span style="color:#d9aa60;display:block;font-size:44px;margin-top:5px;">
-            ${last}
-          </span>
+        <div class="celeb-name">
+          ${person.name}
         </div>
 
-        <div class="celeb-age-badge">
-          Wordt ${age} jaar
-        </div>
-
-        <div class="celeb-wish-text">
-          Van harte gefeliciteerd met je verjaardag!
+        <div class="celeb-age">
+          ${age} jaar
         </div>
 
       </div>
     `;
   });
 
-  contentArea.innerHTML = html;
+  contentArea.innerHTML = `
+    <div class="celebration-screen">
 
-  setTimeout(triggerConfetti,200);
+      <div class="celeb-tag">
+        Een bijzondere mijlpaal
+      </div>
+
+      <div class="celeb-heading">
+        Van harte gefeliciteerd!
+      </div>
+
+      <div class="celebration-decoration">✦</div>
+
+      <div class="celeb-people">
+        ${cards}
+      </div>
+
+      <div class="celeb-wish">
+        We wensen jullie een fantastische verjaardag!
+      </div>
+
+    </div>
+  `;
+
+  if (!confettiStarted) {
+    confettiStarted = true;
+    setTimeout(triggerConfetti,400);
+  }
 }
 
-/* MAIN RENDER */
+/* =====================================
+   CALENDAR
+===================================== */
 
-function renderPage() {
-
-  const params = new URLSearchParams(window.location.search);
-  const isTestMode = params.get("test")==="true";
-
-  if (isTestMode) {
-    document.getElementById("testBanner").style.display = "block";
-  }
-
-  const now = new Date();
-  const currentYear = now.getFullYear();
-
-  const currentDay = isTestMode
-    ? Number(params.get("day") || 12)
-    : now.getDate();
-
-  const currentMonth = isTestMode
-    ? Number(params.get("month") || 11)
-    : now.getMonth()+1;
-
-  document.getElementById("dateDisplay").innerText =
-    now.toLocaleDateString("nl-NL",{
-      weekday:"long",
-      day:"numeric",
-      month:"long"
-    });
-
-  const todaysBirthdays = birthdays.filter(b =>
-    b.month===currentMonth && b.day===currentDay
-  );
-
-  if (todaysBirthdays.length>0) {
-    renderCelebration(todaysBirthdays,currentYear);
-    return;
-  }
+function renderCalendar(currentMonth,currentDay,currentYear) {
 
   document.getElementById("mainTitle").innerText =
     "Verjaardagen deze maand";
@@ -768,7 +1051,7 @@ function renderPage() {
     dutchMonths[currentMonth-1].toUpperCase();
 
   const monthlyBirthdays = birthdays.filter(b =>
-    b.month===currentMonth
+    b.month === currentMonth
   );
 
   const totalDays = getDaysInMonth(currentYear,currentMonth);
@@ -776,7 +1059,11 @@ function renderPage() {
   const birthdayMap = {};
 
   monthlyBirthdays.forEach(b => {
-    if (!birthdayMap[b.day]) birthdayMap[b.day] = [];
+
+    if (!birthdayMap[b.day]) {
+      birthdayMap[b.day] = [];
+    }
+
     birthdayMap[b.day].push(b);
   });
 
@@ -796,9 +1083,9 @@ function renderPage() {
 
     const people = birthdayMap[day] || [];
 
-    const isPast = day<currentDay;
-    const isToday = day===currentDay;
-    const hasBirthday = people.length>0;
+    const isPast = day < currentDay;
+    const isToday = day === currentDay;
+    const hasBirthday = people.length > 0;
 
     const row = Math.floor((day-1)/itemsPerRow);
     const position = (day-1)%itemsPerRow;
@@ -815,32 +1102,42 @@ function renderPage() {
 
     let title = "";
     let sub = "";
-    let label = day;
 
     if (hasBirthday) {
 
-      title = people.map(p => splitName(p.name).first).join(" & ");
-
-      sub = people.length===1
-        ? `Wordt ${calculateAge(people[0].dob,currentYear)} jaar`
-        : `${people.length} verjaardagen`;
+      if (people.length === 1) {
+        title = splitName(people[0].name).first;
+        sub = `Wordt ${calculateAge(people[0].dob,currentYear)} jaar`;
+      } else {
+        title = `${people.length} jarigen`;
+        sub = "Iedereen in de spotlight";
+      }
 
     } else if (isToday) {
       title = "Vandaag";
-      sub = " ";
     }
+
+    const satelliteHtml = hasBirthday
+      ? createSatellites(people)
+      : "";
 
     pathHtml += `
       <div class="path-node ${statusClass}"
            style="grid-column:${column};grid-row:${row+1};">
 
-        <div class="node-circle">
-          ${label}
+        <div class="orb-cluster">
 
-          ${hasBirthday
-            ? '<span class="milestone-star">★</span>'
-            : ''
-          }
+          <div class="node-circle">
+            ${day}
+
+            ${hasBirthday && people.length===1
+              ? '<span class="milestone-star">★</span>'
+              : ''
+            }
+          </div>
+
+          ${satelliteHtml}
+
         </div>
 
         ${title ? `
@@ -863,14 +1160,75 @@ function renderPage() {
   });
 }
 
+/* =====================================
+   MAIN RENDER
+===================================== */
+
+function renderPage() {
+
+  const now = new Date();
+
+  const currentYear = now.getFullYear();
+
+  const currentDay = now.getDate();
+  const currentMonth = now.getMonth()+1;
+
+  document.getElementById("dateDisplay").innerText =
+    now.toLocaleDateString("nl-NL",{
+      weekday:"long",
+      day:"numeric",
+      month:"long"
+    });
+
+  document.getElementById("testButton").innerText =
+    previewMode
+      ? "Terug naar kalender"
+      : "Test verjaardag";
+
+  /* TEST MODE */
+
+  if (previewMode) {
+
+    renderCelebration(testPeople,currentYear);
+    return;
+  }
+
+  /* REAL BIRTHDAY */
+
+  const todaysBirthdays = birthdays.filter(b =>
+    b.month===currentMonth && b.day===currentDay
+  );
+
+  if (todaysBirthdays.length>0) {
+
+    renderCelebration(todaysBirthdays,currentYear);
+    return;
+  }
+
+  /* NORMAL CALENDAR */
+
+  confettiStarted = false;
+
+  document.getElementById("confettiCanvas")
+    .getContext("2d")
+    .clearRect(0,0,window.innerWidth,window.innerHeight);
+
+  renderCalendar(currentMonth,currentDay,currentYear);
+}
+
 /* INITIALIZE */
 
 renderPage();
 
 window.addEventListener("resize",drawSnakeRoute);
 
-setInterval(renderPage,60000);
+setInterval(() => {
+  if (!previewMode) {
+    renderPage();
+  }
+},60000);
 
 </script>
+
 </body>
 </html>
