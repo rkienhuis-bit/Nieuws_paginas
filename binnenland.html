@@ -63,7 +63,7 @@
       line-height: 1.2;
       margin-bottom: 25px;
       color: #ffffff;
-      max-width: calc(100% - 310px);
+      max-width: calc(100% - 310px); /* Keeps title clear of the static circle */
     }
 
     /* STATIC VISUAL IMAGE BADGE (LOCKED IN TOP RIGHT) */
@@ -100,7 +100,7 @@
     .news-description {
       position: absolute;
       width: 100%;
-      padding-right: 320px; 
+      padding-right: 320px; /* Protects text from sliding behind the static circle */
       font-size: 21px;
       line-height: 1.6;
       color: #dddddd;
@@ -110,7 +110,7 @@
 
     /* DYNAMIC TEXT HIERARCHY STYLES */
     .news-description p.lead-paragraph {
-      font-size: 24px;
+      font-size: 23px;
       font-weight: 600;
       line-height: 1.5;
       color: #ffffff;
@@ -122,6 +122,23 @@
     .news-description p.body-paragraph {
       margin-bottom: 16px;
       color: #cccccc;
+    }
+
+    /* PRESERVED NATIVE BOLDING & SUBHEADINGS FROM FEED */
+    .news-description strong, 
+    .news-description b {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .news-description h3.sub-heading {
+      font-size: 23px;
+      font-weight: 700;
+      color: #e30613;
+      margin-top: 18px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     /* DYNAMIC QR CODE - ALIGNED BOTTOM RIGHT */
@@ -202,22 +219,45 @@
       return imgMatch ? imgMatch[1] : null;
     }
 
-    // FORMAT DESCRIPTION WITH DYNAMIC VISUAL HIERARCHY
+    // FORMAT DESCRIPTION PRESERVING NATIVE HTML TAGS & APPLYING HIERARCHY
     function formatDescription(html) {
       if (!html) return '';
       const div = document.createElement("div");
       div.innerHTML = html;
-      const text = div.textContent || div.innerText || "";
-      const paragraphs = text.split(/\r?\n\r?/).map(p => p.trim()).filter(p => p.length > 0);
       
-      return paragraphs
-        .map((p, index) => {
-          if (index === 0) {
-            // Lead paragraph: Larger font, bold weight, red accent bar
-            return `<p class="lead-paragraph">${p}</p>`;
+      const scripts = div.querySelectorAll("script, style");
+      scripts.forEach(s => s.remove());
+
+      let elements = Array.from(div.querySelectorAll("p, h3, h4, li"));
+      
+      if (elements.length === 0) {
+        // Fallback for feeds formatted with raw linebreaks
+        const rawLines = div.innerHTML.split(/<br\s*\/?>\s*<br\s*\/?>/i);
+        return rawLines
+          .map((line, index) => {
+            const trimmed = line.trim();
+            if (!trimmed) return '';
+            return index === 0 
+              ? `<p class="lead-paragraph">${trimmed}</p>`
+              : `<p class="body-paragraph">${trimmed}</p>`;
+          })
+          .join('');
+      }
+
+      return elements
+        .map((el, index) => {
+          const innerHTML = el.innerHTML.trim();
+          if (!innerHTML) return '';
+
+          const tag = el.tagName.toLowerCase();
+          if (tag === 'h3' || tag === 'h4') {
+            return `<h3 class="sub-heading">${innerHTML}</h3>`;
           }
-          // Subsequent body paragraphs
-          return `<p class="body-paragraph">${p}</p>`;
+
+          if (index === 0) {
+            return `<p class="lead-paragraph">${innerHTML}</p>`;
+          }
+          return `<p class="body-paragraph">${innerHTML}</p>`;
         })
         .join('');
     }
@@ -278,7 +318,7 @@
         document.getElementById('newsCat').innerText = CATEGORY_LABEL;
         document.getElementById('newsTitle').innerText = item.title;
         
-        // Reset Scroll & Insert Description Text with Hierarchy
+        // Reset Scroll & Insert Formatted Description Text
         descEl.style.transition = 'none';
         descEl.style.transform = 'translateY(0px)';
         descEl.innerHTML = formatDescription(item.description);
@@ -343,7 +383,7 @@
 
     loadCachedData();
     fetchRSS();
-    setInterval(fetchRSS, 10 * 60 * 1000);
+    setInterval(fetchRSS, 10 * 60 * 1000); // 10-minute background update cycle
   </script>
 
 </body>
