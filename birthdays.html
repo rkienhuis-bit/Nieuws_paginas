@@ -10,24 +10,25 @@
       height: 100vh;
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: #0b0f19;
+      background: #090d16;
       color: #ffffff;
     }
 
     .bg-gradient {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle at 50% 30%, rgba(245, 158, 11, 0.07) 0%, rgba(11, 15, 25, 1) 80%);
+      background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.05) 0%, rgba(9, 13, 22, 1) 85%);
       z-index: 1;
       pointer-events: none;
     }
     #confettiCanvas {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 3;
+      z-index: 4;
       pointer-events: none;
     }
 
+    /* FULL WIDTH SCREEN WRAPPER */
     .screen-wrapper {
       position: relative;
       z-index: 2;
@@ -48,7 +49,7 @@
     }
 
     .title-box h1 {
-      font-size: 34px;
+      font-size: 36px;
       font-weight: 700;
       letter-spacing: -0.5px;
       color: #ffffff;
@@ -64,7 +65,7 @@
     }
 
     .date-display {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 500;
       color: #94a3b8;
     }
@@ -85,123 +86,140 @@
       justify-content: center;
       padding: 10px 0;
       overflow: hidden;
+      position: relative;
     }
 
-    /* SNAKE PATH CONTAINER */
-    .snake-path-container {
+    /* FULL WIDTH SNAKE MAP CONTAINER */
+    .snake-map {
       width: 100%;
-      max-width: 900px;
       height: 100%;
-      max-height: 720px;
+      max-height: 740px;
       overflow-y: auto;
-      padding: 20px 40px;
+      padding: 30px 40px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 36px;
       position: relative;
-      scroll-behavior: smooth;
     }
 
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.2); border-radius: 4px; }
 
-    /* SNAKE ROWS (ZIG-ZAG PATTERN) */
+    /* ROW ZIG-ZAG STYLING ACROSS FULL WIDTH */
     .snake-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      padding: 0 40px;
+      padding: 0 60px;
     }
 
-    .snake-row.left-heavy { justify-content: flex-start; gap: 120px; }
-    .snake-row.right-heavy { justify-content: flex-end; gap: 120px; }
-    .snake-row.balanced { justify-content: space-around; }
+    .snake-row.reverse {
+      flex-direction: row-reverse;
+    }
 
     /* NODE STYLES */
-    .node {
+    .path-node {
       display: flex;
       align-items: center;
-      gap: 14px;
-      position: relative;
-    }
-
-    /* Standard Day Dot */
-    .node-dot {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.04);
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 600;
-      color: #64748b;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 20px;
+      padding: 14px 22px;
+      width: 320px;
+      backdrop-filter: blur(12px);
       transition: all 0.3s ease;
     }
 
-    /* Past Days */
-    .node.past .node-dot {
-      background: rgba(255, 255, 255, 0.02);
-      border-color: rgba(255, 255, 255, 0.06);
-      color: #475569;
-      opacity: 0.5;
+    /* CIRCLE ICON / NUMBER */
+    .node-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #94a3b8;
+      flex-shrink: 0;
     }
 
-    /* Today Node */
-    .node.today .node-dot {
+    /* PAST DAYS (CROSSED OFF / DIMMED) */
+    .path-node.past {
+      opacity: 0.35;
+      border-color: rgba(255, 255, 255, 0.03);
+    }
+    .path-node.past .node-circle {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.06);
+      color: #475569;
+      text-decoration: line-through;
+    }
+
+    /* TODAY NODE */
+    .path-node.today {
+      background: rgba(56, 189, 248, 0.08);
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.2);
+    }
+    .path-node.today .node-circle {
       background: #38bdf8;
       border-color: #38bdf8;
       color: #0b0f19;
-      font-weight: 700;
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
     }
 
-    /* Birthday Node (Milestone) */
-    .node.birthday {
-      background: rgba(245, 158, 11, 0.08);
-      border: 1px solid rgba(245, 158, 11, 0.4);
-      border-radius: 20px;
-      padding: 8px 18px 8px 8px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15);
-      animation: pulseNode 3s infinite alternate;
+    /* BIRTHDAY NODE (MILESTONE) */
+    .path-node.birthday {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.5);
+      box-shadow: 0 10px 30px rgba(245, 158, 11, 0.2);
+      width: 360px;
     }
-
-    @keyframes pulseNode {
-      0% { box-shadow: 0 10px 20px rgba(245, 158, 11, 0.1); }
-      100% { box-shadow: 0 15px 30px rgba(245, 158, 11, 0.3); }
-    }
-
-    .node.birthday .node-dot {
-      width: 52px;
-      height: 52px;
+    .path-node.birthday .node-circle {
       background: #f59e0b;
       border-color: #f59e0b;
       color: #0b0f19;
-      font-size: 20px;
-      box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+      font-size: 22px;
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.7);
+      animation: pulseMilestone 2s infinite alternate;
     }
 
-    .node-info {
+    @keyframes pulseMilestone {
+      0% { transform: scale(1); box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
+      100% { transform: scale(1.06); box-shadow: 0 0 30px rgba(245, 158, 11, 0.8); }
+    }
+
+    .node-text {
       display: flex;
       flex-direction: column;
     }
 
-    .node-name {
-      font-size: 15px;
+    .node-title {
+      font-size: 16px;
       font-weight: 700;
       color: #ffffff;
       line-height: 1.2;
     }
 
     .node-sub {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 500;
+      color: #94a3b8;
+      margin-top: 3px;
+    }
+
+    .path-node.birthday .node-title {
       color: #f59e0b;
-      margin-top: 2px;
+      font-size: 17px;
+    }
+    .path-node.birthday .node-sub {
+      color: #fde68a;
+      font-weight: 600;
     }
 
     /* TODAY CELEBRATION FEATURE VIEW */
@@ -455,11 +473,11 @@
           birthdayMap[b.day].push(b);
         });
 
-        let pathHtml = `<div class="snake-path-container" id="snakeContainer">`;
+        let pathHtml = `<div class="snake-map" id="snakeContainer">`;
         
-        // Group days into rows of 3 to create a horizontal zig-zag snake path
-        let currentRowNodes = [];
-        let rowPattern = 0; // 0: left, 1: center, 2: right
+        // Group days into pairs (2 per row) to snake cleanly across full width
+        let rowNodes = [];
+        let isReversed = false;
 
         for (let day = 1; day <= totalDays; day++) {
           const hasBday = birthdayMap[day];
@@ -470,11 +488,11 @@
             hasBday.forEach(person => {
               const { first, last } = splitName(person.name);
               const age = calculateAge(person.dob, currentYear);
-              currentRowNodes.push(`
-                <div class="node birthday">
-                  <div class="node-dot">🎈</div>
-                  <div class="node-info">
-                    <span class="node-name">${first} ${last}</span>
+              rowNodes.push(`
+                <div class="path-node birthday">
+                  <div class="node-circle">🎈</div>
+                  <div class="node-text">
+                    <span class="node-title">${first} ${last}</span>
                     <span class="node-sub">${day} ${dutchMonths[currentMonth - 1].slice(0,3)}. • Wordt ${age}</span>
                   </div>
                 </div>
@@ -482,40 +500,43 @@
             });
           } else {
             let statusClass = isPast ? 'past' : (isToday ? 'today' : '');
-            let label = isToday ? 'Vandaag' : day;
-            currentRowNodes.push(`
-              <div class="node ${statusClass}">
-                <div class="node-dot">${label}</div>
-                <div class="node-info">
-                  <span class="node-name" style="font-size: 13px; color: ${isToday ? '#38bdf8' : '#64748b'};">${isToday ? 'Vandaag' : 'Dag ' + day}</span>
-                  <span class="node-sub" style="color: #475569;">${day} ${dutchMonths[currentMonth - 1].slice(0,3)}.</span>
+            let label = isToday ? '★' : day;
+            rowNodes.push(`
+              <div class="path-node ${statusClass}">
+                <div class="node-circle">${label}</div>
+                <div class="node-text">
+                  <span class="node-title" style="color: ${isToday ? '#38bdf8' : '#94a3b8'};">${isToday ? 'Vandaag' : 'Dag ' + day}</span>
+                  <span class="node-sub">${day} ${dutchMonths[currentMonth - 1].slice(0,3)}.</span>
                 </div>
               </div>
             `);
           }
 
-          // Once we collect 2 or 3 nodes per row, push the row into the path map
-          if (currentRowNodes.length >= 2 || day === totalDays) {
-            let rowClass = rowPattern === 0 ? 'left-heavy' : (rowPattern === 1 ? 'balanced' : 'right-heavy');
-            pathHtml += `<div class="snake-row ${rowClass}">` + currentRowNodes.join('') + `</div>`;
-            currentRowNodes = [];
-            rowPattern = (rowPattern + 1) % 3;
+          // When we have 2 nodes, form a full-width snake row
+          if (rowNodes.length === 2 || day === totalDays) {
+            // If odd last day, pad with empty placeholder to maintain alignment
+            if (rowNodes.length === 1) {
+              rowNodes.push(`<div style="width: 320px;"></div>`);
+            }
+            pathHtml += `<div class="snake-row ${isReversed ? 'reverse' : ''}">` + rowNodes.join('') + `</div>`;
+            rowNodes = [];
+            isReversed = !isReversed;
           }
         }
 
         pathHtml += `</div>`;
         contentArea.innerHTML = pathHtml;
 
-        // Auto-scroll to today's active position if possible
+        // Auto-scroll to today's node smoothly
         setTimeout(() => {
           const container = document.getElementById('snakeContainer');
           if (container) {
-            const todayNode = container.querySelector('.node.today, .node.birthday');
+            const todayNode = container.querySelector('.path-node.today, .path-node.birthday');
             if (todayNode) {
               container.scrollTop = todayNode.offsetTop - container.clientHeight / 2;
             }
           }
-        }, 100);
+        }, 150);
       }
     }
 
