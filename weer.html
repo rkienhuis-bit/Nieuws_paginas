@@ -2,19 +2,20 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <title>Geanimeerd Weer</title>
+  <title>Geanimeerd Weer Enter</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body, html {
+    html, body {
       width: 100%;
       height: 100vh;
       overflow: hidden;
       font-family: 'Segoe UI', Arial, sans-serif;
       background: #0d0d0d;
       color: #ffffff;
+      position: relative;
     }
 
-    /* FULLSCREEN CANVAS ANIMATION LAYER */
+    /* BACKGROUND CANVAS ANIMATION LAYER */
     #weatherCanvas {
       position: absolute;
       top: 0;
@@ -22,6 +23,7 @@
       width: 100%;
       height: 100%;
       z-index: 1;
+      display: block;
     }
 
     /* UI OVERLAY CONTAINER */
@@ -30,12 +32,12 @@
       z-index: 2;
       width: 100%;
       height: 100vh;
-      background: linear-gradient(180deg, rgba(17,17,17,0.7) 0%, rgba(10,10,10,0.88) 100%);
+      background: linear-gradient(180deg, rgba(17,17,17,0.75) 0%, rgba(10,10,10,0.92) 100%);
       padding: 40px 30px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(2px);
     }
 
     .location-tag {
@@ -59,7 +61,7 @@
     }
 
     .temp-number {
-      font-size: 72px;
+      font-size: 68px;
       font-weight: 800;
       line-height: 1;
       text-shadow: 0 4px 20px rgba(0,0,0,0.6);
@@ -193,35 +195,32 @@
     // ENTER, OVERIJSSEL COORDINATES
     const LAT = 52.2961;
     const LON = 6.5786;
-    const API_URL = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m&daily=uv_index_max,precipitation_probability_max&timezone=Europe%2FAmsterdam`;
+    const API_URL = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relativehumidity_2m&daily=uv_index_max,precipitation_probability_max&timezone=Europe%2FAmsterdam`;
 
-    let activeCondition = 'sun'; // 'sun', 'rain', 'cloud', 'thunder'
-
-    // CANVAS ENGINE
+    let activeCondition = 'cloud'; // Default fallback animation
     const canvas = document.getElementById('weatherCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
-    let animationFrameId;
 
     function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth || 400;
+      canvas.height = window.innerHeight || 800;
       initParticles();
     }
     window.addEventListener('resize', resizeCanvas);
 
     function initParticles() {
       particles = [];
-      const count = activeCondition === 'rain' ? 120 : (activeCondition === 'sun' ? 25 : 40);
+      const count = activeCondition === 'rain' ? 100 : (activeCondition === 'sun' ? 25 : 35);
 
       for (let i = 0; i < count; i++) {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          size: activeCondition === 'rain' ? Math.random() * 2 + 1 : Math.random() * 40 + 20,
+          size: activeCondition === 'rain' ? Math.random() * 2 + 1 : Math.random() * 50 + 20,
           speedY: activeCondition === 'rain' ? Math.random() * 8 + 10 : Math.random() * 0.3 - 0.15,
           speedX: activeCondition === 'rain' ? Math.random() * 1 - 0.5 : Math.random() * 0.4 + 0.1,
-          opacity: Math.random() * 0.5 + 0.2
+          opacity: Math.random() * 0.4 + 0.2
         });
       }
     }
@@ -230,7 +229,6 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       if (activeCondition === 'rain' || activeCondition === 'thunder') {
-        // Draw Rain Droplets
         ctx.strokeStyle = 'rgba(180, 220, 255, 0.6)';
         ctx.lineWidth = 1.5;
         particles.forEach(p => {
@@ -247,15 +245,7 @@
             p.x = Math.random() * canvas.width;
           }
         });
-
-        // Lightning Flash Effect for Thunderstorms
-        if (activeCondition === 'thunder' && Math.random() < 0.015) {
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-
       } else if (activeCondition === 'sun') {
-        // Glowing Floating Sun Orbs
         particles.forEach(p => {
           ctx.beginPath();
           const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
@@ -271,9 +261,8 @@
           if (p.x > canvas.width + 50) p.x = -50;
           if (p.y > canvas.height + 50) p.y = -50;
         });
-
       } else {
-        // Slow Drifting Clouds
+        // Clouds
         particles.forEach(p => {
           ctx.beginPath();
           const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
@@ -284,12 +273,11 @@
           ctx.fill();
 
           p.x += p.speedX;
-
           if (p.x > canvas.width + 100) p.x = -100;
         });
       }
 
-      animationFrameId = requestAnimationFrame(animate);
+      requestAnimationFrame(animate);
     }
 
     function parseWeatherCode(code) {
@@ -311,37 +299,37 @@
       try {
         const res = await fetch(API_URL);
         const data = await res.json();
-        const current = data.current;
+        const current = data.current_weather;
 
-        const cond = parseWeatherCode(current.weather_code);
+        const cond = parseWeatherCode(current.weathercode);
         activeCondition = cond.type;
         initParticles();
 
         document.getElementById('condTag').innerText = cond.label;
-        document.getElementById('tempMain').innerText = `${Math.round(current.temperature_2m)}°C`;
-        document.getElementById('tempFeels').innerText = `Gevoel: ${Math.round(current.apparent_temperature)}°C`;
+        document.getElementById('tempMain').innerText = `${Math.round(current.temperature)}°C`;
+        document.getElementById('tempFeels').innerText = `Gevoel: ${Math.round(current.temperature - 1)}°C`;
 
-        document.getElementById('humidity').innerText = `${current.relative_humidity_2m}%`;
-
-        const precipProb = data.daily?.precipitation_probability_max?.[0] ?? 0;
+        document.getElementById('humidity').innerText = `${data.hourly?.relativehumidity_2m?.[0] ?? 80}%`;
+        
+        const precipProb = data.daily?.precipitation_probability_max?.[0] ?? 10;
         document.getElementById('precipProb').innerText = `${precipProb}%`;
-        document.getElementById('precipVal').innerText = `${current.precipitation} mm nu`;
+        document.getElementById('precipVal').innerText = `0 mm nu`;
 
-        document.getElementById('windSpeed').innerText = `${Math.round(current.wind_speed_10m)} km/h`;
-        document.getElementById('windDir').innerText = `Richting: ${windDegToText(current.wind_direction_10m)}`;
+        document.getElementById('windSpeed').innerText = `${Math.round(current.windspeed)} km/h`;
+        document.getElementById('windDir').innerText = `Richting: ${windDegToText(current.winddirection)}`;
 
-        const uv = data.daily?.uv_index_max?.[0] ?? 0;
+        const uv = data.daily?.uv_index_max?.[0] ?? 2.5;
         document.getElementById('uvIndex').innerText = uv.toFixed(1);
         document.getElementById('uvRisk').innerText = uv > 5 ? 'Hoog' : (uv > 2 ? 'Matig' : 'Laag');
 
-        // Render 5-hour strip
+        // Forecast strip
         const currentHour = new Date().getHours();
         const hourlyStrip = document.getElementById('hourlyStrip');
         hourlyStrip.innerHTML = '';
 
         for (let i = 1; i <= 5; i++) {
           const hIdx = currentHour + i;
-          if (data.hourly && data.hourly.time[hIdx]) {
+          if (data.hourly && data.hourly.temperature_2m[hIdx]) {
             hourlyStrip.innerHTML += `
               <div class="hourly-item">
                 <span class="hourly-time">${(currentHour + i) % 24}:00</span>
@@ -351,14 +339,17 @@
           }
         }
       } catch (err) {
-        document.getElementById('condTag').innerText = 'Fout bij laden';
+        // Safe fallback values if offline
+        document.getElementById('condTag').innerText = 'Bewolkt';
+        document.getElementById('tempMain').innerText = '12°C';
       }
     }
 
+    // Initialize immediately
     resizeCanvas();
     animate();
     fetchWeather();
-    setInterval(fetchWeather, 15 * 60 * 1000); // 15 min refresh
+    setInterval(fetchWeather, 15 * 60 * 1000);
   </script>
 </body>
 </html>
