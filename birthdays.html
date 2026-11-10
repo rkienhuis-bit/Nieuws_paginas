@@ -238,7 +238,7 @@ body::before {
 
 .node-circle {
   position: relative;
-  z-index: 4; /* Keeps main day circle on top */
+  z-index: 4;
   width: 53px;
   height: 53px;
   border-radius: 50%;
@@ -322,14 +322,14 @@ body::before {
   }
 }
 
-/* SATELLITE ORBS & LINES (BEHIND THE MAIN DATE CIRCLE) */
+/* SATELLITE ORBS & LINES */
 
 .satellite-line {
   position: absolute;
   height: 1.5px;
   background: rgba(217,170,96,.65);
   transform-origin: left center;
-  z-index: 1; /* Behind node-circle */
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -338,7 +338,7 @@ body::before {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  z-index: 2; /* Behind node-circle */
+  z-index: 2;
 
   display: flex;
   align-items: center;
@@ -426,14 +426,6 @@ body::before {
   white-space: nowrap;
 }
 
-.node-sub {
-  font-size: 9px;
-  font-weight: 500;
-  color: #78879e;
-  margin-top: 2px;
-  white-space: nowrap;
-}
-
 .milestone-star {
   position: absolute;
   top: -8px;
@@ -452,7 +444,7 @@ body::before {
   z-index: 5;
 }
 
-/* BIRTHDAY CELEBRATION SCREEN */
+/* BIRTHDAY & JUBILEE CELEBRATION SCREENS */
 
 .celebration-screen {
   width: 100%;
@@ -466,10 +458,11 @@ body::before {
   position: relative;
 }
 
+/* Oranje accentlijn iets lager gezet (naar 5% i.p.v. 9%) en dichter bij de kop */
 .celebration-screen::before {
   content: "";
   position: absolute;
-  top: 9%;
+  top: 5%;
   left: 50%;
   transform: translateX(-50%);
   width: 170px;
@@ -477,21 +470,13 @@ body::before {
   background: linear-gradient(90deg,transparent,var(--gold),transparent);
 }
 
-.celeb-tag {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--gold);
-  text-transform: uppercase;
-  letter-spacing: 5px;
-  margin-bottom: 14px;
-}
-
 .celeb-heading {
   font-size: 42px;
   font-weight: 650;
   color: #fff;
   letter-spacing: -1px;
-  margin-bottom: 38px;
+  margin-top: 10px;
+  margin-bottom: 30px;
   text-align: center;
 }
 
@@ -505,6 +490,7 @@ body::before {
   flex-wrap: wrap;
 }
 
+/* STANDAARD VERJAARDAG KAART */
 .celeb-person {
   position: relative;
   flex: 1;
@@ -512,18 +498,9 @@ body::before {
   max-width: 480px;
   padding: 35px 30px 32px;
   text-align: center;
-
-  background:
-    linear-gradient(145deg,
-      rgba(38,55,79,.75),
-      rgba(15,25,42,.8));
-
+  background: linear-gradient(145deg, rgba(38,55,79,.75), rgba(15,25,42,.8));
   border: 1px solid rgba(217,170,96,.3);
-
-  box-shadow:
-    0 15px 50px rgba(0,0,0,.25),
-    inset 0 1px 0 rgba(255,255,255,.06);
-
+  box-shadow: 0 15px 50px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.06);
   animation: cardEnter .8s ease both;
 }
 
@@ -536,18 +513,8 @@ body::before {
   border-color: rgba(217,170,96,.55);
   border-style: solid;
 }
-
-.celeb-person::before {
-  top: 9px;
-  left: 9px;
-  border-width: 1px 0 0 1px;
-}
-
-.celeb-person::after {
-  bottom: 9px;
-  right: 9px;
-  border-width: 0 1px 1px 0;
-}
+.celeb-person::before { top: 9px; left: 9px; border-width: 1px 0 0 1px; }
+.celeb-person::after { bottom: 9px; right: 9px; border-width: 0 1px 1px 0; }
 
 .celeb-number {
   font-size: 12px;
@@ -577,33 +544,57 @@ body::before {
   letter-spacing: .5px;
 }
 
-.celeb-wish {
-  color: #c3ccda;
-  font-size: 18px;
-  margin-top: 35px;
+/* SPECIAAL JUBILEUM DESIGN */
+.jubilee-card {
+  position: relative;
+  flex: 1;
+  min-width: 280px;
+  max-width: 520px;
+  padding: 45px 35px 40px;
   text-align: center;
-  letter-spacing: .2px;
+  background: linear-gradient(155deg, rgba(45,35,20,0.85), rgba(15,18,26,0.95));
+  border: 2px solid var(--gold);
+  box-shadow: 0 20px 60px rgba(217,170,96,0.2), inset 0 0 30px rgba(217,170,96,0.08);
+  animation: cardEnter .8s ease both;
 }
 
-.celebration-decoration {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  margin-bottom: 26px;
+.jubilee-badge {
+  font-size: 11px;
+  color: #fff0cf;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  background: rgba(217,170,96,0.2);
+  border: 1px solid var(--gold);
+  padding: 6px 16px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 22px;
+}
+
+.jubilee-name {
+  font-size: clamp(32px, 3.2vw, 48px);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -1px;
+  line-height: 1.15;
+  margin-bottom: 18px;
+  background: linear-gradient(to bottom, #fff, var(--gold-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.jubilee-years {
+  font-size: 18px;
+  font-weight: 600;
   color: var(--gold);
-  font-size: 14px;
+  letter-spacing: 1px;
+  margin-bottom: 25px;
 }
 
-.celebration-decoration::before,
-.celebration-decoration::after {
-  content: "";
-  width: 55px;
-  height: 1px;
-  background: linear-gradient(90deg,transparent,var(--gold));
-}
-
-.celebration-decoration::after {
-  transform: rotate(180deg);
+.jubilee-star-icon {
+  font-size: 20px;
+  color: var(--gold);
+  margin-bottom: 20px;
 }
 
 @keyframes celebrationEnter {
@@ -640,7 +631,7 @@ body::before {
 
     <div class="header-actions">
       <div class="date-display" id="dateDisplay">--</div>
-      <button class="test-button" id="testButton" onclick="toggleTestMode()">
+      <button class="test-button" id="testButton" onclick="cycleTestMode()">
         Test verjaardag
       </button>
     </div>
@@ -708,14 +699,20 @@ const testPeople = [
   { name:"Desiree Wissink", dob:"1969-11-12" }
 ];
 
-/* STATE */
+const testJubilee = [
+  { name:"Robert Markvoort", years: "12,5" }
+];
 
-let previewMode = false;
+/* STATE */
+// testMode can be: 'off', 'birthday', 'jubilee'
+let testMode = 'off';
 let confettiStarted = false;
 
 const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('test') === 'true') {
-  previewMode = true;
+if (urlParams.get('test') === 'true' || urlParams.get('test') === 'birthday') {
+  testMode = 'birthday';
+} else if (urlParams.get('test') === 'jubilee') {
+  testMode = 'jubilee';
 }
 
 /* HELPERS */
@@ -728,14 +725,17 @@ function getDaysInMonth(year, month) {
   return new Date(year, month, 0).getDate();
 }
 
-function toggleTestMode() {
-  previewMode = !previewMode;
+function cycleTestMode() {
+  if (testMode === 'off') testMode = 'birthday';
+  else if (testMode === 'birthday') testMode = 'jubilee';
+  else testMode = 'off';
+
   confettiStarted = false;
   renderPage();
 }
 
 /* =====================================
-   SATELLITE ORBS & FULL NAME LABELS (BEHIND NODE CIRCLE)
+   SATELLITE ORBS
 ===================================== */
 
 function createSatellites(people, currentYear) {
@@ -743,14 +743,12 @@ function createSatellites(people, currentYear) {
 
   let html = "";
   const count = people.length;
-  const radius = 62; // Increased distance for comfortable breathing room
+  const radius = 62;
 
   people.forEach((person, index) => {
-    // Fan out angles cleanly around the circle
     const angle = count === 1 ? -38 : (-48 + 96 * (index / (count - 1)));
     const radians = angle * Math.PI / 180;
 
-    // Center is 26.5px, orb width is 24px (radius 12)
     const orbX = 26.5 + Math.cos(radians) * radius - 12;
     const orbY = 26.5 + Math.sin(radians) * radius - 12;
     
@@ -787,7 +785,7 @@ function createSatellites(people, currentYear) {
           animation-delay:${index*.12}s;
         ">
         <span class="sat-name">${person.name}</span>
-        <span class="sat-sub">wordt ${age} jaar</span>
+        <span class="sat-sub">${age} jaar</span>
       </div>
     `;
   });
@@ -888,42 +886,52 @@ function triggerConfetti() {
 }
 
 /* =====================================
-   CELEBRATION MODE
+   CELEBRATION MODES (VERJAARDAG & JUBILEUM)
 ===================================== */
 
-function renderCelebration(persons, year) {
+function renderCelebration(persons, year, isJubilee = false) {
   const contentArea = document.getElementById("contentArea");
 
   document.getElementById("mainTitle").innerText =
-    persons.length > 1 ? "Vandaag is het feest" : "Jarig Vandaag";
+    isJubilee ? "Gefeliciteerd met je jubileum!" : (persons.length > 1 ? "Vandaag is het feest" : "Jarig Vandaag");
 
-  document.getElementById("subTitle").innerText = "Een bijzondere dag";
+  document.getElementById("subTitle").innerText = isJubilee ? "Bedrijfsjubileum" : "Een bijzondere dag";
 
   let cards = "";
-  persons.forEach((person, index) => {
-    const age = calculateAge(person.dob, year);
-    cards += `
-      <div class="celeb-person" style="animation-delay:${index*.15}s">
-        <div class="celeb-number">
-          ${persons.length > 1 ? `Jarige ${index+1}` : "Vandaag in de spotlight"}
+  if (isJubilee) {
+    persons.forEach((person, index) => {
+      cards += `
+        <div class="jubilee-card" style="animation-delay:${index*.15}s">
+          <div class="jubilee-badge">Jubileum in de spotlight</div>
+          <div class="jubilee-name">${person.name}</div>
+          <div class="jubilee-star-icon">✦ ✦ ✦</div>
+          <div class="jubilee-years">${person.years} jaar in dienst</div>
         </div>
-        <div class="celeb-name">
-          ${person.name}
+      `;
+    });
+  } else {
+    persons.forEach((person, index) => {
+      const age = calculateAge(person.dob, year);
+      cards += `
+        <div class="celeb-person" style="animation-delay:${index*.15}s">
+          <div class="celeb-number">
+            ${persons.length > 1 ? `Jarige ${index+1}` : "Vandaag in de spotlight"}
+          </div>
+          <div class="celeb-name">
+            ${person.name}
+          </div>
+          <div class="celeb-age">
+            ${age} jaar
+          </div>
         </div>
-        <div class="celeb-age">
-          wordt ${age} jaar
-        </div>
-      </div>
-    `;
-  });
+      `;
+    });
+  }
 
   contentArea.innerHTML = `
     <div class="celebration-screen">
-      <div class="celeb-tag">Een bijzondere mijlpaal</div>
       <div class="celeb-heading">Van harte gefeliciteerd!</div>
-      <div class="celebration-decoration">✦</div>
       <div class="celeb-people">${cards}</div>
-      <div class="celeb-wish">We wensen je een fantastische verjaardag!</div>
     </div>
   `;
 
@@ -1017,8 +1025,8 @@ function renderCalendar(currentMonth, currentDay, currentYear) {
 function renderPage() {
   const now = new Date();
   const currentYear = now.getFullYear();
-  const currentDay = previewMode ? 12 : now.getDate();
-  const currentMonth = previewMode ? 11 : now.getMonth()+1;
+  const currentDay = testMode === 'birthday' ? 12 : now.getDate();
+  const currentMonth = testMode === 'birthday' ? 11 : now.getMonth()+1;
 
   document.getElementById("dateDisplay").innerText =
     now.toLocaleDateString("nl-NL",{
@@ -1027,19 +1035,26 @@ function renderPage() {
       month:"long"
     });
 
-  document.getElementById("testButton").innerText =
-    previewMode ? "Terug naar kalender" : "Test verjaardag";
+  let btnText = "Test verjaardag";
+  if (testMode === 'birthday') btnText = "Test jubileum";
+  if (testMode === 'jubilee') btnText = "Terug naar kalender";
+  document.getElementById("testButton").innerText = btnText;
 
-  if (previewMode) {
+  if (testMode === 'jubilee') {
+    renderCelebration(testJubilee, currentYear, true);
+    return;
+  }
+
+  if (testMode === 'birthday') {
     const todaysBirthdays = birthdays.filter(b => b.month === currentMonth && b.day === currentDay);
-    renderCelebration(todaysBirthdays.length > 0 ? todaysBirthdays : testPeople, currentYear);
+    renderCelebration(todaysBirthdays.length > 0 ? todaysBirthdays : testPeople, currentYear, false);
     return;
   }
 
   const todaysBirthdays = birthdays.filter(b => b.month===currentMonth && b.day===currentDay);
 
   if (todaysBirthdays.length > 0) {
-    renderCelebration(todaysBirthdays, currentYear);
+    renderCelebration(todaysBirthdays, currentYear, false);
     return;
   }
 
@@ -1060,7 +1075,7 @@ window.addEventListener("resize", drawSnakeRoute);
 setTimeout(drawSnakeRoute, 100);
 
 setInterval(() => {
-  if (!previewMode) {
+  if (testMode === 'off') {
     renderPage();
   }
 }, 60000);
