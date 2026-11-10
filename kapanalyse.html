@@ -8,16 +8,15 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <style>
     :root {
-      --bg-color: #f1f5f9;
+      --bg-color: #f8fafc;
       --card-bg: #ffffff;
-      --text-main: #0f172a;
-      --text-muted: #475569;
-      --border-color: #cbd5e1;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
       --primary-blue: #2563eb;
-      --alert-red: #dc2626;
-      --safe-green: #16a34a;
-      --right-panel-bg: #0f172a;
-      --right-panel-text: #f8fafc;
+      --target-line: #f59e0b; /* Warm amber/orange for targets instead of harsh red */
+      --right-panel-bg: #1e293b;
+      --right-panel-text: #f1f5f9;
     }
 
     * {
@@ -52,7 +51,7 @@
       background: var(--card-bg);
       border-radius: 16px;
       padding: 16px 20px;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
       border: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
@@ -60,9 +59,9 @@
     }
 
     .chart-title {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: #1e293b;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #475569;
       margin-bottom: 6px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -80,7 +79,7 @@
       background: var(--card-bg);
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
       border: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
@@ -89,36 +88,29 @@
     }
 
     .middle-column h2 {
-      font-size: 1.7rem;
-      font-weight: 900;
+      font-size: 1.6rem;
+      font-weight: 800;
       color: #0f172a;
       margin-bottom: 12px;
     }
 
-    /* Big Visual Status Badge */
-    .status-badge {
+    /* Professional, neutral info banner */
+    .info-banner {
       display: flex;
       align-items: center;
       gap: 12px;
       padding: 12px 16px;
       border-radius: 12px;
       margin-bottom: 16px;
-      font-weight: 700;
-      font-size: 1rem;
-    }
-    .status-badge.alert {
-      background: #fee2e2;
-      color: #991b1b;
-      border: 1px solid #fecaca;
-    }
-    .status-badge.safe {
-      background: #dcfce7;
-      color: #166534;
-      border: 1px solid #bbf7d0;
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #dbeafe;
+      font-weight: 600;
+      font-size: 0.9rem;
     }
 
     .middle-column p, .middle-column li {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
       line-height: 1.5;
       margin-bottom: 10px;
@@ -129,14 +121,14 @@
       margin-bottom: 10px;
     }
 
-    /* Right Column: Plain English Explanation */
+    /* Right Column: Balanced Educational Panel */
     .right-column {
       flex: 1.1;
       background: var(--right-panel-bg);
       color: var(--right-panel-text);
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
@@ -145,18 +137,18 @@
     }
 
     .right-column h3 {
-      font-size: 1.3rem;
-      font-weight: 800;
-      margin-bottom: 14px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
       color: #ffffff;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       padding-bottom: 8px;
     }
 
     .right-column p {
-      font-size: 0.88rem;
-      line-height: 1.55;
-      margin-bottom: 10px;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      margin-bottom: 8px;
       color: #cbd5e1;
     }
 
@@ -170,43 +162,46 @@
   <!-- Left Column: Two Bar Graphs -->
   <div class="left-column">
     <div class="chart-card">
-      <div class="chart-title">Facturen met Klachten (Doel: max 1,5%)</div>
+      <div class="chart-title">KAP t.o.v Verkoop Facturen (Doel: 1,5%)</div>
       <div class="chart-wrapper">
         <canvas id="facturenChart"></canvas>
       </div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">Regels met Klachten (Doel: max 0,7%)</div>
+      <div class="chart-title">KAP t.o.v Verkoop Regels (Doel: 0,7%)</div>
       <div class="chart-wrapper">
         <canvas id="regelsChart"></canvas>
       </div>
     </div>
   </div>
 
-  <!-- Middle Column: Monthly Summary & Status -->
+  <!-- Middle Column: Monthly Summary -->
   <div class="middle-column">
     <h2 id="mainTitle">KAP Analyse</h2>
-    <div id="statusIndicator" class="status-badge alert">
-      <span id="statusIcon">⚠️</span>
+    <div class="info-banner">
+      <span>📊</span>
       <div>
-        <div id="statusTextHeading">Doelstelling overschreden</div>
-        <div id="statusTextSub" style="font-size: 0.8rem; font-weight: normal;">Laatste maand zit boven de limiet.</div>
+        <div>Maandoverzicht & Kwaliteitsmeting</div>
+        <div style="font-size: 0.78rem; font-weight: normal; color: #3b82f6;">Continu inzicht in klachten en actiepunten</div>
       </div>
     </div>
     <p><strong>Overzicht Klachten Actie Plan (KAP)</strong></p>
-    <p>We bewaken de kwaliteit door klachten nauwlettend te onderzoeken en op te lossen.</p>
+    <p>We bewaken de kwaliteit door klachten gestructureerd te onderzoeken en te verhelpen.</p>
     <ul>
-      <li><strong>Doel:</strong> Minder klachten dan de rode lijn.</li>
-      <li><strong>Actie:</strong> Directe opvolging en preventie bij uitschieters.</li>
+      <li><strong>Doel:</strong> Presteren rondom of onder de doelstellinglijn.</li>
+      <li><strong>Focus:</strong> Leerpunten omzetten in structurele verbeteringen.</li>
     </ul>
   </div>
 
-  <!-- Right Column: Simple Educational Info Panel -->
+  <!-- Right Column: Educational Info Panel -->
   <div class="right-column">
-    <h3>Hoe leest u deze grafiek?</h3>
-    <p><strong>Wat is een KAP? (Klachten Actie Plan)</strong><br>Wanneer er een klacht binnenkomt, registreren we wat er fout ging en welke afdeling hierbij betrokken was.</p>
-    <p><strong>De Rode Lijn = De Doelstelling</strong><br>Blijft de blauwe balk <em>onder</em> de rode lijn? Dan presteren we binnen de norm. Schiet de balk er <em>bovenuit</em>? Dan krijgt dit extra aandacht.</p>
-    <p><strong>Waarom doen we dit?</strong><br>Om structurele problemen snel op te lossen, herhaling te voorkomen, en ervoor te zorgen dat onze klanten tevreden blijven.</p>
+    <h3>Wat is een KAP?</h3>
+    <p><strong>KAP</strong> staat voor <strong>Klachten Actie Plan</strong>.</p>
+    <p>In de KAP worden drie elementen vastgelegd:</p>
+    <p>• De aard van de klacht;</p>
+    <p>• Wat er exact is misgegaan;</p>
+    <p>• Welke afdeling hiervoor verantwoordelijk is.</p>
+    <p>Het doel van de KAP is om gerichte actie te ondernemen, herhaling te voorkomen en de service continu te optimaliseren voor onze klanten.</p>
   </div>
 
   <script>
@@ -252,14 +247,13 @@
           {
             label: 'Facturen KAP %',
             data: [],
-            // Colors will be dynamically assigned: red if > 1.5, blue if <= 1.5
-            backgroundColor: [],
-            borderRadius: 6,
+            backgroundColor: '#2563eb',
+            borderRadius: 4,
             datalabels: {
               align: 'top',
               anchor: 'end',
-              font: { size: 10, weight: 'bold' },
-              color: (ctx) => ctx.dataset.data[ctx.dataIndex] > 1.5 ? '#dc2626' : '#1e293b',
+              font: { size: 9, weight: 'bold' },
+              color: '#334155',
               formatter: (val) => val !== null ? val.toFixed(2).replace('.', ',') + '%' : ''
             }
           },
@@ -267,9 +261,8 @@
             label: 'Doel 1.5%',
             data: [],
             type: 'line',
-            borderColor: '#0f172a',
+            borderColor: '#f59e0b',
             borderWidth: 2.5,
-            borderDash: [4, 4],
             pointRadius: 0,
             datalabels: { display: false }
           }
@@ -280,7 +273,7 @@
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } },
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
           y: { min: 0, max: 4.5, ticks: { stepSize: 1, callback: (v) => v.toFixed(1).replace('.', ',') + '%' } }
         }
       }
@@ -296,13 +289,13 @@
           {
             label: 'Regels KAP %',
             data: [],
-            backgroundColor: [],
-            borderRadius: 6,
+            backgroundColor: '#2563eb',
+            borderRadius: 4,
             datalabels: {
               align: 'top',
               anchor: 'end',
-              font: { size: 10, weight: 'bold' },
-              color: (ctx) => ctx.dataset.data[ctx.dataIndex] > 0.7 ? '#dc2626' : '#1e293b',
+              font: { size: 9, weight: 'bold' },
+              color: '#334155',
               formatter: (val) => val !== null ? val.toFixed(2).replace('.', ',') + '%' : ''
             }
           },
@@ -310,9 +303,8 @@
             label: 'Doel 0.7%',
             data: [],
             type: 'line',
-            borderColor: '#0f172a',
+            borderColor: '#f59e0b',
             borderWidth: 2.5,
-            borderDash: [4, 4],
             pointRadius: 0,
             datalabels: { display: false }
           }
@@ -323,7 +315,7 @@
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } },
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
           y: { min: 0, max: 1.8, ticks: { stepSize: 0.4, callback: (v) => v.toFixed(1).replace('.', ',') + '%' } }
         }
       }
@@ -340,8 +332,6 @@
         const labels = [];
         const facturenData = [];
         const regelsData = [];
-        const facturenColors = [];
-        const regelsColors = [];
 
         for (let line of lines) {
           if (line.trim() !== '') {
@@ -358,10 +348,6 @@
               labels.push(formattedMonth);
               facturenData.push(!isNaN(fVal) ? fVal : null);
               regelsData.push(!isNaN(rVal) ? rVal : null);
-
-              // Smart Color Coding: Red if over target, Blue if under target
-              facturenColors.push(!isNaN(fVal) && fVal > 1.5 ? '#dc2626' : '#2563eb');
-              regelsColors.push(!isNaN(rVal) && rVal > 0.7 ? '#dc2626' : '#2563eb');
             }
           }
         }
@@ -369,37 +355,14 @@
         // Update Facturen Chart
         facturenChart.data.labels = labels;
         facturenChart.data.datasets[0].data = facturenData;
-        facturenChart.data.datasets[0].backgroundColor = facturenColors;
         facturenChart.data.datasets[1].data = Array(labels.length).fill(1.5);
         facturenChart.update();
 
         // Update Regels Chart
         regelsChart.data.labels = labels;
         regelsChart.data.datasets[0].data = regelsData;
-        regelsChart.data.datasets[0].backgroundColor = regelsColors;
         regelsChart.data.datasets[1].data = Array(labels.length).fill(0.7);
         regelsChart.update();
-
-        // Update Status Badge based on the latest month's performance
-        if (facturenData.length > 0) {
-          const latestF = facturenData[facturenData.length - 1];
-          const badge = document.getElementById('statusIndicator');
-          const icon = document.getElementById('statusIcon');
-          const heading = document.getElementById('statusTextHeading');
-          const sub = document.getElementById('statusTextSub');
-
-          if (latestF > 1.5) {
-            badge.className = 'status-badge alert';
-            icon.innerText = '⚠️';
-            heading.innerText = 'Doelstelling Overschreden';
-            sub.innerText = `Laatste maand (${latestF.toFixed(1).replace('.', ',')}%) zit boven de doelnorm van 1,5%.`;
-          } else {
-            badge.className = 'status-badge safe';
-            icon.innerText = '✅';
-            heading.innerText = 'Binnen Doelstelling';
-            sub.innerText = `Laatste maand (${latestF.toFixed(1).replace('.', ',')}%) presteert naar wens.`;
-          }
-        }
 
       } catch (err) {
         console.error('Error loading KAP data:', err);
