@@ -14,109 +14,115 @@
       color: #ffffff;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 35px 25px;
+      justify-content: flex-start;
+      padding: 45px 35px;
     }
 
-    /* TOP LOCATION & CONDITION HEADER */
+    /* TOP HEADER */
     .header-group {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
+      margin-bottom: 25px;
     }
 
     .location-title {
-      font-size: 24px;
-      font-weight: 700;
+      font-size: 28px;
+      font-weight: 800;
       letter-spacing: 1px;
+    }
+
+    .location-sub {
+      font-size: 13px;
+      color: #888888;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-top: 2px;
     }
 
     .condition-badge {
       background: #e30613; /* NOS Red */
       color: #ffffff;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 4px;
-      letter-spacing: 1px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      letter-spacing: 1.5px;
+      box-shadow: 0 4px 15px rgba(227, 6, 19, 0.3);
     }
 
-    /* HERO WEATHER GRAPHIC & TEMP */
+    /* HERO WEATHER CARD */
     .hero-section {
       display: flex;
       align-items: center;
       justify-content: space-between;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      padding: 20px;
-      margin: 15px 0;
-    }
-
-    .temp-block display {
-      display: flex;
-      flex-direction: column;
+      border-radius: 16px;
+      padding: 25px 30px;
+      margin-bottom: 25px;
     }
 
     .temp-main {
-      font-size: 62px;
+      font-size: 72px;
       font-weight: 800;
       line-height: 1;
+      letter-spacing: -2px;
     }
 
     .temp-feels {
-      font-size: 14px;
+      font-size: 15px;
       color: #aaaaaa;
-      margin-top: 6px;
+      margin-top: 8px;
+      font-weight: 500;
     }
 
-    /* VISUAL STORYTELLING ICON CONTAINER */
-    .weather-icon-visual {
-      font-size: 48px;
-      text-align: right;
+    .weather-graphic {
+      font-size: 56px;
     }
 
-    /* HOURLY FORECAST STRIP */
+    /* SECTION TITLE */
     .section-title {
       font-size: 12px;
       font-weight: 700;
       color: #888888;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
     }
 
+    /* HOURLY FORECAST STRIP */
     .hourly-strip {
       display: flex;
       justify-content: space-between;
       background: rgba(255, 255, 255, 0.04);
-      padding: 12px 10px;
-      border-radius: 12px;
+      padding: 16px 15px;
+      border-radius: 14px;
       border: 1px solid rgba(255, 255, 255, 0.08);
-      margin-bottom: 15px;
+      margin-bottom: 25px;
     }
 
     .hourly-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
     }
-    .hourly-time { font-size: 12px; color: #aaaaaa; }
-    .hourly-temp { font-size: 15px; font-weight: 700; }
+    .hourly-time { font-size: 13px; color: #888888; font-weight: 600; }
+    .hourly-temp { font-size: 16px; font-weight: 700; color: #ffffff; }
 
     /* METRICS GRID */
     .stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 15px;
     }
 
     .stat-card {
       background: rgba(255, 255, 255, 0.04);
-      padding: 14px;
-      border-radius: 10px;
+      padding: 18px 20px;
+      border-radius: 14px;
       border: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       flex-direction: column;
@@ -127,20 +133,20 @@
       color: #888888;
       text-transform: uppercase;
       font-weight: 700;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
     }
 
     .stat-value {
-      font-size: 19px;
-      font-weight: 700;
+      font-size: 22px;
+      font-weight: 800;
       color: #ffffff;
     }
 
     .stat-sub {
-      font-size: 11px;
+      font-size: 12px;
       color: #aaaaaa;
-      margin-top: 2px;
+      margin-top: 4px;
     }
   </style>
 </head>
@@ -150,18 +156,18 @@
   <div class="header-group">
     <div>
       <div class="location-title">Enter</div>
-      <div style="font-size: 12px; color: #888; margin-top: 2px;">Overijssel</div>
+      <div class="location-sub">Overijssel</div>
     </div>
     <div class="condition-badge" id="condBadge">Laden...</div>
   </div>
 
-  <!-- HERO SECTION WITH VISUAL STORYTELLING ICON -->
+  <!-- HERO SECTION -->
   <div class="hero-section">
     <div>
       <div class="temp-main" id="tempMain">--°C</div>
       <div class="temp-feels" id="tempFeels">Gevoel: --°C</div>
     </div>
-    <div class="weather-icon-visual" id="weatherIcon">⛅</div>
+    <div class="weather-graphic" id="weatherIcon">⛅</div>
   </div>
 
   <!-- HOURLY FORECAST -->
@@ -242,7 +248,6 @@
         document.getElementById('uvIndex').innerText = uv.toFixed(1);
         document.getElementById('uvRisk').innerText = uv > 5 ? 'Hoog' : (uv > 2 ? 'Matig' : 'Laag');
 
-        // Hourly strip
         const currentHour = new Date().getHours();
         const hourlyStrip = document.getElementById('hourlyStrip');
         hourlyStrip.innerHTML = '';
