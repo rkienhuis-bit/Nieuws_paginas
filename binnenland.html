@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>NOS Binnenland</title>
-<style>
+  <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background-color: transparent;
@@ -36,24 +36,45 @@
       transition: none;
     }
 
-    /* IMAGE STYLING */
+    /* CONTEXTUAL IMAGE WRAPPER WITH BLURRED BACKDROP */
     .news-image-container {
       width: 30%;
       height: 100%;
+      position: relative;
       overflow: hidden;
-      background-color: #000;
+      background-color: #0b0b0b;
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+
+    .news-image-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      filter: blur(20px) brightness(0.4);
+      transform: scale(1.1);
+      z-index: 1;
+    }
+
     .news-image {
+      position: relative;
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center center;
+      z-index: 2;
     }
 
     /* CONTENT LAYOUT - BALANCED SPACING */
     .news-content {
       width: 70%;
-      padding: 50px 100px 45px 60px; /* Right padding widened to keep text away from QR code */
+      padding: 50px 100px 45px 60px;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
@@ -79,12 +100,11 @@
       color: #ffffff;
     }
 
-    /* EXPANDED TEXT WRAPPER TO ELIMINATE EMPTY GAP */
     .news-desc-wrapper {
       position: relative;
       flex-grow: 1;
       overflow: hidden;
-      max-height: 62vh; /* Expanded height so it fills the lower area cleanly */
+      max-height: 62vh;
       margin-bottom: 20px;
     }
 
@@ -134,9 +154,10 @@
 <body>
 
   <div class="news-card" id="newsCard">
-    <!-- MAIN NEWS CONTENT -->
-    <div class="news-image-container" id="imgContainer">
-      <img id="newsImg" class="news-image" src="" alt="Afbeelding" style="display:none;" />
+    <!-- CONTEXTUAL IMAGE PANEL WITH BLUR BACKDROP -->
+    <div class="news-image-container" id="imgContainer" style="display:none;">
+      <div id="newsImgBg" class="news-image-bg"></div>
+      <img id="newsImg" class="news-image" src="" alt="Afbeelding" />
     </div>
 
     <div class="news-content">
@@ -154,10 +175,10 @@
     </div>
   </div>
 
-<script>
-    const RSS_URL = 'https://feeds.nos.nl/nosnieuwsbinnenland'; // Change per category file
-    const CATEGORY_LABEL = 'BINNENLAND';                         // Change per category file
-    const STORAGE_KEY_INDEX = 'nos_cat_index_binnenland';        // Use a unique key per category (e.g. _buitenland, _politiek, _sport)
+  <script>
+    const RSS_URL = 'https://feeds.nos.nl/nosnieuwsbinnenland'; 
+    const CATEGORY_LABEL = 'BINNENLAND';
+    const STORAGE_KEY_INDEX = 'nos_cat_index_binnenland';
     const STORAGE_KEY_ITEMS = 'nos_cat_items_binnenland';
 
     const API_URL = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS_URL);
@@ -166,7 +187,7 @@
     let timerId = null;
     let scrollTimeout = null;
 
-    // Load saved index from browser memory if it exists
+    // Load saved index from browser memory if available
     const savedIndex = localStorage.getItem(STORAGE_KEY_INDEX);
     if (savedIndex !== null) {
       currentIndex = parseInt(savedIndex, 10);
@@ -211,7 +232,6 @@
       if (items.length === 0) return;
       if (timerId) clearTimeout(timerId);
       
-      // Ensure index is within bounds of the fetched items array
       if (currentIndex >= items.length) {
         currentIndex = 0;
       }
@@ -228,13 +248,12 @@
         const qrContainer = document.getElementById('qrContainer');
         const qrImg = document.getElementById('qrImg');
 
-        // Image Handling
+        // Image Handling with Blur Backdrop
         if (imgUrl) {
           imgEl.src = imgUrl;
-          imgEl.style.display = 'block';
-          document.getElementById('imgContainer').style.display = 'block';
+          document.getElementById('newsImgBg').style.backgroundImage = `url('${imgUrl}')`;
+          document.getElementById('imgContainer').style.display = 'flex';
         } else {
-          imgEl.style.display = 'none';
           document.getElementById('imgContainer').style.display = 'none';
         }
 
@@ -251,7 +270,7 @@
         document.getElementById('newsCat').innerText = CATEGORY_LABEL;
         document.getElementById('newsTitle').innerText = item.title;
         
-        // Reset Text Scroll Position & Insert Full Description
+        // Reset Scroll & Insert Description
         descEl.style.transition = 'none';
         descEl.style.transform = 'translateY(0px)';
         descEl.innerHTML = formatDescription(item.description);
@@ -278,51 +297,7 @@
           }
         }, 4500);
 
-        // Advance to next index and save it to memory
         currentIndex = (currentIndex + 1) % items.length;
         localStorage.setItem(STORAGE_KEY_INDEX, currentIndex);
 
-        timerId = setTimeout(renderCurrentStory, currentStoryDuration);
-      }, 800);
-    }
-
-    async function fetchRSS() {
-      try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
-        if (data.status === 'ok' && data.items.length > 0) {
-          items = data.items;
-          localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(items));
-          
-          // If stories haven't started playing yet, trigger the first render
-          if (!timerId) {
-            renderCurrentStory();
-          }
-        } else {
-          loadCachedData();
-        }
-      } catch (err) {
-        loadCachedData();
-      }
-    }
-
-    function loadCachedData() {
-      const cached = localStorage.getItem(STORAGE_KEY_ITEMS);
-      if (cached) {
-        items = JSON.parse(cached);
-        if (!timerId) {
-          renderCurrentStory();
-        }
-      } else {
-        document.getElementById('newsTitle').innerText = 'Fout bij het laden van het nieuws.';
-      }
-    }
-
-    // Initialize instantly from local cache if available, then fetch fresh data in background
-    loadCachedData();
-    fetchRSS();
-    setInterval(fetchRSS, 10 * 60 * 1000); // Check for feed updates every 10 minutes
-  </script>
-
-</body>
-</html>
+        timerId = setTimeout(renderCurrent
