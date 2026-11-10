@@ -124,11 +124,11 @@
       color: #cccccc;
     }
 
-    /* PRESERVED NATIVE BOLDING & SUBHEADINGS FROM FEED */
+    /* ENHANCED NATIVE INLINE BOLDING & SUBHEADINGS */
     .news-description strong, 
     .news-description b {
       color: #ffffff;
-      font-weight: 700;
+      font-weight: 800; /* Extra bold for clarity on narrowcasting screens */
     }
 
     .news-description h3.sub-heading {
@@ -219,19 +219,24 @@
       return imgMatch ? imgMatch[1] : null;
     }
 
-    // FORMAT DESCRIPTION PRESERVING NATIVE HTML TAGS & APPLYING HIERARCHY
+    // FORMAT DESCRIPTION: STRIPS LINKS, PRESERVES BOLDING & SUBHEADINGS
     function formatDescription(html) {
       if (!html) return '';
       const div = document.createElement("div");
       div.innerHTML = html;
       
-      const scripts = div.querySelectorAll("script, style");
-      scripts.forEach(s => s.remove());
+      // Remove scripts, styles, and convert <a> links to plain text (stripping dead narrowcasting hyperlinks)
+      div.querySelectorAll("script, style, a").forEach(el => {
+        if (el.tagName.toLowerCase() === 'a') {
+          el.replaceWith(el.textContent);
+        } else {
+          el.remove();
+        }
+      });
 
       let elements = Array.from(div.querySelectorAll("p, h3, h4, li"));
       
       if (elements.length === 0) {
-        // Fallback for feeds formatted with raw linebreaks
         const rawLines = div.innerHTML.split(/<br\s*\/?>\s*<br\s*\/?>/i);
         return rawLines
           .map((line, index) => {
