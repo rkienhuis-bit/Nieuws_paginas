@@ -61,31 +61,24 @@
       font-size: 38px;
       font-weight: 700;
       line-height: 1.2;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       color: #ffffff;
+      max-width: calc(100% - 310px); /* Leaves clear breathing room for the static circle */
     }
 
-    /* TEXT WRAPPER WITH PARAGRAPH RETURNS */
-    .news-desc-wrapper {
-      position: relative;
-      flex-grow: 1;
-      overflow: hidden;
-      max-height: 62vh;
-      margin-bottom: 20px;
-    }
-
-    /* ENLARGED FLOATING CIRCLE WITH SHAPE WRAPPING */
+    /* STATIC CIRCULAR IMAGE BADGE (LOCKED IN TOP RIGHT) */
     .news-image-circle {
-      float: right;
-      width: 280px;
-      height: 280px;
+      position: absolute;
+      top: 45px;
+      right: 70px;
+      width: 270px;
+      height: 270px;
       border-radius: 50%;
-      shape-outside: circle(50%);
-      margin: 0 0 25px 35px;
       overflow: hidden;
       border: 5px solid #e30613; /* NOS Red accent border */
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
       background-color: #0b0b0b;
+      z-index: 5;
     }
 
     .news-image-circle img {
@@ -93,6 +86,15 @@
       height: 100%;
       object-fit: cover;
       object-position: center center;
+    }
+
+    /* ISOLATED SCROLLING TEXT CONTAINER */
+    .news-desc-wrapper {
+      position: relative;
+      flex-grow: 1;
+      overflow: hidden;
+      max-height: 52vh;
+      margin-bottom: 20px;
     }
 
     .news-description {
@@ -142,17 +144,17 @@
 
   <div class="news-card" id="newsCard">
     <div class="news-content">
+      <!-- STATIC CIRCULAR IMAGE BADGE (LOCKED IN TOP RIGHT) -->
+      <div class="news-image-circle" id="imgContainer" style="display:none;">
+        <img id="newsImg" src="" alt="Afbeelding" />
+      </div>
+
       <div class="news-category" id="newsCat">BINNENLAND</div>
       <h1 class="news-title" id="newsTitle">NOS Nieuws laden...</h1>
       
+      <!-- ONLY THIS TEXT BOX SCROLLS -->
       <div class="news-desc-wrapper" id="descWrapper">
-        <div class="news-description" id="newsDesc">
-          <!-- FLOATING CIRCULAR IMAGE BADGE -->
-          <div class="news-image-circle" id="imgContainer" style="display:none;">
-            <img id="newsImg" src="" alt="Afbeelding" />
-          </div>
-          <div id="textBody"></div>
-        </div>
+        <div class="news-description" id="newsDesc"></div>
       </div>
       
       <!-- QR CODE BOX (BOTTOM RIGHT) -->
@@ -232,7 +234,6 @@
         const imgEl = document.getElementById('newsImg');
         const imgContainer = document.getElementById('imgContainer');
         const descEl = document.getElementById('newsDesc');
-        const textBody = document.getElementById('textBody');
         const descWrapper = document.getElementById('descWrapper');
         const qrContainer = document.getElementById('qrContainer');
         const qrImg = document.getElementById('qrImg');
@@ -261,7 +262,7 @@
         // Reset Scroll & Insert Description Text
         descEl.style.transition = 'none';
         descEl.style.transform = 'translateY(0px)';
-        textBody.innerHTML = formatDescription(item.description);
+        descEl.innerHTML = formatDescription(item.description);
 
         card.classList.add('slide-in');
         card.classList.remove('slide-out');
