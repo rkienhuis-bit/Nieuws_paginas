@@ -300,4 +300,44 @@
         currentIndex = (currentIndex + 1) % items.length;
         localStorage.setItem(STORAGE_KEY_INDEX, currentIndex);
 
-        timerId = setTimeout(renderCurrent
+        timerId = setTimeout(renderCurrentStory, currentStoryDuration);
+      }, 800);
+    }
+
+    async function fetchRSS() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        if (data.status === 'ok' && data.items.length > 0) {
+          items = data.items;
+          localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(items));
+          if (!timerId) {
+            renderCurrentStory();
+          }
+        } else {
+          loadCachedData();
+        }
+      } catch (err) {
+        loadCachedData();
+      }
+    }
+
+    function loadCachedData() {
+      const cached = localStorage.getItem(STORAGE_KEY_ITEMS);
+      if (cached) {
+        items = JSON.parse(cached);
+        if (!timerId) {
+          renderCurrentStory();
+        }
+      } else {
+        document.getElementById('newsTitle').innerText = 'Fout bij het laden van het nieuws.';
+      }
+    }
+
+    loadCachedData();
+    fetchRSS();
+    setInterval(fetchRSS, 10 * 60 * 1000); // 10-minute background update cycle
+  </script>
+
+</body>
+</html>
