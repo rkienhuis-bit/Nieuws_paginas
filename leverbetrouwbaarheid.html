@@ -60,4 +60,340 @@
       background: var(--card-bg);
       border-radius: 16px;
       padding: 20px 24px 12px 24px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04),
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      animation: fadeInUp 0.8s ease-out 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .chart-wrapper {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      height: 100%;
+    }
+
+    .bottom-cards-container {
+      flex: 2;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Idle Shimmer Highlight Line */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.4), transparent);
+      animation: idleShimmer 6s infinite linear;
+    }
+
+    .card:nth-child(1) { animation: fadeInUp 0.8s ease-out 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .card:nth-child(2) { animation: fadeInUp 0.8s ease-out 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .card:nth-child(3) { animation: fadeInUp 0.8s ease-out 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #334155;
+      text-align: center;
+    }
+
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-top: 2px;
+      text-align: center;
+    }
+
+    .donut-wrapper {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 6px 0;
+    }
+
+    .donut-center-text {
+      position: absolute;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .donut-percentage {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #0f172a;
+      animation: idlePulse 4s ease-in-out infinite;
+    }
+
+    .legend-container {
+      display: flex;
+      gap: 16px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-box {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes idleShimmer {
+      0% { left: -100%; }
+      50% { left: 100%; }
+      100% { left: 100%; }
+    }
+
+    @keyframes idlePulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.03); opacity: 0.95; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Leverbetrouwbaarheid 2026</h1>
+  </header>
+
+  <main>
+    <div class="top-chart-container">
+      <div class="chart-wrapper">
+        <canvas id="weeklyChart"></canvas>
+      </div>
+    </div>
+
+    <div class="bottom-cards-container">
+      <!-- 2024 Card -->
+      <div class="card">
+        <div>
+          <div class="card-title">Gemiddelde LBH 2024</div>
+          <div class="card-subtitle">Ipex-Group International BV</div>
+        </div>
+        <div class="donut-wrapper">
+          <canvas id="donut2024"></canvas>
+          <div class="donut-center-text">
+            <div class="donut-percentage">99,35%</div>
+          </div>
+        </div>
+        <div class="legend-container">
+          <div class="legend-item"><span class="legend-box" style="background:#2563eb;"></span>Verzonden</div>
+          <div class="legend-item"><span class="legend-box" style="background:#f97316;"></span>Niet verzonden</div>
+        </div>
+      </div>
+
+      <!-- 2025 Card -->
+      <div class="card">
+        <div>
+          <div class="card-title">Gemiddelde LBH 2025</div>
+          <div class="card-subtitle">Ipex-Group International BV</div>
+        </div>
+        <div class="donut-wrapper">
+          <canvas id="donut2025"></canvas>
+          <div class="donut-center-text">
+            <div class="donut-percentage">98,74%</div>
+          </div>
+        </div>
+        <div class="legend-container">
+          <div class="legend-item"><span class="legend-box" style="background:#2563eb;"></span>Verzonden</div>
+          <div class="legend-item"><span class="legend-box" style="background:#f97316;"></span>Niet verzonden</div>
+        </div>
+      </div>
+
+      <!-- 2026 Card -->
+      <div class="card">
+        <div>
+          <div class="card-title">Gemiddelde LBH 2026</div>
+          <div class="card-subtitle">Ipex-Group International BV</div>
+        </div>
+        <div class="donut-wrapper">
+          <canvas id="donut2026"></canvas>
+          <div class="donut-center-text">
+            <div class="donut-percentage" id="val2026">--%</div>
+          </div>
+        </div>
+        <div class="legend-container">
+          <div class="legend-item"><span class="legend-box" style="background:#2563eb;"></span>Verzonden</div>
+          <div class="legend-item"><span class="legend-box" style="background:#f97316;"></span>Niet verzonden</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    Chart.register(ChartDataLabels);
+
+    // YOUR PUBLISHED GOOGLE SHEET CSV URL
+    const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQtxKzOmH_pFkFCD60zVlU8tXQd2aW8B92eY-iMdstxibnAYtxESxC3cS-5peclfntJhRrLIGWKPg5/pub?gid=0&single=true&output=csv';
+
+    let weeklyValues = Array(52).fill(null);
+    const weekLabels = Array.from({ length: 52 }, (_, i) => i + 1);
+
+    // Setup Line Chart
+    const ctxLine = document.getElementById('weeklyChart').getContext('2d');
+    const lineChart = new Chart(ctxLine, {
+      type: 'line',
+      data: {
+        labels: weekLabels,
+        datasets: [
+          {
+            label: 'Percentage',
+            data: weeklyValues,
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37, 99, 235, 0.08)',
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.1,
+            spanGaps: false,
+            datalabels: {
+              align: 'top',
+              anchor: 'end',
+              font: { size: 10, weight: 'bold' },
+              color: '#334155',
+              formatter: (val) => (val !== null && val !== undefined) ? val.toFixed(1) : ''
+            }
+          },
+          {
+            label: 'Doelstelling 98%',
+            data: Array(52).fill(98),
+            borderColor: '#ef4444',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            pointRadius: 0,
+            fill: false,
+            datalabels: { display: false }
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 1500, easing: 'easeOutQuart' },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { boxWidth: 12, usePointStyle: true, font: { size: 12 } }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+          y: { min: 50, max: 105, ticks: { stepSize: 10 } }
+        }
+      }
+    });
+
+    // Setup Donut Charts
+    function createDonutChart(elementId, percentage) {
+      const ctx = document.getElementById(elementId).getContext('2d');
+      return new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Verzonden', 'Niet verzonden'],
+          datasets: [{
+            data: [percentage, Math.max(0, 100 - percentage)],
+            backgroundColor: ['#2563eb', '#f97316'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          cutout: '75%',
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 1200 },
+          plugins: { legend: { display: false }, datalabels: { display: false } }
+        }
+      });
+    }
+
+    createDonutChart('donut2024', 99.35);
+    createDonutChart('donut2025', 98.74);
+    const donutChart2026 = createDonutChart('donut2026', 0);
+
+    function calculateAverage(data) {
+      const valid = data.filter(v => v !== null && v !== undefined && !isNaN(v));
+      if (valid.length === 0) return 0;
+      return (valid.reduce((a, b) => a + Number(b), 0) / valid.length).toFixed(2);
+    }
+
+    // Fetch Live CSV Data
+    async function fetchLiveData() {
+      try {
+        const response = await fetch(GOOGLE_SHEET_CSV_URL + '&t=' + new Date().getTime());
+        const text = await response.text();
+        
+        const lines = text.split('\n').slice(1);
+        const parsedData = Array(52).fill(null);
+
+        lines.forEach(line => {
+          const cols = line.split(',');
+          if (cols.length >= 2) {
+            const weekNum = parseInt(cols[0].trim());
+            const val = parseFloat(cols[1].replace(',', '.').trim());
+            if (weekNum >= 1 && weekNum <= 52 && !isNaN(val)) {
+              parsedData[weekNum - 1] = val;
+            }
+          }
+        });
+
+        weeklyValues = parsedData;
+
+        // Update Charts
+        lineChart.data.datasets[0].data = weeklyValues;
+        lineChart.update();
+
+        const avg = calculateAverage(weeklyValues);
+        document.getElementById('val2026').innerText = `${avg.toString().replace('.', ',')}%`;
+        donutChart2026.data.datasets[0].data = [avg, (100 - avg).toFixed(2)];
+        donutChart2026.update();
+
+      } catch (err) {
+        console.error('Failed to load Google Sheet data:', err);
+      }
+    }
+
+    // Fetch on load & auto-refresh every 5 minutes
+    fetchLiveData();
+    setInterval(fetchLiveData, 5 * 60 * 1000);
+  </script>
+</body>
+</html>
