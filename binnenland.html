@@ -1,20 +1,166 @@
-<script>
-    const RSS_URL = 'https://feeds.nos.nl/nosnieuwsbinnenland'; // Change per category file
-    const CATEGORY_LABEL = 'BINNENLAND';                         // Change per category file
-    const STORAGE_KEY_INDEX = 'nos_cat_index_binnenland';        // Use a unique key per category (e.g. _buitenland, _politiek, _sport)
-    const STORAGE_KEY_ITEMS = 'nos_cat_items_binnenland';
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>NOS Binnenland</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: transparent;
+      color: #ffffff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+    }
+
+    /* SLIDING TRANSITION CONTAINER */
+    .news-card {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      height: 100vh;
+      background: rgba(17, 17, 17, 0.88);
+      overflow: hidden;
+      transform: translateX(0);
+      transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .news-card.slide-out {
+      transform: translateX(-100vw);
+    }
+
+    .news-card.slide-in {
+      transform: translateX(100vw);
+      transition: none;
+    }
+
+    /* IMAGE STYLING */
+    .news-image-container {
+      width: 30%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000;
+      flex-shrink: 0;
+    }
+    .news-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* CONTENT LAYOUT - TOP ALIGNED */
+    .news-content {
+      width: 70%;
+      padding: 50px 80px 40px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .news-category {
+      color: #e30613;
+      font-size: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+    }
+
+    .news-title {
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      color: #ffffff;
+    }
+
+    /* BODY TEXT WRAPPER WITH PARAGRAPH RETURNS */
+    .news-desc-wrapper {
+      position: relative;
+      flex-grow: 1;
+      overflow: hidden;
+      max-height: 52vh;
+    }
+
+    .news-description {
+      position: absolute;
+      width: 100%;
+      font-size: 20px;
+      line-height: 1.5;
+      color: #dddddd;
+      top: 0;
+      transition: transform linear;
+    }
+
+    .news-description p {
+      margin-bottom: 14px;
+    }
+
+    /* DYNAMIC QR CODE - BOTTOM RIGHT */
+    .qr-container {
+      position: absolute;
+      bottom: 40px;
+      right: 50px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 10;
+    }
+
+    .qr-code {
+      width: 85px;
+      height: 85px;
+    }
+
+    .qr-label {
+      color: #111;
+      font-size: 10px;
+      font-weight: 700;
+      margin-top: 5px;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="news-card" id="newsCard">
+    <!-- MAIN NEWS CONTENT -->
+    <div class="news-image-container" id="imgContainer">
+      <img id="newsImg" class="news-image" src="" alt="Afbeelding" style="display:none;" />
+    </div>
+
+    <div class="news-content">
+      <div class="news-category" id="newsCat">BINNENLAND</div>
+      <h1 class="news-title" id="newsTitle">NOS Nieuws laden...</h1>
+      <div class="news-desc-wrapper" id="descWrapper">
+        <div class="news-description" id="newsDesc"></div>
+      </div>
+      
+      <!-- QR CODE BOX (BOTTOM RIGHT) -->
+      <div class="qr-container" id="qrContainer" style="display:none;">
+        <img id="qrImg" class="qr-code" src="" alt="Scan QR" />
+        <span class="qr-label">LEES MEER</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const RSS_URL = 'https://feeds.nos.nl/nosnieuwsbinnenland'; 
+    const CATEGORY_LABEL = 'BINNENLAND';
 
     const API_URL = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS_URL);
     let items = [];
     let currentIndex = 0;
     let timerId = null;
     let scrollTimeout = null;
-
-    // Load saved index from browser memory if it exists
-    const savedIndex = localStorage.getItem(STORAGE_KEY_INDEX);
-    if (savedIndex !== null) {
-      currentIndex = parseInt(savedIndex, 10);
-    }
 
     function extractImage(item) {
       if (item.thumbnail) return item.thumbnail;
@@ -37,29 +183,39 @@
         .join('');
     }
 
+    // CALCULATE PROPORTIONAL READING TIME
     function calculateReadingDuration(title, descriptionHtml) {
       const div = document.createElement("div");
       div.innerHTML = descriptionHtml;
       const plainText = div.textContent || div.innerText || "";
       const wordCount = (title + " " + plainText).split(/\s+/).length;
       
+      // Base time + scale dynamically with word count (~300ms per word)
       let durationMs = 12000; 
       durationMs += wordCount * 300; 
       
-      if (durationMs < 14000) durationMs = 14000;
-      if (durationMs > 35000) durationMs = 35000;
+      if (durationMs < 14000) durationMs = 14000; // Minimum 14 seconds
+      if (durationMs > 35000) durationMs = 35000; // Maximum 35 seconds for very long pieces
       return durationMs;
     }
 
-    function renderCurrentStory() {
+    async function fetchRSS() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        if (data.status === 'ok' && data.items.length > 0) {
+          items = data.items;
+          showNextStory();
+        }
+      } catch (err) {
+        document.getElementById('newsTitle').innerText = 'Fout bij het laden van het nieuws.';
+      }
+    }
+
+    function showNextStory() {
       if (items.length === 0) return;
       if (timerId) clearTimeout(timerId);
       
-      // Ensure index is within bounds of the fetched items array
-      if (currentIndex >= items.length) {
-        currentIndex = 0;
-      }
-
       const card = document.getElementById('newsCard');
       card.classList.add('slide-out');
 
@@ -105,9 +261,10 @@
         void card.offsetWidth;
         card.classList.remove('slide-in');
 
+        // Get unique duration for this specific news item
         const currentStoryDuration = calculateReadingDuration(item.title, item.description);
 
-        // Proportional Scroll Logic
+        // FULLY PROPORTIONAL CRAWL SPEED
         if (scrollTimeout) clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
           const textHeight = descEl.offsetHeight;
@@ -115,55 +272,23 @@
           
           if (textHeight > containerHeight) {
             const scrollDistance = textHeight - containerHeight + 25;
+            
+            // Proportional scroll time: scales cleanly based on how long the slide stays open
             const scrollTime = Math.max(8, (currentStoryDuration - 6000) / 1000); 
             
             descEl.style.transition = `transform ${scrollTime}s linear`;
             descEl.style.transform = `translateY(-${scrollDistance}px)`;
           }
-        }, 4500);
+        }, 4500); // 4.5 second pause at the top before scrolling begins
 
-        // Advance to next index and save it to memory
         currentIndex = (currentIndex + 1) % items.length;
-        localStorage.setItem(STORAGE_KEY_INDEX, currentIndex);
-
-        timerId = setTimeout(renderCurrentStory, currentStoryDuration);
+        timerId = setTimeout(showNextStory, currentStoryDuration);
       }, 800);
     }
 
-    async function fetchRSS() {
-      try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
-        if (data.status === 'ok' && data.items.length > 0) {
-          items = data.items;
-          localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(items));
-          
-          // If stories haven't started playing yet, trigger the first render
-          if (!timerId) {
-            renderCurrentStory();
-          }
-        } else {
-          loadCachedData();
-        }
-      } catch (err) {
-        loadCachedData();
-      }
-    }
-
-    function loadCachedData() {
-      const cached = localStorage.getItem(STORAGE_KEY_ITEMS);
-      if (cached) {
-        items = JSON.parse(cached);
-        if (!timerId) {
-          renderCurrentStory();
-        }
-      } else {
-        document.getElementById('newsTitle').innerText = 'Fout bij het laden van het nieuws.';
-      }
-    }
-
-    // Initialize instantly from local cache if available, then fetch fresh data in background
-    loadCachedData();
     fetchRSS();
-    setInterval(fetchRSS, 10 * 60 * 1000); // Check for feed updates every 10 minutes
+    setInterval(fetchRSS, 15 * 60 * 1000);
   </script>
+
+</body>
+</html>
