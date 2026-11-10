@@ -63,10 +63,10 @@
       line-height: 1.2;
       margin-bottom: 25px;
       color: #ffffff;
-      max-width: calc(100% - 310px);
+      max-width: calc(100% - 310px); /* Keeps title clear of the static circle */
     }
 
-    /* STATIC VISUAL IMAGE BADGE (TOP RIGHT) */
+    /* STATIC VISUAL IMAGE BADGE (LOCKED IN TOP RIGHT) */
     .news-image-circle {
       position: absolute;
       top: 45px;
@@ -79,7 +79,6 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
       background-color: #0b0b0b;
       z-index: 5;
-      pointer-events: none;
     }
 
     .news-image-circle img {
@@ -101,22 +100,13 @@
     .news-description {
       position: absolute;
       width: 100%;
+      /* PADDING RIGHT KEEPS TEXT FROM GOING BEHIND THE STATIC CIRCLE */
+      padding-right: 320px; 
       font-size: 22px;
       line-height: 1.6;
       color: #dddddd;
       top: 0;
       transition: transform linear;
-    }
-
-    /* FLOATING INVISIBLE SHAPE THAT FORCES TEXT TO WRAP AROUND CIRCLE */
-    .shape-wrap-spacer {
-      float: right;
-      width: 270px;
-      height: 270px;
-      border-radius: 50%;
-      shape-outside: circle(50%);
-      margin-left: 35px;
-      margin-bottom: 15px;
     }
 
     .news-description p {
@@ -164,12 +154,9 @@
       <div class="news-category" id="newsCat">BINNENLAND</div>
       <h1 class="news-title" id="newsTitle">NOS Nieuws laden...</h1>
       
-      <!-- SCROLLING TEXT AREA WITH DYNAMIC CIRCULAR WRAPPING -->
+      <!-- SCROLLING TEXT AREA -->
       <div class="news-desc-wrapper" id="descWrapper">
-        <div class="news-description" id="newsDesc">
-          <div class="shape-wrap-spacer" id="shapeSpacer" style="display:none;"></div>
-          <div id="textBody"></div>
-        </div>
+        <div class="news-description" id="newsDesc"></div>
       </div>
       
       <!-- QR CODE BOX -->
@@ -248,21 +235,17 @@
         const imgUrl = extractImage(item);
         const imgEl = document.getElementById('newsImg');
         const imgContainer = document.getElementById('imgContainer');
-        const shapeSpacer = document.getElementById('shapeSpacer');
         const descEl = document.getElementById('newsDesc');
-        const textBody = document.getElementById('textBody');
         const descWrapper = document.getElementById('descWrapper');
         const qrContainer = document.getElementById('qrContainer');
         const qrImg = document.getElementById('qrImg');
 
-        // Circular Image & Wrap Spacer Handling
+        // Circular Image Handling
         if (imgUrl) {
           imgEl.src = imgUrl;
           imgContainer.style.display = 'block';
-          shapeSpacer.style.display = 'block';
         } else {
           imgContainer.style.display = 'none';
-          shapeSpacer.style.display = 'none';
         }
 
         // QR Code Handling
@@ -281,7 +264,7 @@
         // Reset Scroll & Insert Description Text
         descEl.style.transition = 'none';
         descEl.style.transform = 'translateY(0px)';
-        textBody.innerHTML = formatDescription(item.description);
+        descEl.innerHTML = formatDescription(item.description);
 
         card.classList.add('slide-in');
         card.classList.remove('slide-out');
