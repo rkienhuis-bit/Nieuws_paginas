@@ -73,7 +73,7 @@
       width: 100%;
     }
 
-    /* Middle Column: Original Text Layout */
+    /* Middle Column: Exact Original Text Restored */
     .middle-column {
       flex: 0.95;
       background: var(--card-bg);
@@ -83,26 +83,31 @@
       border: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       height: 100%;
     }
 
     .middle-column h2 {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       font-weight: 800;
       color: #0f172a;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       line-height: 1.2;
     }
 
-    .middle-column p {
-      font-size: 0.95srem;
+    .middle-column p, .middle-column li {
+      font-size: 0.9rem;
       color: var(--text-muted);
-      line-height: 1.6;
-      margin-bottom: 12px;
+      line-height: 1.5;
+      margin-bottom: 10px;
     }
 
-    /* Right Column: Original Info Panel */
+    .middle-column ul {
+      margin-left: 18px;
+      margin-bottom: 10px;
+    }
+
+    /* Right Column: Exact Original Panel Restored */
     .right-column {
       flex: 1.1;
       background: var(--right-panel-bg);
@@ -118,18 +123,18 @@
     }
 
     .right-column h3 {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       color: #ffffff;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       padding-bottom: 8px;
     }
 
     .right-column p {
-      font-size: 0.84rem;
-      line-height: 1.5;
-      margin-bottom: 10px;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      margin-bottom: 8px;
       color: #cbd5e1;
     }
 
@@ -156,15 +161,19 @@
     </div>
   </div>
 
-  <!-- Middle Column: Original Text -->
+  <!-- Middle Column: Exact Original Text -->
   <div class="middle-column">
-    <h2>Kap Analyse September 2026</h2>
+    <h2 id="mainTitle">Kap Analyse September 2026</h2>
     <p>Onderstaande de Kap Analyse van September 2026.</p>
     <p><strong>In totaal 5 Kaps.</strong></p>
     <p>Kaps hebben betrekking op een periode ervoor, 3 à 6 weken.</p>
+    <ul>
+      <li>Monitoring acties ter oplossing van openstaande klachten.</li>
+      <li>Focus op preventie in volgende productiecycli.</li>
+    </ul>
   </div>
 
-  <!-- Right Column: Original "Wat is een KAP?" Text -->
+  <!-- Right Column: Exact Original Info Panel -->
   <div class="right-column">
     <h3>Wat is een KAP?</h3>
     <p><strong>KAP</strong> staat voor <strong>Klachten Actie Plan</strong>.</p>
@@ -227,4 +236,123 @@
               anchor: 'end',
               font: { size: 9, weight: 'bold' },
               color: '#334155',
-              formatter: (val) => val !== null ? val.
+              formatter: (val) => val !== null ? val.toFixed(2).replace('.', ',') + '%' : ''
+            }
+          },
+          {
+            label: 'Doel 1.5%',
+            data: [],
+            type: 'line',
+            borderColor: '#f59e0b',
+            borderWidth: 2.5,
+            pointRadius: 0,
+            datalabels: { display: false }
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+          y: { min: 0, max: 4.5, ticks: { stepSize: 1, callback: (v) => v.toFixed(1).replace('.', ',') + '%' } }
+        }
+      }
+    });
+
+    // Setup Regels Chart
+    const ctxRegels = document.getElementById('regelsChart').getContext('2d');
+    const regelsChart = new Chart(ctxRegels, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: 'Regels KAP %',
+            data: [],
+            backgroundColor: '#2563eb',
+            borderRadius: 4,
+            datalabels: {
+              align: 'top',
+              anchor: 'end',
+              font: { size: 9, weight: 'bold' },
+              color: '#334155',
+              formatter: (val) => val !== null ? val.toFixed(2).replace('.', ',') + '%' : ''
+            }
+          },
+          {
+            label: 'Doel 0.7%',
+            data: [],
+            type: 'line',
+            borderColor: '#f59e0b',
+            borderWidth: 2.5,
+            pointRadius: 0,
+            datalabels: { display: false }
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+          y: { min: 0, max: 1.8, ticks: { stepSize: 0.4, callback: (v) => v.toFixed(1).replace('.', ',') + '%' } }
+        }
+      }
+    });
+
+    async function fetchKapData() {
+      if (!TAB2_CSV_URL || TAB2_CSV_URL.includes('YOUR_TAB_2_PUBLISHED_CSV_URL_HERE')) return;
+
+      try {
+        const response = await fetch(TAB2_CSV_URL + '&t=' + new Date().getTime());
+        const text = await response.text();
+        
+        const lines = text.split('\n').slice(1);
+        const labels = [];
+        const facturenData = [];
+        const regelsData = [];
+
+        for (let line of lines) {
+          if (line.trim() !== '') {
+            const cols = line.split(',');
+            if (cols.length >= 3) {
+              const rawMonth = cols[0];
+              const formattedMonth = formatConsistentMonth(rawMonth);
+              
+              const fVal = parseFloat(cols[1].replace(/"/g, '').replace('%', '').replace(',', '.').trim());
+              const rVal = parseFloat(cols[2].replace(/"/g, '').replace('%', '').replace(',', '.').trim());
+
+              if (!formattedMonth || formattedMonth === 'undefined') break;
+
+              labels.push(formattedMonth);
+              facturenData.push(!isNaN(fVal) ? fVal : null);
+              regelsData.push(!isNaN(rVal) ? rVal : null);
+            }
+          }
+        }
+
+        // Update Facturen Chart
+        facturenChart.data.labels = labels;
+        facturenChart.data.datasets[0].data = facturenData;
+        facturenChart.data.datasets[1].data = Array(labels.length).fill(1.5);
+        facturenChart.update();
+
+        // Update Regels Chart
+        regelsChart.data.labels = labels;
+        regelsChart.data.datasets[0].data = regelsData;
+        regelsChart.data.datasets[1].data = Array(labels.length).fill(0.7);
+        regelsChart.update();
+
+      } catch (err) {
+        console.error('Error loading KAP data:', err);
+      }
+    }
+
+    fetchKapData();
+    setInterval(fetchKapData, 30 * 1000);
+  </script>
+</body>
+</html>
