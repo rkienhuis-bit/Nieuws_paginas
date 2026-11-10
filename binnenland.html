@@ -63,7 +63,7 @@
       line-height: 1.2;
       margin-bottom: 25px;
       color: #ffffff;
-      max-width: calc(100% - 310px); /* Keeps title clear of the static circle */
+      max-width: calc(100% - 310px);
     }
 
     /* STATIC VISUAL IMAGE BADGE (LOCKED IN TOP RIGHT) */
@@ -100,17 +100,28 @@
     .news-description {
       position: absolute;
       width: 100%;
-      /* PADDING RIGHT KEEPS TEXT FROM GOING BEHIND THE STATIC CIRCLE */
       padding-right: 320px; 
-      font-size: 22px;
+      font-size: 21px;
       line-height: 1.6;
       color: #dddddd;
       top: 0;
       transition: transform linear;
     }
 
-    .news-description p {
+    /* DYNAMIC TEXT HIERARCHY STYLES */
+    .news-description p.lead-paragraph {
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1.5;
+      color: #ffffff;
+      margin-bottom: 18px;
+      border-left: 4px solid #e30613;
+      padding-left: 14px;
+    }
+
+    .news-description p.body-paragraph {
       margin-bottom: 16px;
+      color: #cccccc;
     }
 
     /* DYNAMIC QR CODE - ALIGNED BOTTOM RIGHT */
@@ -191,17 +202,23 @@
       return imgMatch ? imgMatch[1] : null;
     }
 
+    // FORMAT DESCRIPTION WITH DYNAMIC VISUAL HIERARCHY
     function formatDescription(html) {
       if (!html) return '';
       const div = document.createElement("div");
       div.innerHTML = html;
       const text = div.textContent || div.innerText || "";
-      const paragraphs = text.split(/\r?\n\r?/);
+      const paragraphs = text.split(/\r?\n\r?/).map(p => p.trim()).filter(p => p.length > 0);
       
       return paragraphs
-        .map(p => p.trim())
-        .filter(p => p.length > 0)
-        .map(p => `<p>${p}</p>`)
+        .map((p, index) => {
+          if (index === 0) {
+            // Lead paragraph: Larger font, bold weight, red accent bar
+            return `<p class="lead-paragraph">${p}</p>`;
+          }
+          // Subsequent body paragraphs
+          return `<p class="body-paragraph">${p}</p>`;
+        })
         .join('');
     }
 
@@ -261,7 +278,7 @@
         document.getElementById('newsCat').innerText = CATEGORY_LABEL;
         document.getElementById('newsTitle').innerText = item.title;
         
-        // Reset Scroll & Insert Description Text
+        // Reset Scroll & Insert Description Text with Hierarchy
         descEl.style.transition = 'none';
         descEl.style.transform = 'translateY(0px)';
         descEl.innerHTML = formatDescription(item.description);
