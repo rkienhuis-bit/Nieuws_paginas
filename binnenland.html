@@ -21,19 +21,16 @@
       flex-direction: row;
       width: 100%;
       height: 100vh;
-      /* Restored original elegant dark-gray semi-transparent background */
       background: rgba(17, 17, 17, 0.88);
       overflow: hidden;
       transform: translateX(0);
       transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
-    /* Slide out to the left when changing stories */
     .news-card.slide-out {
       transform: translateX(-100vw);
     }
 
-    /* Slide in from the right when loading a new story */
     .news-card.slide-in {
       transform: translateX(100vw);
       transition: none;
@@ -100,7 +97,7 @@
     }
 
     .news-description p {
-      margin-bottom: 14px; /* Proper line spacing between paragraphs */
+      margin-bottom: 14px;
     }
 
     /* DYNAMIC QR CODE - BOTTOM RIGHT */
@@ -172,7 +169,6 @@
       return imgMatch ? imgMatch[1] : null;
     }
 
-    // Formats full text cleanly with paragraph spacing (no text cutting)
     function formatDescription(html) {
       if (!html) return '';
       const div = document.createElement("div");
@@ -187,16 +183,19 @@
         .join('');
     }
 
+    // CALCULATE PROPORTIONAL READING TIME
     function calculateReadingDuration(title, descriptionHtml) {
       const div = document.createElement("div");
       div.innerHTML = descriptionHtml;
       const plainText = div.textContent || div.innerText || "";
       const wordCount = (title + " " + plainText).split(/\s+/).length;
       
-      let durationMs = 14000; // Minimum 14 seconds per slide
+      // Base time + scale dynamically with word count (~300ms per word)
+      let durationMs = 12000; 
       durationMs += wordCount * 300; 
       
-      if (durationMs > 32000) durationMs = 32000; // Cap maximum at 32 seconds
+      if (durationMs < 14000) durationMs = 14000; // Minimum 14 seconds
+      if (durationMs > 35000) durationMs = 35000; // Maximum 35 seconds for very long pieces
       return durationMs;
     }
 
@@ -218,8 +217,6 @@
       if (timerId) clearTimeout(timerId);
       
       const card = document.getElementById('newsCard');
-      
-      // Step 1: Slide out to the left
       card.classList.add('slide-out');
 
       setTimeout(() => {
@@ -259,17 +256,15 @@
         descEl.style.transform = 'translateY(0px)';
         descEl.innerHTML = formatDescription(item.description);
 
-        // Instantly snap card to the right side (out of view) without animation
         card.classList.add('slide-in');
         card.classList.remove('slide-out');
-
-        // Force browser reflow, then slide smoothly back into center view
         void card.offsetWidth;
         card.classList.remove('slide-in');
 
+        // Get unique duration for this specific news item
         const currentStoryDuration = calculateReadingDuration(item.title, item.description);
 
-        // Delayed, gentle crawl for longer text (waits 5 seconds before moving)
+        // FULLY PROPORTIONAL CRAWL SPEED
         if (scrollTimeout) clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
           const textHeight = descEl.offsetHeight;
@@ -277,15 +272,18 @@
           
           if (textHeight > containerHeight) {
             const scrollDistance = textHeight - containerHeight + 25;
-            const scrollTime = 12; // 12 seconds smooth slow crawl
+            
+            // Proportional scroll time: scales cleanly based on how long the slide stays open
+            const scrollTime = Math.max(8, (currentStoryDuration - 6000) / 1000); 
+            
             descEl.style.transition = `transform ${scrollTime}s linear`;
             descEl.style.transform = `translateY(-${scrollDistance}px)`;
           }
-        }, 5000); // 5 second static pause at the start of every slide
+        }, 4500); // 4.5 second pause at the top before scrolling begins
 
         currentIndex = (currentIndex + 1) % items.length;
         timerId = setTimeout(showNextStory, currentStoryDuration);
-      }, 800); // Matches the slide-out transition duration
+      }, 800);
     }
 
     fetchRSS();
