@@ -290,7 +290,7 @@
               anchor: 'end',
               font: { size: 10, weight: 'bold' },
               color: '#334155',
-              formatter: (val) => (val !== null && val !== undefined) ? val.toFixed(1) : ''
+              formatter: (val) => (val !== null && val !== undefined) ? val.toFixed(1).replace('.', ',') : ''
             }
           },
           {
@@ -308,7 +308,7 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: { duration: 1500, easing: 'easeOutQuart' },
+        animation: { duration: 1200, easing: 'easeOutQuart' },
         plugins: {
           legend: {
             position: 'bottom',
@@ -339,7 +339,7 @@
           cutout: '75%',
           responsive: true,
           maintainAspectRatio: false,
-          animation: { duration: 1200 },
+          animation: { duration: 1000 },
           plugins: { legend: { display: false }, datalabels: { display: false } }
         }
       });
@@ -355,7 +355,7 @@
       return (valid.reduce((a, b) => a + Number(b), 0) / valid.length).toFixed(2);
     }
 
-    // Fetch Live CSV Data
+    // Fetch Live CSV Data (Handles commas, dots, and spaces)
     async function fetchLiveData() {
       try {
         const response = await fetch(GOOGLE_SHEET_CSV_URL + '&t=' + new Date().getTime());
@@ -368,7 +368,9 @@
           const cols = line.split(',');
           if (cols.length >= 2) {
             const weekNum = parseInt(cols[0].trim());
-            const val = parseFloat(cols[1].replace(',', '.').trim());
+            const cleanVal = cols[1].replace(/"/g, '').replace(',', '.').trim();
+            const val = parseFloat(cleanVal);
+
             if (weekNum >= 1 && weekNum <= 52 && !isNaN(val)) {
               parsedData[weekNum - 1] = val;
             }
@@ -391,7 +393,7 @@
       }
     }
 
-    // Fetch on load & auto-refresh every 5 minutes
+    // Initial Fetch & Auto Refresh every 30 seconds
     fetchLiveData();
     setInterval(fetchLiveData, 30 * 1000);
   </script>
