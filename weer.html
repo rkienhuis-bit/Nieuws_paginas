@@ -29,7 +29,7 @@
       z-index: 2;
       width: 100%;
       height: 100vh;
-      padding: 18px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -37,11 +37,11 @@
 
     /* FROSTED GLASS MIXIN */
     .glass-card {
-      background: rgba(20, 25, 40, 0.45);
+      background: rgba(20, 25, 40, 0.5);
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 20px;
+      border-radius: 18px;
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     }
 
@@ -61,7 +61,7 @@
     }
 
     .condition-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #ff3b30; /* Vivid Broadcast Red */
       margin-bottom: 4px;
@@ -70,7 +70,7 @@
     }
 
     .temp-large {
-      font-size: 38px;
+      font-size: 36px;
       font-weight: 800;
       line-height: 1;
       letter-spacing: -1px;
@@ -109,7 +109,24 @@
       color: rgba(255, 255, 255, 0.7);
       display: flex;
       flex-direction: column;
-      gap: 1px;
+      gap: 2px;
+      align-items: flex-end;
+    }
+
+    .sub-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sub-row svg {
+      width: 14px;
+      height: 14px;
+      stroke: #ffffff;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     /* HOURLY FORECAST STRIP */
@@ -123,11 +140,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
     }
 
     .hourly-time { font-size: 10px; color: rgba(255, 255, 255, 0.6); font-weight: 600; }
-    .hourly-icon { font-size: 14px; }
+    .hourly-icon svg { width: 18px; height: 18px; stroke: #ffffff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .hourly-temp { font-size: 12px; font-weight: 700; }
 
     /* STATS GRID (2x3 Layout) */
@@ -142,7 +159,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      height: 98px;
+      height: 96px;
     }
 
     .stat-header {
@@ -154,6 +171,16 @@
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .stat-header svg {
+      width: 13px;
+      height: 13px;
+      stroke: rgba(255, 255, 255, 0.8);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .stat-main-val {
@@ -170,35 +197,35 @@
     /* COMPASS */
     .compass-box {
       position: relative;
-      width: 35px;
-      height: 35px;
+      width: 34px;
+      height: 34px;
       border: 2px dashed rgba(255, 255, 255, 0.25);
       border-radius: 50%;
       align-self: flex-end;
-      margin-top: -26px;
+      margin-top: -25px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .compass-needle {
       width: 2.5px;
-      height: 16px;
+      height: 15px;
       background: #ff3b30;
       border-radius: 2px;
       transform-origin: bottom center;
       position: absolute;
-      bottom: 15px;
+      bottom: 14px;
     }
 
     /* SUN ARC */
     .sun-arc-container {
       position: relative;
-      height: 20px;
+      height: 18px;
       margin-top: 4px;
     }
     .sun-curve {
       width: 100%;
-      height: 12px;
+      height: 10px;
       border-bottom: 2px solid rgba(255,255,255,0.25);
       border-radius: 0 0 50% 50%;
     }
@@ -242,8 +269,14 @@
         <div class="date-text" id="dateText">--</div>
         <div class="time-text" id="timeText">--:--</div>
         <div class="hero-sub-info">
-          <span id="subCond">☁️ --</span>
-          <span id="subRain">🌧️ Regen - 0%</span>
+          <div class="sub-row">
+            <span id="subCondText">--</span>
+            <span id="subCondIcon"></span>
+          </div>
+          <div class="sub-row">
+            <span id="subRainText">Regen - 0%</span>
+            <svg viewBox="0 0 24 24"><path d="M12 2v6m0 8v4M4.93 10.93l4.24 4.24m5.66 0l4.24-4.24"/></svg>
+          </div>
         </div>
       </div>
     </div>
@@ -257,16 +290,22 @@
     <div class="stats-grid">
       <!-- LUCHTVOCHTIGHEID -->
       <div class="glass-card stat-card">
-        <div class="stat-header">💧 Luchtvochtigheid</div>
+        <div class="stat-header">
+          <svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+          Luchtvochtigheid
+        </div>
         <div>
           <div class="stat-main-val" id="humidityVal">--%</div>
-          <div class="stat-footer-text" id="dewPoint">Relatieve luchtvochtigheid</div>
+          <div class="stat-footer-text">Relatieve luchtvochtigheid</div>
         </div>
       </div>
 
       <!-- NEERSLAG -->
       <div class="glass-card stat-card">
-        <div class="stat-header">🌧️ Neerslagkans</div>
+        <div class="stat-header">
+          <svg viewBox="0 0 24 24"><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/></svg>
+          Neerslagkans
+        </div>
         <div>
           <div class="stat-main-val" id="precipVal">--%</div>
           <div class="stat-footer-text">Verwachting vandaag</div>
@@ -275,7 +314,10 @@
 
       <!-- WIND -->
       <div class="glass-card stat-card">
-        <div class="stat-header">💨 Wind</div>
+        <div class="stat-header">
+          <svg viewBox="0 0 24 24"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19 12H2"/></svg>
+          Wind
+        </div>
         <div>
           <div class="stat-main-val" id="windVal" style="font-size: 18px;">-- km/h</div>
           <div class="stat-footer-text" id="windText">Richting: --</div>
@@ -287,7 +329,10 @@
 
       <!-- DAGLICHT -->
       <div class="glass-card stat-card">
-        <div class="stat-header">☀️ Daglicht</div>
+        <div class="stat-header">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41m12.02-12.02l-1.41 1.41"/></svg>
+          Daglicht
+        </div>
         <div>
           <div class="sun-arc-container">
             <div class="sun-curve"></div>
@@ -301,7 +346,10 @@
 
       <!-- ZICHT -->
       <div class="glass-card stat-card">
-        <div class="stat-header">👁️ Zicht</div>
+        <div class="stat-header">
+          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Zicht
+        </div>
         <div>
           <div class="stat-main-val">10 km</div>
           <div class="stat-footer-text">Uitstekend zicht</div>
@@ -310,7 +358,10 @@
 
       <!-- LUCHTKWALITEIT -->
       <div class="glass-card stat-card">
-        <div class="stat-header">🍃 Luchtkwaliteit</div>
+        <div class="stat-header">
+          <svg viewBox="0 0 24 24"><path d="M2 12h10m4 0h4M4 16h6m4 0h6M6 8h4m4 0h6"/></svg>
+          Luchtkwaliteit
+        </div>
         <div>
           <div class="stat-main-val" style="font-size: 20px;">3 <span style="font-size: 11px; font-weight: 500; color:#fbc531;">Matig</span></div>
           <div class="aqi-bar">
@@ -326,11 +377,19 @@
     const LON = 6.5786;
     const API_URL = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,weather_code&daily=sunrise,sunset,precipitation_probability_max&timezone=Europe%2FAmsterdam`;
 
-    // CANVAS ATMOSPHERIC ANIMATION ENGINE
+    // VECTOR ICON SVGS
+    const icons = {
+      sun: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41m12.02-12.02l-1.41 1.41"/></svg>',
+      cloud: '<svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>',
+      rain: '<svg viewBox="0 0 24 24"><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/><path d="M8 19v2m4-2v2m4-2v2"/></svg>',
+      thunder: '<svg viewBox="0 0 24 24"><path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9M13 11l-4 6h6l-4 6"/></svg>',
+      mist: '<svg viewBox="0 0 24 24"><path d="M3 10h18M3 14h18M5 18h14M7 6h10"/></svg>'
+    };
+
     const canvas = document.getElementById('weatherCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
-    let activeAtmosphere = 'cloud'; // 'sun', 'rain', 'cloud', 'mist'
+    let activeAtmosphere = 'cloud';
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
@@ -355,7 +414,6 @@
     }
 
     function drawAtmosphere() {
-      // Dynamic Apple-style background color gradients based on weather
       const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
       if (activeAtmosphere === 'sun') {
         grad.addColorStop(0, '#26190c');
@@ -364,7 +422,6 @@
         grad.addColorStop(0, '#0c1626');
         grad.addColorStop(1, '#060a12');
       } else {
-        // Deep atmospheric moody blue/slate (Cloudy / Mist)
         grad.addColorStop(0, '#162238');
         grad.addColorStop(0.5, '#0e1524');
         grad.addColorStop(1, '#080c14');
@@ -372,7 +429,6 @@
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Render smooth ambient moving light particles/clouds
       if (activeAtmosphere === 'rain') {
         ctx.strokeStyle = 'rgba(180, 220, 255, 0.5)';
         ctx.lineWidth = 1.5;
@@ -410,24 +466,14 @@
     setInterval(updateClockAndDate, 1000);
     updateClockAndDate();
 
-    function getWeatherEmoji(code) {
-      if (code === 0) return '☀️';
-      if (code >= 1 && code <= 3) return '☁️';
-      if (code >= 45 && code <= 48) return { label: 'Mistig', type: 'mist' }; // handled below
-      if (code >= 51 && code <= 67) return '🌧️';
-      if (code >= 80 && code <= 82) return '🌦️';
-      if (code >= 95) return '⚡';
-      return '☁️';
-    }
-
     function parseWeather(code) {
-      if (code === 0) return { label: 'Zonnig', type: 'sun', emoji: '☀️' };
-      if (code >= 1 && code <= 3) return { label: 'Bewolkt', type: 'cloud', emoji: '☁️' };
-      if (code >= 45 && code <= 48) return { label: 'Mistig', type: 'mist', emoji: '🌫️' };
-      if (code >= 51 && code <= 67) return { label: 'Regen', type: 'rain', emoji: '🌧️' };
-      if (code >= 80 && code <= 82) return { label: 'Buien', type: 'rain', emoji: '🌦️' };
-      if (code >= 95) return { label: 'Onweer', type: 'rain', emoji: '⚡' };
-      return { label: 'Bewolkt', type: 'cloud', emoji: '☁️' };
+      if (code === 0) return { label: 'Zonnig', type: 'sun', icon: icons.sun };
+      if (code >= 1 && code <= 3) return { label: 'Bewolkt', type: 'cloud', icon: icons.cloud };
+      if (code >= 45 && code <= 48) return { label: 'Mistig', type: 'mist', icon: icons.mist };
+      if (code >= 51 && code <= 67) return { label: 'Regen', type: 'rain', icon: icons.rain };
+      if (code >= 80 && code <= 82) return { label: 'Buien', type: 'rain', icon: icons.rain };
+      if (code >= 95) return { label: 'Onweer', type: 'thunder', icon: icons.thunder };
+      return { label: 'Bewolkt', type: 'cloud', icon: icons.cloud };
     }
 
     async function fetchWeatherData() {
@@ -443,10 +489,11 @@
         document.getElementById('condMain').innerText = weatherInfo.label;
         document.getElementById('tempMain').innerText = `${Math.round(cur.temperature_2m)}°C`;
         document.getElementById('feelsMain').innerText = `GEVOELSTEMPERATUUR: ${Math.round(cur.apparent_temperature)}°C`;
-        document.getElementById('subCond').innerText = `${weatherInfo.emoji} ${weatherInfo.label}`;
+        document.getElementById('subCondText').innerText = weatherInfo.label;
+        document.getElementById('subCondIcon').innerHTML = weatherInfo.icon;
         
         const precipProb = data.daily?.precipitation_probability_max?.[0] ?? 0;
-        document.getElementById('subRain').innerText = `🌧️ Regen - ${precipProb}%`;
+        document.getElementById('subRainText').innerText = `Regen - ${precipProb}%`;
         document.getElementById('precipVal').innerText = `${precipProb}%`;
 
         document.getElementById('humidityVal').innerText = `${cur.relative_humidity_2m}%`;
@@ -475,7 +522,7 @@
             hourlyStrip.innerHTML += `
               <div class="hourly-col">
                 <span class="hourly-time">${timeLabel}</span>
-                <span class="hourly-icon">${hInfo.emoji}</span>
+                <span class="hourly-icon">${hInfo.icon}</span>
                 <span class="hourly-temp">${tempVal}</span>
               </div>
             `;
