@@ -14,12 +14,18 @@
       color: #ffffff;
     }
 
-    /* SUBTLE AMBIENT GRADIENT */
+    /* BACKGROUND AMBIENT GRADIENT & CONFETTI CANVAS */
     .bg-gradient {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
       background: radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.04) 0%, rgba(11, 15, 25, 1) 70%);
       z-index: 1;
+      pointer-events: none;
+    }
+    #confettiCanvas {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 3;
       pointer-events: none;
     }
 
@@ -110,30 +116,26 @@
       transition: background 0.2s;
     }
 
-    .person-row:hover {
-      background: rgba(255, 255, 255, 0.04);
-    }
-
-    /* STACKED FIRST & LAST NAME */
+    /* REVERSED NAME HIERARCHY (FIRST NAME BIG, LAST NAME SMALL) */
     .name-stack {
       display: flex;
       flex-direction: column;
     }
 
     .first-name {
-      font-size: 15px;
-      font-weight: 400;
-      color: #94a3b8;
+      font-size: 18px;
+      font-weight: 700;
+      color: #f1f5f9;
       line-height: 1.2;
     }
 
     .last-name {
-      font-size: 18px;
-      font-weight: 700;
-      color: #f1f5f9;
-      text-transform: uppercase;
+      font-size: 13px;
+      font-weight: 500;
+      color: #64748b;
       letter-spacing: 0.5px;
       line-height: 1.2;
+      margin-top: 2px;
     }
 
     .date-number {
@@ -143,13 +145,28 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* TODAY CELEBRATION FEATURE VIEW */
+    /* TODAY CELEBRATION FEATURE VIEW (WITH TOP ACCENT LINE & BOUNCE ANIMATION) */
     .celebration-feature {
       width: 100%;
       max-width: 650px;
       text-align: center;
       padding: 60px 40px;
       background: radial-gradient(circle at 50% 30%, rgba(245, 158, 11, 0.08) 0%, rgba(15, 23, 42, 0) 70%);
+      position: relative;
+      animation: bounceIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    /* TOP ACCENT LINE ABOVE THE CELEBRATION BOX */
+    .celebration-feature::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #f59e0b, transparent);
+      border-radius: 2px;
     }
 
     .celeb-tag {
@@ -162,11 +179,11 @@
     }
 
     .celeb-name-large {
-      font-size: 56px;
+      font-size: 64px;
       font-weight: 800;
       color: #ffffff;
       letter-spacing: -1px;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
       line-height: 1.1;
     }
 
@@ -176,12 +193,19 @@
       font-weight: 400;
       line-height: 1.5;
     }
+
+    @keyframes bounceIn {
+      0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+      60% { opacity: 1; transform: scale(1.02) translateY(-5px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
   </style>
 </head>
 <body>
 
   <div class="test-banner" id="testBanner">Test Mode Actief (?test=true)</div>
   <div class="bg-gradient"></div>
+  <canvas id="confettiCanvas"></canvas>
 
   <div class="screen-wrapper">
     <!-- HEADER -->
@@ -254,10 +278,62 @@
 
     function splitName(fullName) {
       const parts = fullName.trim().split(' ');
-      if (parts.length === 1) return { first: '', last: parts[0] };
+      if (parts.length === 1) return { first: parts[0], last: '' };
       const last = parts.pop();
       const first = parts.join(' ');
       return { first, last };
+    }
+
+    // LIGHTWEIGHT CONFETTI ENGINE FOR BIRTHDAY SLIDE
+    function triggerConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let particles = [];
+      const colors = ['#f59e0b', '#38bdf8', '#f43f5e', '#a855f7', '#10b981'];
+
+      for (let i = 0; i < 70; i++) {
+        particles.push({
+          x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+          y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 12,
+          vy: Math.random() * -14 - 4,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 10,
+          gravity: 0.35,
+          opacity: 1
+        });
+      }
+
+      function update() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += p.gravity;
+          p.rotation += p.rotSpeed;
+          p.opacity -= 0.008;
+
+          if (p.opacity > 0) {
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.globalAlpha = p.opacity;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+            ctx.restore();
+          }
+        });
+
+        if (particles.some(p => p.opacity > 0)) {
+          requestAnimationFrame(update);
+        }
+      }
+      update();
     }
 
     function renderPage() {
@@ -269,7 +345,6 @@
       }
 
       const now = new Date();
-      // If test mode is on, force a date where people have birthdays (e.g., Nov 12 has Gilbert Rada & Desiree Wissink)
       const currentDay = isTestMode ? 12 : now.getDate();
       const currentMonth = isTestMode ? 11 : now.getMonth() + 1;
 
@@ -281,7 +356,7 @@
 
       if (todaysBirthdays.length > 0) {
         document.getElementById('mainTitle').innerText = "Jarig Vandaag";
-        document.getElementById('subTitle').innerText = "Special Occasion";
+        document.getElementById('subTitle').innerText = "Viering";
 
         let html = '';
         todaysBirthdays.forEach(person => {
@@ -290,12 +365,15 @@
           html += `
             <div class="celebration-feature">
               <div class="celeb-tag">Vandaag in de spotlight</div>
-              <div class="celeb-name-large">${first}<br><span style="color:#f59e0b;">${last}</span></div>
+              <div class="celeb-name-large">${first} <span style="color:#f59e0b; display:block; font-size:42px; margin-top:4px;">${last}</span></div>
               <div class="celeb-wish-text">${wish} We wensen je een fantastisch jaar toe!</div>
             </div>
           `;
         });
         contentArea.innerHTML = html;
+        
+        // Trigger confetti burst on load
+        setTimeout(triggerConfetti, 200);
       } else {
         document.getElementById('mainTitle').innerText = "Verjaardagen deze maand";
         document.getElementById('subTitle').innerText = dutchMonths[currentMonth - 1].toUpperCase();
