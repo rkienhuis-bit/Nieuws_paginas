@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <title>NOS Binnenland</title>
+  <title>NOS Buitenland</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -12,95 +12,179 @@
       overflow: hidden;
       height: 100vh;
       display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .news-card {
+      position: relative;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       width: 100%;
       height: 100vh;
-      background: rgba(17, 17, 17, 0.85);
+      background: rgba(17, 17, 17, 0.92);
       overflow: hidden;
+      transform: translateX(0);
+      transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
-    /* AFBEELDING: 30% van het scherm in plaats van 50% */
-    .news-image-container {
-      width: 30%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #000;
-      flex-shrink: 0;
+    .news-card.slide-out {
+      transform: translateX(-100vw);
     }
-    .news-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+
+    .news-card.slide-in {
+      transform: translateX(100vw);
+      transition: none;
     }
 
     .news-content {
-      width: 70%;
-      padding: 50px;
+      width: 100%;
+      height: 100vh;
+      padding: 50px 70px 45px 70px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-    }
-    .news-category {
-      color: #e30613;
-      font-size: 22px;
-      font-weight: bold;
-      text-transform: uppercase;
-      margin-bottom: 15px;
-      letter-spacing: 1.5px;
-    }
-    .news-title {
-      font-size: 42px;
-      font-weight: 700;
-      line-height: 1.25;
-      margin-bottom: 20px;
-      color: #ffffff;
-    }
-    .news-description {
-      font-size: 26px;
-      line-height: 1.45;
-      color: #dddddd;
-      display: -webkit-box;
-      -webkit-line-clamp: 4;
-      -webkit-box-orient: vertical;
+      justify-content: flex-start;
       overflow: hidden;
+      position: relative;
     }
 
-    .fade {
-      transition: opacity 0.8s ease-in-out;
-      opacity: 1;
+    .news-category {
+      color: #e30613;
+      font-size: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
     }
-    .fade-out {
-      opacity: 0;
+
+    .news-title {
+      font-size: 38px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 25px;
+      color: #ffffff;
+      max-width: calc(100% - 310px);
     }
+
+    .news-image-circle {
+      position: absolute;
+      top: 45px;
+      right: 70px;
+      width: 270px;
+      height: 270px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 5px solid #e30613;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      background-color: #0b0b0b;
+      z-index: 5;
+    }
+
+    .news-image-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+    }
+
+    .news-desc-wrapper {
+      position: relative;
+      flex-grow: 1;
+      overflow: hidden;
+      max-height: 60vh;
+      margin-bottom: 20px;
+    }
+
+    .news-description {
+      position: absolute;
+      width: 100%;
+      padding-right: 320px;
+      font-size: 21px;
+      line-height: 1.6;
+      color: #dddddd;
+      top: 0;
+      transition: transform linear;
+    }
+
+    .news-description p.lead-paragraph {
+      font-size: 23px;
+      font-weight: 600;
+      line-height: 1.5;
+      color: #ffffff;
+      margin-bottom: 18px;
+      border-left: 4px solid #e30613;
+      padding-left: 14px;
+    }
+
+    .news-description p.body-paragraph {
+      margin-bottom: 16px;
+      color: #cccccc;
+    }
+
+    .news-description strong, 
+    .news-description b {
+      color: #ffffff;
+      font-weight: 800;
+    }
+
+    .news-description h3.sub-heading {
+      font-size: 23px;
+      font-weight: 700;
+      color: #e30613;
+      margin-top: 18px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .qr-container {
+      position: absolute;
+      bottom: 45px;
+      right: 70px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 10;
+    }
+
+    .qr-code { width: 80px; height: 80px; }
+    .qr-label { color: #111; font-size: 10px; font-weight: 700; margin-top: 5px; letter-spacing: 0.5px; }
   </style>
 </head>
 <body>
-
-  <div class="news-card fade" id="newsCard">
-    <div class="news-image-container" id="imgContainer">
-      <img id="newsImg" class="news-image" src="" alt="Nieuws afbeelding" style="display:none;" />
-    </div>
+  <div class="news-card" id="newsCard">
     <div class="news-content">
-      <div class="news-category" id="newsCat">BINNENLAND</div>
+      <div class="news-image-circle" id="imgContainer" style="display:none;">
+        <img id="newsImg" src="" alt="Afbeelding" />
+      </div>
+      <div class="news-category" id="newsCat">BUITENLAND</div>
       <h1 class="news-title" id="newsTitle">NOS Nieuws laden...</h1>
-      <p class="news-description" id="newsDesc"></p>
+      <div class="news-desc-wrapper" id="descWrapper">
+        <div class="news-description" id="newsDesc"></div>
+      </div>
+      <div class="qr-container" id="qrContainer" style="display:none;">
+        <img id="qrImg" class="qr-code" src="" alt="Scan QR" />
+        <span class="qr-label">LEES MEER</span>
+      </div>
     </div>
   </div>
 
   <script>
     const RSS_URL = 'https://feeds.nos.nl/nosnieuwsbuitenland'; 
-const CATEGORY_LABEL = 'BUITENLAND';
-    const DISPLAY_DURATION = 15000; // 15 seconden per bericht
+    const CATEGORY_LABEL = 'BUITENLAND';
+    const STORAGE_KEY_INDEX = 'nos_cat_index_buitenland';
+    const STORAGE_KEY_ITEMS = 'nos_cat_items_buitenland';
 
     const API_URL = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS_URL);
     let items = [];
     let currentIndex = 0;
+    let timerId = null;
+    let scrollTimeout = null;
+
+    const savedIndex = localStorage.getItem(STORAGE_KEY_INDEX);
+    if (savedIndex !== null) { currentIndex = parseInt(savedIndex, 10); }
 
     function extractImage(item) {
       if (item.thumbnail) return item.thumbnail;
@@ -109,10 +193,100 @@ const CATEGORY_LABEL = 'BUITENLAND';
       return imgMatch ? imgMatch[1] : null;
     }
 
-    function cleanText(html) {
+    function formatDescription(html) {
+      if (!html) return '';
       const div = document.createElement("div");
-      div.innerHTML = html || "";
-      return div.textContent || div.innerText || "";
+      div.innerHTML = html;
+      div.querySelectorAll("script, style, a").forEach(el => {
+        if (el.tagName.toLowerCase() === 'a') { el.replaceWith(el.textContent); } else { el.remove(); }
+      });
+      let elements = Array.from(div.querySelectorAll("p, h3, h4, li"));
+      if (elements.length === 0) {
+        const rawLines = div.innerHTML.split(/<br\s*\/?>\s*<br\s*\/?>/i);
+        return rawLines.map((line, index) => {
+          const trimmed = line.trim();
+          if (!trimmed) return '';
+          return index === 0 ? `<p class="lead-paragraph">${trimmed}</p>` : `<p class="body-paragraph">${trimmed}</p>`;
+        }).join('');
+      }
+      return elements.map((el, index) => {
+        const innerHTML = el.innerHTML.trim();
+        if (!innerHTML) return '';
+        const tag = el.tagName.toLowerCase();
+        if (tag === 'h3' || tag === 'h4') return `<h3 class="sub-heading">${innerHTML}</h3>`;
+        if (index === 0) return `<p class="lead-paragraph">${innerHTML}</p>`;
+        return `<p class="body-paragraph">${innerHTML}</p>`;
+      }).join('');
+    }
+
+    function calculateReadingDuration(title, descriptionHtml) {
+      const div = document.createElement("div");
+      div.innerHTML = descriptionHtml;
+      const plainText = div.textContent || div.innerText || "";
+      const wordCount = (title + " " + plainText).split(/\s+/).length;
+      let durationMs = 12000 + (wordCount * 300); 
+      if (durationMs < 14000) durationMs = 14000;
+      if (durationMs > 35000) durationMs = 35000;
+      return durationMs;
+    }
+
+    function renderCurrentStory() {
+      if (items.length === 0) return;
+      if (timerId) clearTimeout(timerId);
+      if (currentIndex >= items.length) currentIndex = 0;
+
+      const card = document.getElementById('newsCard');
+      card.classList.add('slide-out');
+
+      setTimeout(() => {
+        const item = items[currentIndex];
+        const imgUrl = extractImage(item);
+        const imgEl = document.getElementById('newsImg');
+        const imgContainer = document.getElementById('imgContainer');
+        const descEl = document.getElementById('newsDesc');
+        const descWrapper = document.getElementById('descWrapper');
+        const qrContainer = document.getElementById('qrContainer');
+        const qrImg = document.getElementById('qrImg');
+
+        if (imgUrl) { imgEl.src = imgUrl; imgContainer.style.display = 'block'; } 
+        else { imgContainer.style.display = 'none'; }
+
+        const storyUrl = item.link || item.guid;
+        if (storyUrl) {
+          qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(storyUrl);
+          qrContainer.style.display = 'flex';
+        } else { qrContainer.style.display = 'none'; }
+
+        document.getElementById('newsCat').innerText = CATEGORY_LABEL;
+        document.getElementById('newsTitle').innerText = item.title;
+        
+        descEl.style.transition = 'none';
+        descEl.style.transform = 'translateY(0px)';
+        descEl.innerHTML = formatDescription(item.description);
+
+        card.classList.add('slide-in');
+        card.classList.remove('slide-out');
+        void card.offsetWidth;
+        card.classList.remove('slide-in');
+
+        const currentStoryDuration = calculateReadingDuration(item.title, item.description);
+
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          const textHeight = descEl.offsetHeight;
+          const containerHeight = descWrapper.offsetHeight;
+          if (textHeight > containerHeight) {
+            const scrollDistance = textHeight - containerHeight + 25;
+            const scrollTime = Math.max(8, (currentStoryDuration - 6000) / 1000); 
+            descEl.style.transition = `transform ${scrollTime}s linear`;
+            descEl.style.transform = `translateY(-${scrollDistance}px)`;
+          }
+        }, 4500);
+
+        currentIndex = (currentIndex + 1) % items.length;
+        localStorage.setItem(STORAGE_KEY_INDEX, currentIndex);
+        timerId = setTimeout(renderCurrentStory, currentStoryDuration);
+      }, 800);
     }
 
     async function fetchRSS() {
@@ -121,45 +295,21 @@ const CATEGORY_LABEL = 'BUITENLAND';
         const data = await response.json();
         if (data.status === 'ok' && data.items.length > 0) {
           items = data.items;
-          showNextStory();
-        }
-      } catch (err) {
-        document.getElementById('newsTitle').innerText = 'Fout bij het laden van het nieuws.';
-      }
+          localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(items));
+          if (!timerId) renderCurrentStory();
+        } else { loadCachedData(); }
+      } catch (err) { loadCachedData(); }
     }
 
-    function showNextStory() {
-      if (items.length === 0) return;
-      const card = document.getElementById('newsCard');
-      card.classList.add('fade-out');
-
-      setTimeout(() => {
-        const item = items[currentIndex];
-        const imgUrl = extractImage(item);
-        const imgEl = document.getElementById('newsImg');
-
-        if (imgUrl) {
-          imgEl.src = imgUrl;
-          imgEl.style.display = 'block';
-          document.getElementById('imgContainer').style.display = 'block';
-        } else {
-          imgEl.style.display = 'none';
-          document.getElementById('imgContainer').style.display = 'none';
-        }
-
-        document.getElementById('newsCat').innerText = CATEGORY_LABEL;
-        document.getElementById('newsTitle').innerText = item.title;
-        document.getElementById('newsDesc').innerText = cleanText(item.description);
-
-        card.classList.remove('fade-out');
-        currentIndex = (currentIndex + 1) % items.length;
-      }, 800);
+    function loadCachedData() {
+      const cached = localStorage.getItem(STORAGE_KEY_ITEMS);
+      if (cached) { items = JSON.parse(cached); if (!timerId) renderCurrentStory(); }
+      else { document.getElementById('newsTitle').innerText = 'Fout bij het laden van het nieuws.'; }
     }
 
+    loadCachedData();
     fetchRSS();
-    setInterval(showNextStory, DISPLAY_DURATION);
-    setInterval(fetchRSS, 15 * 60 * 1000);
+    setInterval(fetchRSS, 10 * 60 * 1000);
   </script>
-
 </body>
 </html>
