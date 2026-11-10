@@ -35,7 +35,6 @@
       padding: 24px;
     }
 
-    /* Animated Header */
     header {
       text-align: center;
       margin-bottom: 16px;
@@ -49,7 +48,6 @@
       letter-spacing: -0.5px;
     }
 
-    /* Main Container */
     main {
       flex: 1;
       display: flex;
@@ -57,7 +55,7 @@
       gap: 20px;
     }
 
-    /* Top Chart Card */
+    /* Top Chart Container with Subtle Idle Border Animation */
     .top-chart-container {
       flex: 3;
       background: var(--card-bg);
@@ -67,6 +65,7 @@
       border: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
+      position: relative;
       animation: fadeInUp 0.8s ease-out 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
@@ -85,6 +84,7 @@
       gap: 20px;
     }
 
+    /* Cards with Idle Gradient Border Effect */
     .card {
       background: var(--card-bg);
       border-radius: 16px;
@@ -95,17 +95,25 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle Idle Top Highlight Bar */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.4), transparent);
+      animation: idleShimmer 6s infinite linear;
     }
 
     .card:nth-child(1) { animation: fadeInUp 0.8s ease-out 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
     .card:nth-child(2) { animation: fadeInUp 0.8s ease-out 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
     .card:nth-child(3) { animation: fadeInUp 0.8s ease-out 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
-
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.07);
-    }
 
     .card-title {
       font-size: 1.15rem;
@@ -137,10 +145,12 @@
       pointer-events: none;
     }
 
+    /* Idle Breathing Effect on Percentage Text */
     .donut-percentage {
       font-size: 1.45rem;
       font-weight: 700;
       color: #0f172a;
+      animation: idlePulse 4s ease-in-out infinite;
     }
 
     .legend-container {
@@ -162,7 +172,7 @@
       border-radius: 50%;
     }
 
-    /* Keyframe Animations */
+    /* Keyframes */
     @keyframes fadeInDown {
       from { opacity: 0; transform: translateY(-15px); }
       to { opacity: 1; transform: translateY(0); }
@@ -173,41 +183,17 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Quick Update Modal */
-    #editModal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(4px);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
+    /* Subtle Idle Animations */
+    @keyframes idleShimmer {
+      0% { left: -100%; }
+      50% { left: 100%; }
+      100% { left: 100%; }
     }
 
-    .modal-content {
-      background: white;
-      padding: 24px;
-      border-radius: 12px;
-      width: 500px;
-      max-width: 90%;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    @keyframes idlePulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.03); opacity: 0.95; }
     }
-
-    .modal-content h3 { margin-bottom: 12px; }
-    .modal-content textarea {
-      width: 100%; height: 120px;
-      margin: 10px 0; padding: 10px;
-      border: 1px solid #cbd5e1; border-radius: 6px;
-      font-family: monospace; font-size: 0.9rem;
-    }
-
-    .btn-group { display: flex; justify-content: flex-end; gap: 10px; }
-    .btn {
-      padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600;
-    }
-    .btn-primary { background: var(--line-color); color: white; }
-    .btn-secondary { background: #e2e8f0; color: #334155; }
   </style>
 </head>
 <body>
@@ -224,7 +210,7 @@
     </div>
 
     <div class="bottom-cards-container">
-      <!-- 2024 Card -->
+      <!-- 2024 -->
       <div class="card">
         <div>
           <div class="card-title">Gemiddelde LBH 2024</div>
@@ -242,7 +228,7 @@
         </div>
       </div>
 
-      <!-- 2025 Card -->
+      <!-- 2025 -->
       <div class="card">
         <div>
           <div class="card-title">Gemiddelde LBH 2025</div>
@@ -260,7 +246,7 @@
         </div>
       </div>
 
-      <!-- 2026 Card -->
+      <!-- 2026 -->
       <div class="card">
         <div>
           <div class="card-title">Gemiddelde LBH 2026</div>
@@ -269,7 +255,7 @@
         <div class="donut-wrapper">
           <canvas id="donut2026"></canvas>
           <div class="donut-center-text">
-            <div class="donut-percentage" id="val2026">94,58%</div>
+            <div class="donut-percentage" id="val2026">--%</div>
           </div>
         </div>
         <div class="legend-container">
@@ -280,31 +266,14 @@
     </div>
   </main>
 
-  <!-- Hidden Edit Modal -->
-  <div id="editModal">
-    <div class="modal-content">
-      <h3>Quick Data Update</h3>
-      <p style="font-size: 0.85rem; color: #64748b;">Paste comma-separated weekly percentages for 2026 (weeks 1 to 52):</p>
-      <textarea id="weeklyDataInput"></textarea>
-      <div class="btn-group">
-        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-        <button class="btn btn-primary" onclick="saveData()">Save & Update</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     Chart.register(ChartDataLabels);
 
-    // Default Weekly Values
-    let weeklyValues = JSON.parse(localStorage.getItem('yodeck_2026_data')) || [
-      98.1, 99.3, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,
-      100.0, 100.0, 99.5, 98.6, 100.0, 97.8, 100.0, 100.0, 92.2, 92.0,
-      98.0, 100.0, 89.8, 94.1, 85.9, 98.3, 99.2, 52.4, 92.0, 90.5,
-      100.0, 98.7, 95.8, 98.1, 97.5, 80.6, 87.1, 84.0, null, null,
-      null, null, null, null, null, null, null, null, null, null, null, null
-    ];
+    // PASTE YOUR PUBLISHED GOOGLE SHEET CSV URL HERE
+    const GOOGLE_SHEET_CSV_URL = 'YOUR_PUBLISHED_CSV_URL_HERE';
 
+    // Default Fallback Data (used if Google Sheet is unreachable)
+    let weeklyValues = Array(52).fill(null);
     const weekLabels = Array.from({ length: 52 }, (_, i) => i + 1);
 
     // Setup Line Chart
@@ -346,10 +315,7 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: {
-          duration: 1800,
-          easing: 'easeOutQuart'
-        },
+        animation: { duration: 1500, easing: 'easeOutQuart' },
         plugins: {
           legend: {
             position: 'bottom',
@@ -357,21 +323,13 @@
           }
         },
         scales: {
-          x: {
-            grid: { display: false },
-            ticks: { font: { size: 10 } }
-          },
-          y: {
-            min: 50,
-            max: 105,
-            ticks: { stepSize: 10 }
-          }
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+          y: { min: 50, max: 105, ticks: { stepSize: 10 } }
         }
       }
     });
 
-    // Donut Chart Creator
-    let donutChart2026;
+    // Donut Chart Setup
     function createDonutChart(elementId, percentage) {
       const ctx = document.getElementById(elementId).getContext('2d');
       return new Chart(ctx, {
@@ -379,7 +337,7 @@
         data: {
           labels: ['Verzonden', 'Niet verzonden'],
           datasets: [{
-            data: [percentage, (100 - percentage).toFixed(2)],
+            data: [percentage, Math.max(0, 100 - percentage)],
             backgroundColor: ['#2563eb', '#f97316'],
             borderWidth: 0
           }]
@@ -388,7 +346,7 @@
           cutout: '75%',
           responsive: true,
           maintainAspectRatio: false,
-          animation: { duration: 1500, easing: 'easeOutCubic' },
+          animation: { duration: 1200 },
           plugins: { legend: { display: false }, datalabels: { display: false } }
         }
       });
@@ -396,50 +354,56 @@
 
     createDonutChart('donut2024', 99.35);
     createDonutChart('donut2025', 98.74);
-    donutChart2026 = createDonutChart('donut2026', calculateAverage(weeklyValues));
+    const donutChart2026 = createDonutChart('donut2026', 0);
 
-    // Calculate Average of Valid Weeks
     function calculateAverage(data) {
-      const validPoints = data.filter(v => v !== null && v !== undefined && !isNaN(v));
-      if (validPoints.length === 0) return 0;
-      const sum = validPoints.reduce((a, b) => a + Number(b), 0);
-      return (sum / validPoints.length).toFixed(2);
+      const valid = data.filter(v => v !== null && v !== undefined && !isNaN(v));
+      if (valid.length === 0) return 0;
+      return (valid.reduce((a, b) => a + Number(b), 0) / valid.length).toFixed(2);
     }
 
-    function update2026Average() {
-      const avg = calculateAverage(weeklyValues);
-      document.getElementById('val2026').innerText = `${avg.replace('.', ',')}%`;
-      donutChart2026.data.datasets[0].data = [avg, (100 - avg).toFixed(2)];
-      donutChart2026.update();
-    }
+    // Fetch Live CSV Data
+    async function fetchLiveData() {
+      if (!GOOGLE_SHEET_CSV_URL || GOOGLE_SHEET_CSV_URL.includes('YOUR_PUBLISHED_CSV_URL_HERE')) return;
 
-    // Modal Edit Shortcuts (Press 'E' on keyboard to update)
-    window.addEventListener('keydown', (e) => {
-      if (e.key.toLowerCase() === 'e') {
-        document.getElementById('weeklyDataInput').value = weeklyValues.join(', ');
-        document.getElementById('editModal').style.display = 'flex';
+      try {
+        const response = await fetch(GOOGLE_SHEET_CSV_URL + '?t=' + new Date().getTime());
+        const text = await response.text();
+        
+        // Parse CSV Lines
+        const lines = text.split('\n').slice(1); // Skip header row
+        const parsedData = Array(52).fill(null);
+
+        lines.forEach(line => {
+          const cols = line.split(',');
+          if (cols.length >= 2) {
+            const weekNum = parseInt(cols[0].trim());
+            const val = parseFloat(cols[1].replace(',', '.').trim());
+            if (weekNum >= 1 && weekNum <= 52 && !isNaN(val)) {
+              parsedData[weekNum - 1] = val;
+            }
+          }
+        });
+
+        weeklyValues = parsedData;
+
+        // Update Charts
+        lineChart.data.datasets[0].data = weeklyValues;
+        lineChart.update();
+
+        const avg = calculateAverage(weeklyValues);
+        document.getElementById('val2026').innerText = `${avg.replace('.', ',')}%`;
+        donutChart2026.data.datasets[0].data = [avg, (100 - avg).toFixed(2)];
+        donutChart2026.update();
+
+      } catch (err) {
+        console.error('Failed to load Google Sheet data:', err);
       }
-    });
-
-    function closeModal() {
-      document.getElementById('editModal').style.display = 'none';
     }
 
-    function saveData() {
-      const raw = document.getElementById('weeklyDataInput').value;
-      const parsed = raw.split(',').map(item => {
-        const val = parseFloat(item.trim());
-        return isNaN(val) ? null : val;
-      });
-
-      weeklyValues = parsed;
-      localStorage.setItem('yodeck_2026_data', JSON.stringify(weeklyValues));
-      
-      lineChart.data.datasets[0].data = weeklyValues;
-      lineChart.update();
-      update2026Average();
-      closeModal();
-    }
+    // Initial Fetch & Auto Refresh every 5 minutes
+    fetchLiveData();
+    setInterval(fetchLiveData, 5 * 60 * 1000);
   </script>
 </body>
 </html>
