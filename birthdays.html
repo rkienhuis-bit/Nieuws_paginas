@@ -14,11 +14,12 @@
       color: #ffffff;
     }
 
-    /* BACKGROUND AMBIENT GRADIENT & CONFETTI CANVAS */
+    /* VIBRANT AMBIENT BACKGROUND & CONFETTI CANVAS */
     .bg-gradient {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.04) 0%, rgba(11, 15, 25, 1) 70%);
+      background: radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.08) 0%, rgba(11, 15, 25, 1) 70%),
+                  radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.06) 0%, rgba(11, 15, 25, 1) 70%);
       z-index: 1;
       pointer-events: none;
     }
@@ -60,7 +61,7 @@
 
     .title-box p {
       font-size: 13px;
-      color: #64748b;
+      color: #f59e0b;
       text-transform: uppercase;
       letter-spacing: 2px;
       font-weight: 600;
@@ -92,71 +93,80 @@
       padding: 20px 0;
     }
 
-    /* MONTHLY GRID (EDITORIAL LIST) */
+    /* EXCITING MONTHLY GRID (VIBRANT EDITORIAL CARDS) */
     .monthly-grid {
       width: 100%;
       max-height: 100%;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+      gap: 18px;
       overflow-y: auto;
       padding: 4px;
     }
 
     ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.2); border-radius: 4px; }
 
-    .person-row {
-      background: rgba(255, 255, 255, 0.02);
-      border-left: 2px solid rgba(56, 189, 248, 0.4);
-      padding: 18px 22px;
+    .person-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 22px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: background 0.2s;
+      backdrop-filter: blur(12px);
+      transition: transform 0.2s, border-color 0.2s;
     }
 
-    /* REVERSED NAME HIERARCHY (FIRST NAME BIG, LAST NAME SMALL) */
+    .person-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
     .name-stack {
       display: flex;
       flex-direction: column;
     }
 
     .first-name {
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 700;
-      color: #f1f5f9;
+      color: #ffffff;
       line-height: 1.2;
     }
 
     .last-name {
       font-size: 13px;
       font-weight: 500;
-      color: #64748b;
+      color: #94a3b8;
       letter-spacing: 0.5px;
       line-height: 1.2;
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
-    .date-number {
-      font-size: 18px;
-      font-weight: 600;
-      color: #38bdf8;
+    .date-badge {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      padding: 6px 12px;
+      border-radius: 10px;
       font-variant-numeric: tabular-nums;
     }
 
-    /* TODAY CELEBRATION FEATURE VIEW (WITH TOP ACCENT LINE & BOUNCE ANIMATION) */
+    /* TODAY CELEBRATION FEATURE VIEW */
     .celebration-feature {
       width: 100%;
       max-width: 650px;
       text-align: center;
       padding: 60px 40px;
-      background: radial-gradient(circle at 50% 30%, rgba(245, 158, 11, 0.08) 0%, rgba(15, 23, 42, 0) 70%);
+      background: radial-gradient(circle at 50% 30%, rgba(245, 158, 11, 0.12) 0%, rgba(15, 23, 42, 0) 70%);
       position: relative;
       animation: bounceIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
 
-    /* TOP ACCENT LINE ABOVE THE CELEBRATION BOX */
     .celebration-feature::before {
       content: '';
       position: absolute;
@@ -170,7 +180,7 @@
     }
 
     .celeb-tag {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
       color: #f59e0b;
       text-transform: uppercase;
@@ -188,9 +198,9 @@
     }
 
     .celeb-wish-text {
-      font-size: 20px;
-      color: #94a3b8;
-      font-weight: 400;
+      font-size: 22px;
+      color: #f3f4f6;
+      font-weight: 500;
       line-height: 1.5;
     }
 
@@ -269,13 +279,6 @@
       "juli", "augustus", "september", "oktober", "november", "december"
     ];
 
-    const professionalWishes = [
-      "Van harte gefeliciteerd met je verjaardag!",
-      "Een fijne verjaardag toegewenst namens het hele team!",
-      "Gefeliciteerd! Maak er een fantastische dag van!",
-      "Heel fijne verjaardag gewenst!"
-    ];
-
     function splitName(fullName) {
       const parts = fullName.trim().split(' ');
       if (parts.length === 1) return { first: parts[0], last: '' };
@@ -284,7 +287,6 @@
       return { first, last };
     }
 
-    // LIGHTWEIGHT CONFETTI ENGINE FOR BIRTHDAY SLIDE
     function triggerConfetti() {
       const canvas = document.getElementById('confettiCanvas');
       const ctx = canvas.getContext('2d');
@@ -356,23 +358,20 @@
 
       if (todaysBirthdays.length > 0) {
         document.getElementById('mainTitle').innerText = "Jarig Vandaag";
-        document.getElementById('subTitle').innerText = "Viering";
+        document.getElementById('subTitle').innerText = "";
 
         let html = '';
         todaysBirthdays.forEach(person => {
           const { first, last } = splitName(person.name);
-          const wish = professionalWishes[person.name.length % professionalWishes.length];
           html += `
             <div class="celebration-feature">
               <div class="celeb-tag">Vandaag in de spotlight</div>
               <div class="celeb-name-large">${first} <span style="color:#f59e0b; display:block; font-size:42px; margin-top:4px;">${last}</span></div>
-              <div class="celeb-wish-text">${wish} We wensen je een fantastisch jaar toe!</div>
+              <div class="celeb-wish-text">Van harte gefeliciteerd met je verjaardag!</div>
             </div>
           `;
         });
         contentArea.innerHTML = html;
-        
-        // Trigger confetti burst on load
         setTimeout(triggerConfetti, 200);
       } else {
         document.getElementById('mainTitle').innerText = "Verjaardagen deze maand";
@@ -388,12 +387,12 @@
           monthlyBirthdays.forEach(person => {
             const { first, last } = splitName(person.name);
             gridHtml += `
-              <div class="person-row">
+              <div class="person-card">
                 <div class="name-stack">
                   <span class="first-name">${first}</span>
                   <span class="last-name">${last}</span>
                 </div>
-                <div class="date-number">${person.day} ${dutchMonths[currentMonth - 1].slice(0,3)}.</div>
+                <div class="date-badge">${person.day} ${dutchMonths[currentMonth - 1].slice(0,3)}.</div>
               </div>
             `;
           });
