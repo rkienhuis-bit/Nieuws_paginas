@@ -23,13 +23,13 @@
       z-index: 1;
     }
 
-    /* UI FROSTED GLASS CONTAINER */
+    /* UI FROSTED GLASS CONTAINER - TIGHT & BALANCED */
     .dashboard-container {
       position: relative;
       z-index: 2;
       width: 100%;
       height: 100vh;
-      padding: 16px;
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -37,24 +37,24 @@
 
     /* FROSTED GLASS MIXIN */
     .glass-card {
-      background: rgba(20, 25, 40, 0.5);
+      background: rgba(18, 23, 38, 0.6);
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 18px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
     }
 
     /* TOP HERO CARD */
     .hero-card {
-      padding: 16px 20px;
+      padding: 14px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
     .hero-left h1 {
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 700;
       letter-spacing: 0.5px;
       margin-bottom: 2px;
@@ -63,14 +63,14 @@
     .condition-title {
       font-size: 15px;
       font-weight: 600;
-      color: #ff3b30; /* Vivid Broadcast Red */
-      margin-bottom: 4px;
+      color: #ff3b30;
+      margin-bottom: 2px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
     .temp-large {
-      font-size: 36px;
+      font-size: 34px;
       font-weight: 800;
       line-height: 1;
       letter-spacing: -1px;
@@ -81,13 +81,13 @@
       color: rgba(255, 255, 255, 0.6);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-top: 4px;
+      margin-top: 3px;
     }
 
     .hero-right {
       text-align: right;
       border-left: 1px solid rgba(255, 255, 255, 0.1);
-      padding-left: 16px;
+      padding-left: 14px;
     }
 
     .date-text {
@@ -98,10 +98,10 @@
     }
 
     .time-text {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 700;
       color: #ffffff;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .hero-sub-info {
@@ -120,8 +120,8 @@
     }
 
     .sub-row svg {
-      width: 14px;
-      height: 14px;
+      width: 13px;
+      height: 13px;
       stroke: #ffffff;
       fill: none;
       stroke-width: 2;
@@ -140,11 +140,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
     }
 
     .hourly-time { font-size: 10px; color: rgba(255, 255, 255, 0.6); font-weight: 600; }
-    .hourly-icon svg { width: 18px; height: 18px; stroke: #ffffff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .hourly-icon svg { width: 16px; height: 16px; stroke: #ffffff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .hourly-temp { font-size: 12px; font-weight: 700; }
 
     /* STATS GRID (2x3 Layout) */
@@ -155,11 +155,11 @@
     }
 
     .stat-card {
-      padding: 14px 16px;
+      padding: 12px 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      height: 96px;
+      height: 88px;
     }
 
     .stat-header {
@@ -174,8 +174,8 @@
     }
 
     .stat-header svg {
-      width: 13px;
-      height: 13px;
+      width: 12px;
+      height: 12px;
       stroke: rgba(255, 255, 255, 0.8);
       fill: none;
       stroke-width: 2;
@@ -184,7 +184,7 @@
     }
 
     .stat-main-val {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 800;
       line-height: 1.1;
     }
@@ -197,19 +197,19 @@
     /* COMPASS */
     .compass-box {
       position: relative;
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       border: 2px dashed rgba(255, 255, 255, 0.25);
       border-radius: 50%;
       align-self: flex-end;
-      margin-top: -25px;
+      margin-top: -24px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .compass-needle {
-      width: 2.5px;
-      height: 15px;
+      width: 2px;
+      height: 14px;
       background: #ff3b30;
       border-radius: 2px;
       transform-origin: bottom center;
@@ -220,8 +220,8 @@
     /* SUN ARC */
     .sun-arc-container {
       position: relative;
-      height: 18px;
-      margin-top: 4px;
+      height: 16px;
+      margin-top: 2px;
     }
     .sun-curve {
       width: 100%;
@@ -237,16 +237,16 @@
       background: linear-gradient(90deg, #4cd137, #fbc531, #e84118);
       border-radius: 2px;
       position: relative;
-      margin-top: 6px;
+      margin-top: 4px;
     }
     .aqi-pointer {
-      width: 9px;
-      height: 9px;
+      width: 8px;
+      height: 8px;
       background: #ffffff;
       border: 2px solid #141928;
       border-radius: 50%;
       position: absolute;
-      top: -2.5px;
+      top: -2px;
       left: 35%;
     }
   </style>
@@ -319,7 +319,7 @@
           Wind
         </div>
         <div>
-          <div class="stat-main-val" id="windVal" style="font-size: 18px;">-- km/h</div>
+          <div class="stat-main-val" id="windVal" style="font-size: 16px;">-- km/h</div>
           <div class="stat-footer-text" id="windText">Richting: --</div>
         </div>
         <div class="compass-box">
@@ -363,7 +363,7 @@
           Luchtkwaliteit
         </div>
         <div>
-          <div class="stat-main-val" style="font-size: 20px;">3 <span style="font-size: 11px; font-weight: 500; color:#fbc531;">Matig</span></div>
+          <div class="stat-main-val" style="font-size: 18px;">3 <span style="font-size: 11px; font-weight: 500; color:#fbc531;">Matig</span></div>
           <div class="aqi-bar">
             <div class="aqi-pointer"></div>
           </div>
@@ -377,7 +377,6 @@
     const LON = 6.5786;
     const API_URL = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,weather_code&daily=sunrise,sunset,precipitation_probability_max&timezone=Europe%2FAmsterdam`;
 
-    // VECTOR ICON SVGS
     const icons = {
       sun: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41m12.02-12.02l-1.41 1.41"/></svg>',
       cloud: '<svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>',
@@ -507,7 +506,6 @@
           document.getElementById('sunsetTime').innerText = new Date(data.daily.sunset[0]).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
         }
 
-        // Hourly Strip
         const currentHourIndex = new Date().getHours();
         const hourlyStrip = document.getElementById('hourlyStrip');
         hourlyStrip.innerHTML = '';
