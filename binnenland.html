@@ -18,10 +18,10 @@
     .news-card {
       position: relative;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       width: 100%;
       height: 100vh;
-      background: rgba(17, 17, 17, 0.88);
+      background: rgba(17, 17, 17, 0.92);
       overflow: hidden;
       transform: translateX(0);
       transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
@@ -36,36 +36,16 @@
       transition: none;
     }
 
-    /* CLEAN PILLARBOX IMAGE FRAME (NO DISTORTION) */
-    .news-image-container {
-      width: 30%;
-      height: 100%;
-      position: relative;
-      overflow: hidden;
-      background-color: #050505; /* Professional dark frame background */
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .news-image {
-      width: 100%;
-      height: 100%;
-      object-fit: contain; /* Keeps original proportions intact with zero cropping or weird zoom */
-      object-position: center center;
-    }
-
-    /* CONTENT LAYOUT - BALANCED SPACING */
+    /* MAIN CONTENT AREA - FULL WIDTH WITH CIRCULAR ACCENT */
     .news-content {
-      width: 70%;
-      padding: 50px 100px 45px 60px;
+      width: 100%;
+      height: 100vh;
+      padding: 50px 180px 45px 70px; /* Extra right padding so text wraps nicely around circular badge/QR area */
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       overflow: hidden;
       position: relative;
-      height: 100vh;
     }
 
     .news-category {
@@ -78,40 +58,66 @@
     }
 
     .news-title {
-      font-size: 36px;
+      font-size: 40px;
       font-weight: 700;
       line-height: 1.2;
-      margin-bottom: 18px;
+      margin-bottom: 22px;
       color: #ffffff;
+      max-width: 75%; /* Leaves room for top right elements if needed */
     }
 
+    /* CIRCULAR IMAGE BADGE (TOP RIGHT ACCENT) */
+    .news-image-circle {
+      position: absolute;
+      top: 55px;
+      right: 70px;
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid #e30613; /* NOS Red accent border */
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      background-color: #0b0b0b;
+      flex-shrink: 0;
+      z-index: 5;
+    }
+
+    .news-image-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+    }
+
+    /* TEXT WRAPPER WITH PARAGRAPH RETURNS */
     .news-desc-wrapper {
       position: relative;
       flex-grow: 1;
       overflow: hidden;
-      max-height: 62vh;
+      max-height: 60vh;
       margin-bottom: 20px;
+      margin-top: 10px;
     }
 
     .news-description {
       position: absolute;
       width: 100%;
-      font-size: 20px;
-      line-height: 1.5;
+      font-size: 22px;
+      line-height: 1.6;
       color: #dddddd;
       top: 0;
       transition: transform linear;
     }
 
     .news-description p {
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     /* DYNAMIC QR CODE - ALIGNED BOTTOM RIGHT */
     .qr-container {
       position: absolute;
       bottom: 45px;
-      right: 45px;
+      right: 70px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -139,14 +145,15 @@
 <body>
 
   <div class="news-card" id="newsCard">
-    <!-- PILLARBOX IMAGE PANEL -->
-    <div class="news-image-container" id="imgContainer" style="display:none;">
-      <img id="newsImg" class="news-image" src="" alt="Afbeelding" />
-    </div>
-
     <div class="news-content">
+      <!-- CIRCULAR IMAGE ACCENT (TOP RIGHT) -->
+      <div class="news-image-circle" id="imgContainer" style="display:none;">
+        <img id="newsImg" src="" alt="Afbeelding" />
+      </div>
+
       <div class="news-category" id="newsCat">BINNENLAND</div>
       <h1 class="news-title" id="newsTitle">NOS Nieuws laden...</h1>
+      
       <div class="news-desc-wrapper" id="descWrapper">
         <div class="news-description" id="newsDesc"></div>
       </div>
@@ -226,17 +233,18 @@
         const item = items[currentIndex];
         const imgUrl = extractImage(item);
         const imgEl = document.getElementById('newsImg');
+        const imgContainer = document.getElementById('imgContainer');
         const descEl = document.getElementById('newsDesc');
         const descWrapper = document.getElementById('descWrapper');
         const qrContainer = document.getElementById('qrContainer');
         const qrImg = document.getElementById('qrImg');
 
-        // Image Handling with Clean Pillarboxing
+        // Circular Image Handling
         if (imgUrl) {
           imgEl.src = imgUrl;
-          document.getElementById('imgContainer').style.display = 'flex';
+          imgContainer.style.display = 'block';
         } else {
-          document.getElementById('imgContainer').style.display = 'none';
+          imgContainer.style.display = 'none';
         }
 
         // QR Code Handling
