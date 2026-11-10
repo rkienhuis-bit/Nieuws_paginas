@@ -36,39 +36,24 @@
       transition: none;
     }
 
-    /* CONTEXTUAL IMAGE WRAPPER WITH BLURRED BACKDROP */
+    /* CLEAN PILLARBOX IMAGE FRAME (NO DISTORTION) */
     .news-image-container {
       width: 30%;
       height: 100%;
       position: relative;
       overflow: hidden;
-      background-color: #0b0b0b;
+      background-color: #050505; /* Professional dark frame background */
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .news-image-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      filter: blur(20px) brightness(0.4);
-      transform: scale(1.1);
-      z-index: 1;
-    }
-
     .news-image {
-      position: relative;
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain; /* Keeps original proportions intact with zero cropping or weird zoom */
       object-position: center center;
-      z-index: 2;
     }
 
     /* CONTENT LAYOUT - BALANCED SPACING */
@@ -154,9 +139,8 @@
 <body>
 
   <div class="news-card" id="newsCard">
-    <!-- CONTEXTUAL IMAGE PANEL WITH BLUR BACKDROP -->
+    <!-- PILLARBOX IMAGE PANEL -->
     <div class="news-image-container" id="imgContainer" style="display:none;">
-      <div id="newsImgBg" class="news-image-bg"></div>
       <img id="newsImg" class="news-image" src="" alt="Afbeelding" />
     </div>
 
@@ -187,7 +171,6 @@
     let timerId = null;
     let scrollTimeout = null;
 
-    // Load saved index from browser memory if available
     const savedIndex = localStorage.getItem(STORAGE_KEY_INDEX);
     if (savedIndex !== null) {
       currentIndex = parseInt(savedIndex, 10);
@@ -248,10 +231,9 @@
         const qrContainer = document.getElementById('qrContainer');
         const qrImg = document.getElementById('qrImg');
 
-        // Image Handling with Blur Backdrop
+        // Image Handling with Clean Pillarboxing
         if (imgUrl) {
           imgEl.src = imgUrl;
-          document.getElementById('newsImgBg').style.backgroundImage = `url('${imgUrl}')`;
           document.getElementById('imgContainer').style.display = 'flex';
         } else {
           document.getElementById('imgContainer').style.display = 'none';
@@ -282,7 +264,6 @@
 
         const currentStoryDuration = calculateReadingDuration(item.title, item.description);
 
-        // Proportional Scroll Logic
         if (scrollTimeout) clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
           const textHeight = descEl.offsetHeight;
@@ -336,7 +317,7 @@
 
     loadCachedData();
     fetchRSS();
-    setInterval(fetchRSS, 10 * 60 * 1000); // 10-minute background update cycle
+    setInterval(fetchRSS, 10 * 60 * 1000);
   </script>
 
 </body>
