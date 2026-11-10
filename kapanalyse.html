@@ -8,13 +8,16 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <style>
     :root {
-      --bg-color: #f8fafc;
+      --bg-color: #f1f5f9;
       --card-bg: #ffffff;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-      --border-color: #e2e8f0;
-      --right-panel-bg: #1e293b;
-      --right-panel-text: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border-color: #cbd5e1;
+      --primary-blue: #2563eb;
+      --alert-red: #dc2626;
+      --safe-green: #16a34a;
+      --right-panel-bg: #0f172a;
+      --right-panel-text: #f8fafc;
     }
 
     * {
@@ -37,7 +40,7 @@
 
     /* Left Column: Charts */
     .left-column {
-      flex: 1.3;
+      flex: 1.35;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -47,9 +50,9 @@
     .chart-card {
       flex: 1;
       background: var(--card-bg);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 16px 20px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
       border: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
@@ -57,10 +60,10 @@
     }
 
     .chart-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #475569;
-      margin-bottom: 8px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 6px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -71,13 +74,13 @@
       width: 100%;
     }
 
-    /* Middle Column: Dynamic Summary (Aligned to Top) */
+    /* Middle Column: Executive Summary */
     .middle-column {
-      flex: 1;
+      flex: 0.95;
       background: var(--card-bg);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
       border: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
@@ -86,15 +89,36 @@
     }
 
     .middle-column h2 {
-      font-size: 1.6rem;
-      font-weight: 800;
+      font-size: 1.7rem;
+      font-weight: 900;
       color: #0f172a;
+      margin-bottom: 12px;
+    }
+
+    /* Big Visual Status Badge */
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 12px;
       margin-bottom: 16px;
-      line-height: 1.2;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .status-badge.alert {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+    .status-badge.safe {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
     }
 
     .middle-column p, .middle-column li {
-      font-size: 0.92rem;
+      font-size: 0.95rem;
       color: var(--text-muted);
       line-height: 1.5;
       margin-bottom: 10px;
@@ -105,14 +129,14 @@
       margin-bottom: 10px;
     }
 
-    /* Right Column: Information Panel (Aligned to Top) */
+    /* Right Column: Plain English Explanation */
     .right-column {
       flex: 1.1;
       background: var(--right-panel-bg);
       color: var(--right-panel-text);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
@@ -121,18 +145,18 @@
     }
 
     .right-column h3 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 12px;
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 14px;
       color: #ffffff;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.15);
       padding-bottom: 8px;
     }
 
     .right-column p {
-      font-size: 0.82rem;
-      line-height: 1.45;
-      margin-bottom: 8px;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      margin-bottom: 10px;
       color: #cbd5e1;
     }
 
@@ -146,48 +170,48 @@
   <!-- Left Column: Two Bar Graphs -->
   <div class="left-column">
     <div class="chart-card">
-      <div class="chart-title">KAP t.o.v Verkoop Facturen - met 1,5% doel</div>
+      <div class="chart-title">Facturen met Klachten (Doel: max 1,5%)</div>
       <div class="chart-wrapper">
         <canvas id="facturenChart"></canvas>
       </div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">KAP t.o.v Verkoop Regels - met 0,7% doel</div>
+      <div class="chart-title">Regels met Klachten (Doel: max 0,7%)</div>
       <div class="chart-wrapper">
         <canvas id="regelsChart"></canvas>
       </div>
     </div>
   </div>
 
-  <!-- Middle Column: Monthly Commentary -->
+  <!-- Middle Column: Monthly Summary & Status -->
   <div class="middle-column">
-    <h2 id="mainTitle">Kap Analyse Oktober 2026</h2>
-    <p>Onderstaande de Kap Analyse van Oktober 2026.</p>
-    <p><strong>In totaal 5 Kaps.</strong></p>
-    <p>Kaps hebben betrekking op een periode ervoor, 3 à 6 weken.</p>
+    <h2 id="mainTitle">KAP Analyse</h2>
+    <div id="statusIndicator" class="status-badge alert">
+      <span id="statusIcon">⚠️</span>
+      <div>
+        <div id="statusTextHeading">Doelstelling overschreden</div>
+        <div id="statusTextSub" style="font-size: 0.8rem; font-weight: normal;">Laatste maand zit boven de limiet.</div>
+      </div>
+    </div>
+    <p><strong>Overzicht Klachten Actie Plan (KAP)</strong></p>
+    <p>We bewaken de kwaliteit door klachten nauwlettend te onderzoeken en op te lossen.</p>
     <ul>
-      <li>Monitoring acties ter oplossing van openstaande klachten.</li>
-      <li>Focus op preventie in volgende productiecycli.</li>
+      <li><strong>Doel:</strong> Minder klachten dan de rode lijn.</li>
+      <li><strong>Actie:</strong> Directe opvolging en preventie bij uitschieters.</li>
     </ul>
   </div>
 
-  <!-- Right Column: Educational Info Panel -->
+  <!-- Right Column: Simple Educational Info Panel -->
   <div class="right-column">
-    <h3>Wat is een KAP?</h3>
-    <p><strong>KAP</strong> staat voor <strong>Klachten Actie Plan</strong>.</p>
-    <p>In de KAP worden drie items vastgelegd, namelijk:</p>
-    <p>• De soort klacht;</p>
-    <p>• Wat er fout gegaan is;</p>
-    <p>• Welke afdeling hiervoor verantwoordelijk was.</p>
-    <p>Het doel van de KAP is te monitoren welke actie er genomen is om een klacht op te lossen en te kijken hoe we de klacht in de toekomst kunnen voorkomen.</p>
-    <p>Dit moet uiteindelijk leiden tot een vermindering van het aantal klachten en daarom is een doelstelling bepaald die je terug ziet in de grafieken.</p>
-    <p>Het liefst hebben we geen klachten, maar als ze er toch zijn, is het belangrijk dat deze op een correcte en efficiënte wijze worden opgelost, zodat de klant ook tevreden is met de oplossing.</p>
+    <h3>Hoe leest u deze grafiek?</h3>
+    <p><strong>Wat is een KAP? (Klachten Actie Plan)</strong><br>Wanneer er een klacht binnenkomt, registreren we wat er fout ging en welke afdeling hierbij betrokken was.</p>
+    <p><strong>De Rode Lijn = De Doelstelling</strong><br>Blijft de blauwe balk <em>onder</em> de rode lijn? Dan presteren we binnen de norm. Schiet de balk er <em>bovenuit</em>? Dan krijgt dit extra aandacht.</p>
+    <p><strong>Waarom doen we dit?</strong><br>Om structurele problemen snel op te lossen, herhaling te voorkomen, en ervoor te zorgen dat onze klanten tevreden blijven.</p>
   </div>
 
   <script>
     Chart.register(ChartDataLabels);
 
-    // YOUR CORRECT TAB 2 CSV URL
     const TAB2_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQtxKzOmH_pFkFCD60zVlU8tXQd2aW8B92eY-iMdstxibnAYtxESxC3cS-5peclfntJhRrLIGWKPg5/pub?gid=762908038&single=true&output=csv';
 
     function formatConsistentMonth(rawDateStr) {
@@ -218,7 +242,7 @@
       return cleaned;
     }
 
-    // Setup Facturen Chart (Top)
+    // Setup Facturen Chart
     const ctxFacturen = document.getElementById('facturenChart').getContext('2d');
     const facturenChart = new Chart(ctxFacturen, {
       type: 'bar',
@@ -228,13 +252,14 @@
           {
             label: 'Facturen KAP %',
             data: [],
-            backgroundColor: '#3b82f6',
-            borderRadius: 4,
+            // Colors will be dynamically assigned: red if > 1.5, blue if <= 1.5
+            backgroundColor: [],
+            borderRadius: 6,
             datalabels: {
               align: 'top',
               anchor: 'end',
-              font: { size: 9, weight: 'bold' },
-              color: '#334155',
+              font: { size: 10, weight: 'bold' },
+              color: (ctx) => ctx.dataset.data[ctx.dataIndex] > 1.5 ? '#dc2626' : '#1e293b',
               formatter: (val) => val !== null ? val.toFixed(2).replace('.', ',') + '%' : ''
             }
           },
@@ -242,8 +267,9 @@
             label: 'Doel 1.5%',
             data: [],
             type: 'line',
-            borderColor: '#ef4444',
-            borderWidth: 2,
+            borderColor: '#0f172a',
+            borderWidth: 2.5,
+            borderDash: [4, 4],
             pointRadius: 0,
             datalabels: { display: false }
           }
@@ -254,13 +280,13 @@
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+          x: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } },
           y: { min: 0, max: 4.5, ticks: { stepSize: 1, callback: (v) => v.toFixed(1).replace('.', ',') + '%' } }
         }
       }
     });
 
-    // Setup Regels Chart (Bottom)
+    // Setup Regels Chart
     const ctxRegels = document.getElementById('regelsChart').getContext('2d');
     const regelsChart = new Chart(ctxRegels, {
       type: 'bar',
@@ -270,13 +296,13 @@
           {
             label: 'Regels KAP %',
             data: [],
-            backgroundColor: '#3b82f6',
-            borderRadius: 4,
+            backgroundColor: [],
+            borderRadius: 6,
             datalabels: {
               align: 'top',
               anchor: 'end',
-              font: { size: 9, weight: 'bold' },
-              color: '#334155',
+              font: { size: 10, weight: 'bold' },
+              color: (ctx) => ctx.dataset.data[ctx.dataIndex] > 0.7 ? '#dc2626' : '#1e293b',
               formatter: (val) => val !== null ? val.toFixed(2).replace('.', ',') + '%' : ''
             }
           },
@@ -284,8 +310,9 @@
             label: 'Doel 0.7%',
             data: [],
             type: 'line',
-            borderColor: '#ef4444',
-            borderWidth: 2,
+            borderColor: '#0f172a',
+            borderWidth: 2.5,
+            borderDash: [4, 4],
             pointRadius: 0,
             datalabels: { display: false }
           }
@@ -296,13 +323,12 @@
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+          x: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } },
           y: { min: 0, max: 1.8, ticks: { stepSize: 0.4, callback: (v) => v.toFixed(1).replace('.', ',') + '%' } }
         }
       }
     });
 
-    // Fetch Google Sheet Data for Tab 2 (Strictly ignoring empty rows)
     async function fetchKapData() {
       if (!TAB2_CSV_URL || TAB2_CSV_URL.includes('YOUR_TAB_2_PUBLISHED_CSV_URL_HERE')) return;
 
@@ -314,6 +340,8 @@
         const labels = [];
         const facturenData = [];
         const regelsData = [];
+        const facturenColors = [];
+        const regelsColors = [];
 
         for (let line of lines) {
           if (line.trim() !== '') {
@@ -325,12 +353,15 @@
               const fVal = parseFloat(cols[1].replace(/"/g, '').replace('%', '').replace(',', '.').trim());
               const rVal = parseFloat(cols[2].replace(/"/g, '').replace('%', '').replace(',', '.').trim());
 
-              // Stop parsing if we hit empty month cells
               if (!formattedMonth || formattedMonth === 'undefined') break;
 
               labels.push(formattedMonth);
               facturenData.push(!isNaN(fVal) ? fVal : null);
               regelsData.push(!isNaN(rVal) ? rVal : null);
+
+              // Smart Color Coding: Red if over target, Blue if under target
+              facturenColors.push(!isNaN(fVal) && fVal > 1.5 ? '#dc2626' : '#2563eb');
+              regelsColors.push(!isNaN(rVal) && rVal > 0.7 ? '#dc2626' : '#2563eb');
             }
           }
         }
@@ -338,14 +369,37 @@
         // Update Facturen Chart
         facturenChart.data.labels = labels;
         facturenChart.data.datasets[0].data = facturenData;
+        facturenChart.data.datasets[0].backgroundColor = facturenColors;
         facturenChart.data.datasets[1].data = Array(labels.length).fill(1.5);
         facturenChart.update();
 
         // Update Regels Chart
         regelsChart.data.labels = labels;
         regelsChart.data.datasets[0].data = regelsData;
+        regelsChart.data.datasets[0].backgroundColor = regelsColors;
         regelsChart.data.datasets[1].data = Array(labels.length).fill(0.7);
         regelsChart.update();
+
+        // Update Status Badge based on the latest month's performance
+        if (facturenData.length > 0) {
+          const latestF = facturenData[facturenData.length - 1];
+          const badge = document.getElementById('statusIndicator');
+          const icon = document.getElementById('statusIcon');
+          const heading = document.getElementById('statusTextHeading');
+          const sub = document.getElementById('statusTextSub');
+
+          if (latestF > 1.5) {
+            badge.className = 'status-badge alert';
+            icon.innerText = '⚠️';
+            heading.innerText = 'Doelstelling Overschreden';
+            sub.innerText = `Laatste maand (${latestF.toFixed(1).replace('.', ',')}%) zit boven de doelnorm van 1,5%.`;
+          } else {
+            badge.className = 'status-badge safe';
+            icon.innerText = '✅';
+            heading.innerText = 'Binnen Doelstelling';
+            sub.innerText = `Laatste maand (${latestF.toFixed(1).replace('.', ',')}%) presteert naar wens.`;
+          }
+        }
 
       } catch (err) {
         console.error('Error loading KAP data:', err);
