@@ -991,3 +991,121 @@ function renderCalendar(currentMonth, currentDay, currentYear) {
   for (let day=1; day<=totalDays; day++) {
     const people = birthdayMap[day] || [];
     const isPast = day < currentDay;
+    const isToday = day === currentDay;
+    const hasBirthday = people.length > 0;
+
+    const row = Math.floor((day-1)/itemsPerRow);
+    const position = (day-1)%itemsPerRow;
+    const column = row%2 === 0 ? position+1 : itemsPerRow-position;
+
+    const statusClass = [
+      isPast ? "past" : "",
+      isToday ? "today" : "",
+      hasBirthday ? "birthday" : ""
+    ].filter(Boolean).join(" ");
+
+    let title = "";
+    let sub = "";
+
+    if (hasBirthday) {
+      if (people.length === 1) {
+        title = splitName(people[0].name).first;
+        sub = `Wordt ${calculateAge(people[0].dob, currentYear)} jaar`;
+      } else {
+        // MULTIPLE BIRTHDAYS: List names & ages directly under/next to the orb
+        title = people.map(p => splitName(p.name).first).join(" & ");
+        sub = people.map(p => `Wordt ${calculateAge(p.dob, currentYear)}`).join(" • ");
+      }
+    } else if (isToday) {
+      title = "Vandaag";
+    }
+
+    const satelliteHtml = hasBirthday ? createSatellites(people) : "";
+
+    pathHtml += `
+      <div class="path-node ${statusClass}" style="grid-column:${column};grid-row:${row+1};">
+        <div class="orb-cluster">
+          <div class="node-circle">
+            ${day}
+            ${hasBirthday && people.length===1 ? '<span class="milestone-star">★</span>' : ''}
+          </div>
+          ${satelliteHtml}
+        </div>
+        ${title ? `
+          <div class="node-text">
+            <span class="node-title">${title}</span>
+            <span class="node-sub">${sub}</span>
+          </div>
+        ` : ""}
+      </div>
+    `;
+  }
+
+  pathHtml += `</div>`;
+  document.getElementById("contentArea").innerHTML = pathHtml;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(drawSnakeRoute);
+  });
+}
+
+/* =====================================
+   MAIN RENDER
+===================================== */
+
+function renderPage() {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  // When preview/test mode is active, override month/day to November 12 (where Gilbert & Desiree share a birthday)
+  const currentDay = previewMode ? 12 : now.getDate();
+  const currentMonth = previewMode ? 11 : now.getMonth()+1;
+
+  document.getElementById("dateDisplay").innerText =
+    now.toLocaleDateString("nl-NL",{
+      weekday:"long",
+      day:"numeric",
+      month:"long"
+    });
+
+  document.getElementById("testButton").innerText =
+    previewMode ? "Terug naar kalender" : "Test verjaardag";
+
+  if (previewMode) {
+    const todaysBirthdays = birthdays.filter(b => b.month === currentMonth && b.day === currentDay);
+    renderCelebration(todaysBirthdays.length > 0 ? todaysBirthdays : testPeople, currentYear);
+    return;
+  }
+
+  const todaysBirthdays = birthdays.filter(b => b.month===currentMonth && b.day===currentDay);
+
+  if (todaysBirthdays.length > 0) {
+    renderCelebration(todaysBirthdays, currentYear);
+    return;
+  }
+
+  confettiStarted = false;
+  const canvas = document.getElementById("confettiCanvas");
+  if (canvas) {
+    canvas.getContext("2d").clearRect(0, 0, window.innerWidth, window.innerHeight);
+  }
+
+  renderCalendar(currentMonth, currentDay, currentYear);
+}
+
+/* INITIALIZE */
+
+renderPage();
+
+window.addEventListener("resize", drawSnakeRoute);
+setTimeout(drawSnakeRoute, 100);
+
+setInterval(() => {
+  if (!previewMode) {
+    renderPage();
+  }
+}, 60000);
+
+</script>
+
+</body>
+</html>
