@@ -87,129 +87,121 @@
       overflow: hidden;
     }
 
-    /* DUOLINGO-STYLE PATH MAP CONTAINER */
-    .path-map-container {
+    /* SNAKE PATH CONTAINER */
+    .snake-path-container {
       width: 100%;
-      max-width: 1000px;
+      max-width: 900px;
       height: 100%;
       max-height: 720px;
       overflow-y: auto;
-      padding: 30px 20px;
+      padding: 20px 40px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 28px;
+      gap: 18px;
       position: relative;
+      scroll-behavior: smooth;
     }
 
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.2); border-radius: 4px; }
 
-    /* ROW FOR ZIG-ZAG PATH */
-    .path-row {
+    /* SNAKE ROWS (ZIG-ZAG PATTERN) */
+    .snake-row {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
       width: 100%;
-      gap: 40px;
+      padding: 0 40px;
     }
 
-    .path-row.left { justify-content: flex-start; padding-left: 15%; }
-    .path-row.center { justify-content: center; }
-    .path-row.right { justify-content: flex-end; padding-right: 15%; }
+    .snake-row.left-heavy { justify-content: flex-start; gap: 120px; }
+    .snake-row.right-heavy { justify-content: flex-end; gap: 120px; }
+    .snake-row.balanced { justify-content: space-around; }
 
-    /* ORB / NODE STYLES */
-    .node-item {
+    /* NODE STYLES */
+    .node {
       display: flex;
       align-items: center;
-      gap: 16px;
-      padding: 12px 20px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      width: 320px;
+      gap: 14px;
+      position: relative;
+    }
+
+    /* Standard Day Dot */
+    .node-dot {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #64748b;
       transition: all 0.3s ease;
     }
 
-    /* PAST NODES */
-    .node-item.past {
-      opacity: 0.4;
-      border-color: rgba(255, 255, 255, 0.03);
-    }
-    .node-item.past .node-orb {
-      background: rgba(255, 255, 255, 0.1);
-      color: #94a3b8;
-      border-color: rgba(255, 255, 255, 0.15);
+    /* Past Days */
+    .node.past .node-dot {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.06);
+      color: #475569;
+      opacity: 0.5;
     }
 
-    /* TODAY NODE */
-    .node-item.today {
-      background: rgba(56, 189, 248, 0.06);
-      border-color: rgba(56, 189, 248, 0.4);
-    }
-    .node-item.today .node-orb {
+    /* Today Node */
+    .node.today .node-dot {
       background: #38bdf8;
-      color: #0b0f19;
       border-color: #38bdf8;
+      color: #0b0f19;
+      font-weight: 700;
       box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
     }
 
-    /* BIRTHDAY NODE */
-    .node-item.birthday {
+    /* Birthday Node (Milestone) */
+    .node.birthday {
       background: rgba(245, 158, 11, 0.08);
-      border-color: rgba(245, 158, 11, 0.5);
-      box-shadow: 0 10px 30px rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 20px;
+      padding: 8px 18px 8px 8px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15);
+      animation: pulseNode 3s infinite alternate;
     }
-    .node-item.birthday .node-orb {
+
+    @keyframes pulseNode {
+      0% { box-shadow: 0 10px 20px rgba(245, 158, 11, 0.1); }
+      100% { box-shadow: 0 15px 30px rgba(245, 158, 11, 0.3); }
+    }
+
+    .node.birthday .node-dot {
+      width: 52px;
+      height: 52px;
       background: #f59e0b;
-      color: #0b0f19;
       border-color: #f59e0b;
-      box-shadow: 0 0 25px rgba(245, 158, 11, 0.7);
-      animation: pulseOrb 2s infinite alternate;
+      color: #0b0f19;
+      font-size: 20px;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
     }
 
-    @keyframes pulseOrb {
-      0% { transform: scale(1); box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
-      100% { transform: scale(1.08); box-shadow: 0 0 30px rgba(245, 158, 11, 0.8); }
-    }
-
-    .node-orb {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      font-weight: 700;
-      color: #94a3b8;
-      flex-shrink: 0;
-    }
-
-    .node-content {
+    .node-info {
       display: flex;
       flex-direction: column;
     }
 
-    .node-title {
-      font-size: 16px;
+    .node-name {
+      font-size: 15px;
       font-weight: 700;
       color: #ffffff;
       line-height: 1.2;
     }
 
     .node-sub {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 500;
-      color: #94a3b8;
-      margin-top: 2px;
-    }
-
-    .node-item.birthday .node-title {
       color: #f59e0b;
+      margin-top: 2px;
     }
 
     /* TODAY CELEBRATION FEATURE VIEW */
@@ -457,57 +449,73 @@
         const monthlyBirthdays = birthdays.filter(b => b.month === currentMonth);
         const totalDays = getDaysInMonth(currentYear, currentMonth);
 
-        // Map birthdays by day for quick lookup
         const birthdayMap = {};
         monthlyBirthdays.forEach(b => {
           if (!birthdayMap[b.day]) birthdayMap[b.day] = [];
           birthdayMap[b.day].push(b);
         });
 
-        let pathHtml = `<div class="path-map-container">`;
+        let pathHtml = `<div class="snake-path-container" id="snakeContainer">`;
         
-        // Build path nodes for every day of the month or milestone days
+        // Group days into rows of 3 to create a horizontal zig-zag snake path
+        let currentRowNodes = [];
+        let rowPattern = 0; // 0: left, 1: center, 2: right
+
         for (let day = 1; day <= totalDays; day++) {
           const hasBday = birthdayMap[day];
           const isPast = day < currentDay;
           const isToday = day === currentDay;
-          const alignClass = day % 3 === 1 ? 'left' : (day % 3 === 2 ? 'center' : 'right');
 
           if (hasBday) {
             hasBday.forEach(person => {
               const { first, last } = splitName(person.name);
               const age = calculateAge(person.dob, currentYear);
-              pathHtml += `
-                <div class="path-row ${alignClass}">
-                  <div class="node-item birthday">
-                    <div class="node-orb">🎈</div>
-                    <div class="node-content">
-                      <span class="node-title">${first} ${last}</span>
-                      <span class="node-sub">${day} ${dutchMonths[currentMonth - 1]} • Wordt ${age}</span>
-                    </div>
+              currentRowNodes.push(`
+                <div class="node birthday">
+                  <div class="node-dot">🎈</div>
+                  <div class="node-info">
+                    <span class="node-name">${first} ${last}</span>
+                    <span class="node-sub">${day} ${dutchMonths[currentMonth - 1].slice(0,3)}. • Wordt ${age}</span>
                   </div>
                 </div>
-              `;
+              `);
             });
           } else {
-            // Optional: show subtle node or skip non-birthday days to keep it clean. Let's show notable or all days if desired, but for narrowcasting showing days with birthdays + today keeps it punchy. Let's show today's node if no birthday!
-            if (isToday) {
-              pathHtml += `
-                <div class="path-row ${alignClass}">
-                  <div class="node-item today">
-                    <div class="node-orb">${day}</div>
-                    <div class="node-content">
-                      <span class="node-title" style="color:#38bdf8;">Vandaag</span>
-                      <span class="node-sub">${day} ${dutchMonths[currentMonth - 1]}</span>
-                    </div>
-                  </div>
+            let statusClass = isPast ? 'past' : (isToday ? 'today' : '');
+            let label = isToday ? 'Vandaag' : day;
+            currentRowNodes.push(`
+              <div class="node ${statusClass}">
+                <div class="node-dot">${label}</div>
+                <div class="node-info">
+                  <span class="node-name" style="font-size: 13px; color: ${isToday ? '#38bdf8' : '#64748b'};">${isToday ? 'Vandaag' : 'Dag ' + day}</span>
+                  <span class="node-sub" style="color: #475569;">${day} ${dutchMonths[currentMonth - 1].slice(0,3)}.</span>
                 </div>
-              `;
-            }
+              </div>
+            `);
+          }
+
+          // Once we collect 2 or 3 nodes per row, push the row into the path map
+          if (currentRowNodes.length >= 2 || day === totalDays) {
+            let rowClass = rowPattern === 0 ? 'left-heavy' : (rowPattern === 1 ? 'balanced' : 'right-heavy');
+            pathHtml += `<div class="snake-row ${rowClass}">` + currentRowNodes.join('') + `</div>`;
+            currentRowNodes = [];
+            rowPattern = (rowPattern + 1) % 3;
           }
         }
+
         pathHtml += `</div>`;
         contentArea.innerHTML = pathHtml;
+
+        // Auto-scroll to today's active position if possible
+        setTimeout(() => {
+          const container = document.getElementById('snakeContainer');
+          if (container) {
+            const todayNode = container.querySelector('.node.today, .node.birthday');
+            if (todayNode) {
+              container.scrollTop = todayNode.offsetTop - container.clientHeight / 2;
+            }
+          }
+        }, 100);
       }
     }
 
