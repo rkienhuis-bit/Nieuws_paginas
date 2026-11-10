@@ -120,4 +120,209 @@
     .donut-center-text {
       position: absolute;
       text-align: center;
-      pointer-events: none
+      pointer-events: none;
+    }
+
+    .donut-percentage {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .legend-container {
+      display: flex;
+      gap: 16px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-box {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Leverbetrouwbaarheid 2026</h1>
+  </header>
+
+  <main>
+    <!-- Top Line Graph -->
+    <div class="top-chart-container">
+      <div class="chart-wrapper">
+        <canvas id="weeklyChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Bottom Donut Graphs -->
+    <div class="bottom-cards-container">
+      <!-- 2024 -->
+      <div class="card">
+        <div>
+          <div class="card-title">Gemiddelde LBH 2024</div>
+          <div class="card-subtitle">Ipex-Group International BV</div>
+        </div>
+        <div class="donut-wrapper">
+          <canvas id="donut2024"></canvas>
+          <div class="donut-center-text">
+            <div class="donut-percentage">99,35%</div>
+          </div>
+        </div>
+        <div class="legend-container">
+          <div class="legend-item"><span class="legend-box" style="background:#3b82f6;"></span>Verzonden</div>
+          <div class="legend-item"><span class="legend-box" style="background:#f97316;"></span>Niet verzonden</div>
+        </div>
+      </div>
+
+      <!-- 2025 -->
+      <div class="card">
+        <div>
+          <div class="card-title">Gemiddelde LBH 2025</div>
+          <div class="card-subtitle">Ipex-Group International BV</div>
+        </div>
+        <div class="donut-wrapper">
+          <canvas id="donut2025"></canvas>
+          <div class="donut-center-text">
+            <div class="donut-percentage">98,74%</div>
+          </div>
+        </div>
+        <div class="legend-container">
+          <div class="legend-item"><span class="legend-box" style="background:#3b82f6;"></span>Verzonden</div>
+          <div class="legend-item"><span class="legend-box" style="background:#f97316;"></span>Niet verzonden</div>
+        </div>
+      </div>
+
+      <!-- 2026 -->
+      <div class="card">
+        <div>
+          <div class="card-title">Gemiddelde LBH 2026</div>
+          <div class="card-subtitle">Ipex-Group International BV</div>
+        </div>
+        <div class="donut-wrapper">
+          <canvas id="donut2026"></canvas>
+          <div class="donut-center-text">
+            <div class="donut-percentage" id="val2026">94,58%</div>
+          </div>
+        </div>
+        <div class="legend-container">
+          <div class="legend-item"><span class="legend-box" style="background:#3b82f6;"></span>Verzonden</div>
+          <div class="legend-item"><span class="legend-box" style="background:#f97316;"></span>Niet verzonden</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Register DataLabels Plugin
+    Chart.register(ChartDataLabels);
+
+    // Dynamic Weekly Data (Weeks 1 to 52)
+    const weeklyValues = [
+      98.1, 99.3, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,
+      100.0, 100.0, 99.5, 98.6, 100.0, 97.8, 100.0, 100.0, 92.2, 92.0,
+      98.0, 100.0, 89.8, 94.1, 85.9, 98.3, 99.2, 52.4, 92.0, 90.5,
+      100.0, 98.7, 95.8, 98.1, 97.5, 80.6, 87.1, 84.0, null, null,
+      null, null, null, null, null, null, null, null, null, null, null, null
+    ];
+
+    const weekLabels = Array.from({ length: 52 }, (_, i) => i + 1);
+
+    // Line Chart Initialization
+    const ctxLine = document.getElementById('weeklyChart').getContext('2d');
+    new Chart(ctxLine, {
+      type: 'line',
+      data: {
+        labels: weekLabels,
+        datasets: [
+          {
+            label: 'Percentage',
+            data: weeklyValues,
+            borderColor: '#3b82f6',
+            backgroundColor: '#3b82f6',
+            borderWidth: 2,
+            tension: 0,
+            spanGaps: false,
+            datalabels: {
+              align: 'top',
+              anchor: 'end',
+              font: { size: 10, weight: 'bold' },
+              color: '#374151',
+              formatter: (val) => val !== null ? val.toFixed(1) : ''
+            }
+          },
+          {
+            label: 'Doelstelling 98%',
+            data: Array(52).fill(98),
+            borderColor: '#ef4444',
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: false,
+            datalabels: { display: false }
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { boxWidth: 12, usePointStyle: true }
+          },
+          tooltip: { enabled: true }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 10 } }
+          },
+          y: {
+            min: 50,
+            max: 105,
+            ticks: { stepSize: 10 }
+          }
+        }
+      }
+    });
+
+    // Function to create Donut Charts
+    function createDonutChart(elementId, percentage) {
+      const ctx = document.getElementById(elementId).getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Verzonden', 'Niet verzonden'],
+          datasets: [{
+            data: [percentage, 100 - percentage],
+            backgroundColor: ['#3b82f6', '#f97316'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          cutout: '75%',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            datalabels: { display: false }
+          }
+        }
+      });
+    }
+
+    // Initialize Donut Charts
+    createDonutChart('donut2024', 99.35);
+    createDonutChart('donut2025', 98.74);
+    createDonutChart('donut2026', 94.58);
+  </script>
+</body>
+</html>
