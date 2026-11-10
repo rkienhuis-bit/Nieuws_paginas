@@ -72,7 +72,7 @@
       color: #ffffff;
     }
 
-    /* SCROLLING BODY TEXT WITH PARAGRAPH SUPPORT */
+    /* SUMMARY WRAPPER */
     .news-desc-wrapper {
       position: relative;
       flex-grow: 1;
@@ -163,38 +163,35 @@
       return imgMatch ? imgMatch[1] : null;
     }
 
-    function formatDescription(html) {
+    // Automatically summarizes/trims long text to a maximum word count (e.g. ~45 words)
+    function formatSummary(html) {
       if (!html) return '';
       const div = document.createElement("div");
       div.innerHTML = html;
       const text = div.textContent || div.innerText || "";
-      const paragraphs = text.split(/\r?\n\r?/);
-      return paragraphs
-        .map(p => p.trim())
-        .filter(p => p.length > 0)
-        .map(p => `<p>${p}</p>`)
-        .join('');
+      
+      // Split text into words and limit to keep it concise
+      const words = text.split(/\s+/);
+      const maxWords = 45; 
+      let summaryText = words.slice(0, maxWords).join(" ");
+      
+      if (words.length > maxWords) {
+        summaryText += "...";
+      }
+
+      return `<p>${summaryText}</p>`;
     }
 
-    // CALCULATE SMART READING TIME (in milliseconds)
     function calculateReadingDuration(title, descriptionHtml) {
       const div = document.createElement("div");
       div.innerHTML = descriptionHtml;
       const plainText = div.textContent || div.innerText || "";
-      
-      // Count total words in title + description
       const wordCount = (title + " " + plainText).split(/\s+/).length;
       
-      // Base time (e.g. 8 seconds minimum to just look at a short slide)
-      let durationMs = 10000; 
-      
-      // Add ~350ms per word for a relaxed reading pace
+      let durationMs = 12000; // Minimum 12 seconds
       durationMs += wordCount * 350; 
       
-      // Cap limits: minimum 12 seconds, maximum 30 seconds
-      if (durationMs < 12000) durationMs = 12000;
-      if (durationMs > 30000) durationMs = 30000;
-      
+      if (durationMs > 28000) durationMs = 28000; // Cap at 28 seconds
       return durationMs;
     }
 
@@ -250,17 +247,16 @@
         document.getElementById('newsCat').innerText = CATEGORY_LABEL;
         document.getElementById('newsTitle').innerText = item.title;
         
-        // Reset Text Scroll Position & Apply Paragraphs
+        // Reset Text Scroll Position & Apply Trimmed Summary
         descEl.style.transition = 'none';
         descEl.style.transform = 'translateY(0px)';
-        descEl.innerHTML = formatDescription(item.description);
+        descEl.innerHTML = formatSummary(item.description);
 
         card.classList.remove('fade-out');
 
-        // Calculate exact reading duration based on text length
         const currentStoryDuration = calculateReadingDuration(item.title, item.description);
 
-        // Readable Auto-Scroll Logic tailored to the slide's duration
+        // DELAYED, SLOW CRAWL: Waits 4.5 seconds before starting so people can read the top first
         if (scrollTimeout) clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
           const textHeight = descEl.offsetHeight;
@@ -268,16 +264,13 @@
           
           if (textHeight > containerHeight) {
             const scrollDistance = textHeight - containerHeight + 20;
-            // Tailor scroll speed so it finishes crawling before the slide ends
-            const scrollTime = Math.max(6, (currentStoryDuration - 6000) / 1000); 
+            const scrollTime = 10; // Slow, gentle crawl over 10 seconds
             descEl.style.transition = `transform ${scrollTime}s linear`;
             descEl.style.transform = `translateY(-${scrollDistance}px)`;
           }
-        }, 2000); // Wait 2s before scrolling starts
+        }, 4500); // 4.5 second pause at the beginning of every slide
 
         currentIndex = (currentIndex + 1) % items.length;
-
-        // Schedule next story using its unique dynamic reading time
         timerId = setTimeout(showNextStory, currentStoryDuration);
       }, 1200);
     }
