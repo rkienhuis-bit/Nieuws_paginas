@@ -2,49 +2,269 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <title>Weer Enter</title>
+  <title>NOS Weer Enter</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: rgba(17, 17, 17, 0.92);
-      width: 100vw;
+    html, body {
+      width: 100%;
       height: 100vh;
+      overflow: hidden;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: rgba(17, 17, 17, 0.95);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 35px 25px;
+    }
+
+    /* TOP LOCATION & CONDITION HEADER */
+    .header-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .location-title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .condition-badge {
+      background: #e30613; /* NOS Red */
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+    }
+
+    /* HERO WEATHER GRAPHIC & TEMP */
+    .hero-section {
       display: flex;
       align-items: center;
-      justify-content: center;
-      overflow: hidden;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
       padding: 20px;
+      margin: 15px 0;
     }
-    .weatherwidget-io {
-      width: 100% !important;
-      max-height: 100vh;
+
+    .temp-block display {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .temp-main {
+      font-size: 62px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .temp-feels {
+      font-size: 14px;
+      color: #aaaaaa;
+      margin-top: 6px;
+    }
+
+    /* VISUAL STORYTELLING ICON CONTAINER */
+    .weather-icon-visual {
+      font-size: 48px;
+      text-align: right;
+    }
+
+    /* HOURLY FORECAST STRIP */
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #888888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .hourly-strip {
+      display: flex;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 12px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 15px;
+    }
+
+    .hourly-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .hourly-time { font-size: 12px; color: #aaaaaa; }
+    .hourly-temp { font-size: 15px; font-weight: 700; }
+
+    /* METRICS GRID */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #888888;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 19px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .stat-sub {
+      font-size: 11px;
+      color: #aaaaaa;
+      margin-top: 2px;
     }
   </style>
 </head>
 <body>
 
-  <!-- Animated Weather Widget for Enter -->
-  <a class="weatherwidget-io" 
-     href="https://forecast7.com/nl/52p306p58/enter/" 
-     data-label_1="ENTER" 
-     data-label_2="WEERBERICHT" 
-     data-font="Segoe UI" 
-     data-icons="Climacons Animated" 
-     data-theme="dark" 
-     data-basecolor="rgba(17,17,17,0)" 
-     data-accent="rgba(255,255,255,0.05)" 
-     data-textcolor="#ffffff" 
-     data-highcolor="#e30613" 
-     data-lowcolor="#4cc9f0" 
-     data-suncolor="#ffb703" 
-     data-cloudcolor="#aaaaaa" 
-     data-raincolor="#4cc9f0">
-     ENTER WEER
-  </a>
+  <!-- HEADER -->
+  <div class="header-group">
+    <div>
+      <div class="location-title">Enter</div>
+      <div style="font-size: 12px; color: #888; margin-top: 2px;">Overijssel</div>
+    </div>
+    <div class="condition-badge" id="condBadge">Laden...</div>
+  </div>
+
+  <!-- HERO SECTION WITH VISUAL STORYTELLING ICON -->
+  <div class="hero-section">
+    <div>
+      <div class="temp-main" id="tempMain">--°C</div>
+      <div class="temp-feels" id="tempFeels">Gevoel: --°C</div>
+    </div>
+    <div class="weather-icon-visual" id="weatherIcon">⛅</div>
+  </div>
+
+  <!-- HOURLY FORECAST -->
+  <div>
+    <div class="section-title">Verwachting komende uren</div>
+    <div class="hourly-strip" id="hourlyStrip"></div>
+  </div>
+
+  <!-- METRICS GRID -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-label">Luchtvochtigheid</span>
+      <span class="stat-value" id="humidity">--%</span>
+      <span class="stat-sub">Relatief</span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Neerslagkans</span>
+      <span class="stat-value" id="precipProb">--%</span>
+      <span class="stat-sub" id="precipVal">0 mm nu</span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Wind</span>
+      <span class="stat-value" id="windSpeed">-- km/h</span>
+      <span class="stat-sub" id="windDir">Richting: --</span>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">UV Index</span>
+      <span class="stat-value" id="uvIndex">--</span>
+      <span class="stat-sub" id="uvRisk">Laag</span>
+    </div>
+  </div>
 
   <script>
-    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-  </script>
+    const LAT = 52.2961;
+    const LON = 6.5786;
+    const API_URL = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,relativehumidity_2m&daily=uv_index_max,precipitation_probability_max&timezone=Europe%2FAmsterdam`;
 
+    function parseWeather(code) {
+      if (code === 0) return { label: 'Zonnig', icon: '☀️' };
+      if (code >= 1 && code <= 3) return { label: 'Bewolkt', icon: '☁️' };
+      if (code >= 45 && code <= 48) return { label: 'Mistig', icon: '🌫️' };
+      if (code >= 51 && code <= 67) return { label: 'Regen', icon: '🌧️' };
+      if (code >= 80 && code <= 82) return { label: 'Buien', icon: '🌦️' };
+      if (code >= 95) return { label: 'Onweer', icon: '⚡' };
+      return { label: 'Bewolkt', icon: '⛅' };
+    }
+
+    function windDegToText(deg) {
+      const dirs = ['N', 'NO', 'O', 'ZO', 'Z', 'ZW', 'W', 'NW'];
+      return dirs[Math.round(deg / 45) % 8];
+    }
+
+    async function fetchWeather() {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        const current = data.current_weather;
+
+        const weatherInfo = parseWeather(current.weathercode);
+
+        document.getElementById('condBadge').innerText = weatherInfo.label;
+        document.getElementById('weatherIcon').innerText = weatherInfo.icon;
+        document.getElementById('tempMain').innerText = `${Math.round(current.temperature)}°C`;
+        document.getElementById('tempFeels').innerText = `Gevoel: ${Math.round(current.temperature - 1)}°C`;
+
+        document.getElementById('humidity').innerText = `${data.hourly?.relativehumidity_2m?.[0] ?? 80}%`;
+        
+        const precipProb = data.daily?.precipitation_probability_max?.[0] ?? 10;
+        document.getElementById('precipProb').innerText = `${precipProb}%`;
+
+        document.getElementById('windSpeed').innerText = `${Math.round(current.windspeed)} km/h`;
+        document.getElementById('windDir').innerText = `Richting: ${windDegToText(current.winddirection)}`;
+
+        const uv = data.daily?.uv_index_max?.[0] ?? 2.0;
+        document.getElementById('uvIndex').innerText = uv.toFixed(1);
+        document.getElementById('uvRisk').innerText = uv > 5 ? 'Hoog' : (uv > 2 ? 'Matig' : 'Laag');
+
+        // Hourly strip
+        const currentHour = new Date().getHours();
+        const hourlyStrip = document.getElementById('hourlyStrip');
+        hourlyStrip.innerHTML = '';
+
+        for (let i = 1; i <= 5; i++) {
+          const hIdx = currentHour + i;
+          if (data.hourly && data.hourly.temperature_2m[hIdx]) {
+            hourlyStrip.innerHTML += `
+              <div class="hourly-item">
+                <span class="hourly-time">${(currentHour + i) % 24}:00</span>
+                <span class="hourly-temp">${Math.round(data.hourly.temperature_2m[hIdx])}°</span>
+              </div>
+            `;
+          }
+        }
+      } catch (err) {
+        document.getElementById('condBadge').innerText = 'Lokaal Weer';
+      }
+    }
+
+    fetchWeather();
+    setInterval(fetchWeather, 15 * 60 * 1000);
+  </script>
 </body>
 </html>
