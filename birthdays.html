@@ -114,7 +114,7 @@ body::before {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 25px;
+  gap: 15px;
 }
 
 .date-display {
@@ -122,9 +122,27 @@ body::before {
   font-weight: 500;
   color: #9ca9bd;
   letter-spacing: .3px;
+  margin-right: 10px;
 }
 
-.test-button {
+.month-select {
+  background: rgba(217,170,96,.07);
+  border: 1px solid rgba(217,170,96,.5);
+  color: var(--gold-light);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+.month-select option {
+  background: var(--navy);
+  color: #fff;
+}
+
+.test-button, .upload-btn {
   border: 1px solid rgba(217,170,96,.5);
   background: rgba(217,170,96,.07);
   color: var(--gold-light);
@@ -132,15 +150,44 @@ body::before {
   font-weight: 700;
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  padding: 10px 15px;
-  border-radius: 3px;
+  padding: 9px 14px;
+  border-radius: 4px;
   cursor: pointer;
   transition: all .25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.test-button:hover {
+.test-button:hover, .upload-btn:hover {
   background: rgba(217,170,96,.18);
   border-color: var(--gold);
+}
+
+#csvFileInput {
+  display: none;
+}
+
+/* DRAG OVERLAY */
+.drag-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(9,14,25,0.9);
+  border: 3px dashed var(--gold);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--gold-light);
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+
+.drag-overlay.active {
+  opacity: 1;
 }
 
 /* MAIN CONTENT */
@@ -444,7 +491,7 @@ body::before {
   z-index: 5;
 }
 
-/* BIRTHDAY CELEBRATION SCREENS */
+/* CELEBRATION SCREENS */
 
 .celebration-screen {
   width: 100%;
@@ -627,6 +674,7 @@ body::before {
 
 <div class="bg-glow"></div>
 <canvas id="confettiCanvas"></canvas>
+<div class="drag-overlay" id="dragOverlay">Sleep CSV-bestand hiernaartoe om te uploaden</div>
 
 <div class="screen-wrapper">
 
@@ -638,9 +686,33 @@ body::before {
 
     <div class="header-actions">
       <div class="date-display" id="dateDisplay">--</div>
+      
+      <!-- Month Selector for Testing Any Month -->
+      <select class="month-select" id="monthSelect" onchange="changeMonth(this.value)">
+        <option value="current">Huidige maand</option>
+        <option value="1">Januari</option>
+        <option value="2">Februari</option>
+        <option value="3">Maart</option>
+        <option value="4">April</option>
+        <option value="5">Mei</option>
+        <option value="6">Juni</option>
+        <option value="7">Juli</option>
+        <option value="8">Augustus</option>
+        <option value="9">September</option>
+        <option value="10">Oktober</option>
+        <option value="11">November</option>
+        <option value="12">December</option>
+      </select>
+
       <button class="test-button" id="testButton" onclick="cycleTestMode()">
         Test verjaardag
       </button>
+
+      <!-- CSV Upload Button -->
+      <button class="upload-btn" onclick="document.getElementById('csvFileInput').click()">
+        📁 CSV Uploaden
+      </button>
+      <input type="file" id="csvFileInput" accept=".csv" onchange="handleFileUpload(event)">
     </div>
   </div>
 
@@ -654,7 +726,7 @@ body::before {
    BIRTHDAY DATA
 ===================================== */
 
-const birthdays = [
+let birthdays = [
   { name:"Laila van Oversteeg", dob:"2005-01-19", month:1, day:19 },
   { name:"Malgorzata Witczak", dob:"1994-02-09", month:2, day:9 },
   { name:"Wendy Slag", dob:"1979-02-13", month:2, day:13 },
@@ -707,16 +779,9 @@ const testPeople = [
 ];
 
 /* STATE */
-// testMode can be: 'off', 'birthday', 'special'
+let selectedMonthOverride = 'current';
 let testMode = 'off';
 let confettiStarted = false;
-
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('test') === 'true' || urlParams.get('test') === 'birthday') {
-  testMode = 'birthday';
-} else if (urlParams.get('test') === 'special') {
-  testMode = 'special';
-}
 
 /* HELPERS */
 
@@ -732,6 +797,12 @@ function getDaysInMonth(year, month) {
   return new Date(year, month, 0).getDate();
 }
 
+function changeMonth(val) {
+  selectedMonthOverride = val;
+  testMode = 'off';
+  renderPage();
+}
+
 function cycleTestMode() {
   if (testMode === 'off') testMode = 'birthday';
   else if (testMode === 'birthday') testMode = 'special';
@@ -740,6 +811,90 @@ function cycleTestMode() {
   confettiStarted = false;
   renderPage();
 }
+
+/* =====================================
+   CSV AUTOMATIC IMPORT & PARSER
+===================================== */
+
+function parseCSV(text) {
+  const lines = text.split(/\r\n|\n/);
+  if (lines.length < 2) return;
+
+  const parsed = [];
+  const headers = lines[0].toLowerCase().split(",").map(h => h.trim());
+  const nameIdx = headers.findIndex(h => h.includes("name") || h.includes("naam"));
+  const dobIdx = headers.findIndex(h => h.includes("dob") || h.includes("geboortedatum") || h.includes("date"));
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const cols = line.split(",").map(c => c.trim().replace(/^["']|["']$/g, ""));
+
+    const name = nameIdx !== -1 ? cols[nameIdx] : cols[0];
+    const rawDob = dobIdx !== -1 ? cols[dobIdx] : cols[1];
+
+    if (name && rawDob) {
+      let dob = rawDob;
+      // Convert DD-MM-YYYY to YYYY-MM-DD if needed
+      if (rawDob.includes("-") && rawDob.split("-")[0].length === 2) {
+        const parts = rawDob.split("-");
+        dob = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      } else if (rawDob.includes("/") && rawDob.split("/")[0].length === 2) {
+        const parts = rawDob.split("/");
+        dob = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+
+      const dateObj = new Date(dob);
+      if (!isNaN(dateObj.getTime())) {
+        parsed.push({
+          name: name,
+          dob: dob,
+          month: dateObj.getMonth() + 1,
+          day: dateObj.getDate()
+        });
+      }
+    }
+  }
+
+  if (parsed.length > 0) {
+    birthdays = parsed;
+    alert(`Succesvol ${parsed.length} verjaardagen geïmporteerd uit het CSV-bestand!`);
+    renderPage();
+  } else {
+    alert("Kon geen geldige verjaardagen vinden in het CSV-bestand.");
+  }
+}
+
+function handleFileUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (event) => parseCSV(event.target.result);
+  reader.readAsText(file);
+}
+
+// DRAG AND DROP HANDLERS
+window.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  document.getElementById("dragOverlay").classList.add("active");
+});
+
+window.addEventListener("dragleave", (e) => {
+  if (e.clientX === 0 && e.clientY === 0) {
+    document.getElementById("dragOverlay").classList.remove("active");
+  }
+});
+
+window.addEventListener("drop", (e) => {
+  e.preventDefault();
+  document.getElementById("dragOverlay").classList.remove("active");
+  const files = e.dataTransfer.files;
+  if (files.length > 0 && files[0].name.endsWith(".csv")) {
+    const reader = new FileReader();
+    reader.onload = (event) => parseCSV(event.target.result);
+    reader.readAsText(files[0]);
+  }
+});
 
 /* =====================================
    SATELLITE ORBS
@@ -1034,7 +1189,7 @@ function renderPage() {
   const now = new Date();
   const currentYear = now.getFullYear();
   let currentDay = now.getDate();
-  let currentMonth = now.getMonth()+1;
+  let currentMonth = selectedMonthOverride === 'current' ? (now.getMonth() + 1) : Number(selectedMonthOverride);
 
   if (testMode === 'birthday') {
     currentDay = 12;
@@ -1068,7 +1223,10 @@ function renderPage() {
     return;
   }
 
-  const todaysBirthdays = birthdays.filter(b => b.month===currentMonth && b.day===currentDay);
+  // Only show celebration full-screen if current real-time day has a birthday and no month override is selected
+  const todaysBirthdays = (selectedMonthOverride === 'current') 
+    ? birthdays.filter(b => b.month === currentMonth && b.day === currentDay)
+    : [];
 
   if (todaysBirthdays.length > 0) {
     renderCelebration(todaysBirthdays, currentYear);
@@ -1092,7 +1250,7 @@ window.addEventListener("resize", drawSnakeRoute);
 setTimeout(drawSnakeRoute, 100);
 
 setInterval(() => {
-  if (testMode === 'off') {
+  if (testMode === 'off' && selectedMonthOverride === 'current') {
     renderPage();
   }
 }, 60000);
