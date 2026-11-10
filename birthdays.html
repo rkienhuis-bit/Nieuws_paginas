@@ -3,869 +3,708 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IPEX Group | Verjaardagen</title>
-
+<title>Verjaardagen Pad</title>
 <style>
-:root {
-  --navy: #182b50;
-  --blue: #647da8;
-  --blue-light: #e9eef6;
-  --green: #dcefe5;
-  --green-dark: #6b9b80;
-  --purple: #9699c1;
-  --purple-light: #ededf5;
-  --white: #ffffff;
-  --background: #f5f6f8;
-  --grey: #c9cdd4;
-  --text: #263752;
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html,body {
+  width:100%; height:100vh; overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  background:#090d16; color:#fff;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+.bg-gradient {
+  position:absolute; inset:0;
+  background:radial-gradient(circle at 50% 20%,rgba(245,158,11,.05),#090d16 85%);
+  z-index:1; pointer-events:none;
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  font-family: Arial, Helvetica, sans-serif;
-  background: var(--background);
-  color: var(--navy);
+#confettiCanvas {
+  position:absolute; inset:0;
+  width:100%; height:100%; z-index:4; pointer-events:none;
 }
 
-.screen {
-  height: 100vh;
-  width: 100vw;
-  padding: 42px 65px 35px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
+.screen-wrapper {
+  position:relative; z-index:2;
+  width:100%; height:100vh;
+  padding:40px 60px;
+  display:flex; flex-direction:column;
+  justify-content:space-between;
 }
 
-/* BACKGROUND */
-
-.background-shape {
-  position: absolute;
-  width: 650px;
-  height: 650px;
-  border-radius: 50%;
-  background: var(--green);
-  opacity: .35;
-  right: -350px;
-  bottom: -370px;
-  z-index: 0;
+.header-group {
+  display:flex; justify-content:space-between;
+  align-items:flex-end;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  padding-bottom:20px;
 }
 
-.background-shape.two {
-  width: 350px;
-  height: 350px;
-  right: auto;
-  left: -240px;
-  bottom: 180px;
-  background: var(--purple-light);
-  opacity: .7;
+.title-box h1 {
+  font-size:36px; font-weight:700;
+  letter-spacing:-.5px; margin-bottom:4px;
 }
 
-/* HEADER */
-
-.header {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 24px;
-  border-bottom: 2px solid #e3e6eb;
+.title-box p {
+  font-size:12px; color:#f59e0b;
+  text-transform:uppercase; letter-spacing:2px;
+  font-weight:600;
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.brand-mark {
-  width: 52px;
-  height: 52px;
-  background: var(--navy);
-  border-radius: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 23px;
-  font-weight: 900;
-  letter-spacing: -2px;
-  box-shadow: 0 4px 0 #0e1d38;
-}
-
-.brand-name {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  color: var(--navy);
-}
-
-.brand-sub {
-  font-size: 10px;
-  letter-spacing: 3px;
-  color: var(--blue);
-  margin-top: 4px;
-  font-weight: 700;
-}
-
-.header-right {
-  text-align: right;
-}
-
-.header-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  color: var(--blue);
-  font-weight: 700;
-}
-
-.header-date {
-  font-size: 19px;
-  font-weight: 700;
-  margin-top: 5px;
-}
-
-/* INTRO */
-
-.intro {
-  position: relative;
-  z-index: 2;
-  margin: 28px 0 22px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-
-.intro h1 {
-  font-size: 35px;
-  font-weight: 800;
-  letter-spacing: -1px;
-}
-
-.intro p {
-  font-size: 15px;
-  color: #78859a;
-  margin-top: 7px;
-}
-
-.month-tag {
-  background: var(--purple-light);
-  color: var(--navy);
-  border-radius: 30px;
-  padding: 11px 23px;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 1px;
-}
-
-/* BIRTHDAY PATH */
-
-.path-area {
-  flex: 1;
-  min-height: 0;
-  position: relative;
-  z-index: 2;
-  padding: 12px 5px;
-}
-
-.path-grid {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  grid-template-rows: repeat(5, minmax(0, 1fr));
-  column-gap: 15px;
-  row-gap: 9px;
-}
-
-.path-line {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.path-line path {
-  fill: none;
-  stroke: #d9e0e9;
-  stroke-width: 7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 1 1;
-}
-
-/* DAY NODES */
-
-.day {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.day-circle {
-  width: 59px;
-  height: 59px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  border: 3px solid #dfe3e9;
-  box-shadow: 0 5px 0 #cbd0d7;
-  font-size: 19px;
-  font-weight: 800;
-  color: #8994a4;
-  flex-shrink: 0;
-  position: relative;
-  transition: transform .3s;
-}
-
-.day.past .day-circle {
-  background: #e9ebee;
-  border-color: #e9ebee;
-  box-shadow: 0 4px 0 #d3d6da;
-  color: #aab0b8;
-}
-
-.day.today .day-circle {
-  background: var(--blue);
-  color: white;
-  border-color: var(--blue);
-  box-shadow: 0 5px 0 #435d86;
-  transform: scale(1.12);
-}
-
-.day.birthday .day-circle {
-  background: var(--green);
-  color: var(--navy);
-  border: 4px solid var(--green-dark);
-  box-shadow: 0 5px 0 #91b5a0;
-  transform: scale(1.12);
-}
-
-.day.birthday.today .day-circle {
-  background: var(--navy);
-  border-color: var(--navy);
-  color: white;
-  box-shadow: 0 5px 0 #0e1d38;
-}
-
-.day-number {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background: var(--purple);
-  color: white;
-  border: 2px solid white;
-  width: 23px;
-  height: 23px;
-  border-radius: 50%;
-  font-size: 11px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-}
-
-.day-info {
-  text-align: center;
-  margin-top: 10px;
-  max-width: 100%;
-}
-
-.day-name {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--navy);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.day-age {
-  font-size: 11px;
-  color: #8190a5;
-  margin-top: 3px;
-}
-
-.day.birthday .day-age {
-  color: var(--green-dark);
-  font-weight: 700;
-}
-
-.day.today .day-name {
-  color: var(--blue);
-}
-
-/* TODAY CELEBRATION */
-
-.celebration {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 2;
-  text-align: center;
-}
-
-.celebration-inner {
-  width: 100%;
-  max-width: 1000px;
-  animation: appear .9s ease-out;
-}
-
-.celebration-symbol {
-  width: 115px;
-  height: 115px;
-  margin: 0 auto 25px;
-  border-radius: 50%;
-  background: var(--green);
-  border: 6px solid var(--green-dark);
-  box-shadow: 0 9px 0 #b6d4c1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 54px;
-}
-
-.celebration-label {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--green-dark);
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  margin-bottom: 18px;
-}
-
-.celebration h1 {
-  font-size: 65px;
-  line-height: 1.1;
-  letter-spacing: -2px;
-  font-weight: 900;
-  color: var(--navy);
-}
-
-.celebration-age {
-  display: inline-block;
-  margin-top: 22px;
-  padding: 12px 28px;
-  background: var(--purple-light);
-  color: var(--navy);
-  border-radius: 30px;
-  font-weight: 800;
-  font-size: 18px;
-}
-
-.celebration-message {
-  font-size: 23px;
-  color: #6d7c91;
-  margin-top: 28px;
-}
-
-.celebration-bottom {
-  font-size: 13px;
-  color: var(--blue);
-  letter-spacing: 3px;
-  font-weight: 800;
-  margin-top: 48px;
-}
-
-/* FOOTER */
-
-.footer {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 2px solid #e3e6eb;
-  padding-top: 17px;
-  margin-top: 15px;
-  color: #8994a4;
-  font-size: 11px;
-  letter-spacing: 1px;
-}
-
-.footer strong {
-  color: var(--navy);
-}
-
-.footer-mark {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.footer-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--green-dark);
-}
-
-/* ANIMATIONS */
-
-@keyframes appear {
-  from {
-    opacity: 0;
-    transform: translateY(25px) scale(.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.confetti {
-  position: fixed;
-  top: -20px;
-  z-index: 10;
-  width: 9px;
-  height: 15px;
-  animation: fall linear forwards;
-  pointer-events: none;
-}
-
-@keyframes fall {
-  to {
-    transform: translateY(110vh) rotate(720deg);
-    opacity: 0;
-  }
+.date-display {
+  font-size:15px; color:#94a3b8;
+  font-weight:500;
 }
 
 .test-banner {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--navy);
-  color: white;
-  padding: 7px 18px;
-  border-radius: 20px;
-  font-size: 11px;
-  z-index: 20;
-  font-weight: 700;
+  position:fixed; top:15px; left:50%;
+  transform:translateX(-50%);
+  background:#f59e0b; color:#000;
+  font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:1px;
+  padding:4px 12px; border-radius:4px;
+  z-index:999; display:none;
 }
 
-/* RESPONSIVE */
+.main-content {
+  flex-grow:1;
+  display:flex; align-items:center;
+  justify-content:center;
+  padding:20px 0; overflow:hidden;
+  position:relative;
+}
 
-@media (max-height: 800px) {
-  .screen {
-    padding: 25px 45px 20px;
-  }
+/* SNAKE PATH */
 
-  .intro {
-    margin: 17px 0 12px;
-  }
+.snake-grid {
+  position:relative;
+  width:100%; max-width:1180px;
+  height:100%; max-height:720px;
+  padding:14px 10px;
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  grid-template-rows:repeat(5,minmax(0,1fr));
+  column-gap:12px; row-gap:4px;
+  overflow:hidden;
+}
 
-  .day-circle {
-    width: 48px;
-    height: 48px;
-    font-size: 16px;
-  }
+/* Smooth, layered route */
 
-  .day-info {
-    margin-top: 7px;
-  }
+.snake-route {
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  overflow:visible; pointer-events:none;
+  z-index:0;
+}
 
-  .day-name {
-    font-size: 11px;
-  }
+.route-shadow {
+  fill:none;
+  stroke:rgba(0,0,0,.34);
+  stroke-width:13;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
 
-  .day-age {
-    font-size: 10px;
+.route-line {
+  fill:none;
+  stroke:url(#routeGradient);
+  stroke-width:7;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  opacity:.9;
+}
+
+.route-highlight {
+  fill:none;
+  stroke:rgba(255,255,255,.19);
+  stroke-width:1.5;
+  stroke-linecap:round;
+  stroke-dasharray:2 12;
+}
+
+/* Circular nodes */
+
+.path-node {
+  position:relative; z-index:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  text-align:center;
+}
+
+.node-circle {
+  position:relative;
+  width:55px; height:55px;
+  flex:0 0 55px;
+  border-radius:50%;
+  display:flex; align-items:center;
+  justify-content:center;
+  background:linear-gradient(145deg,#26334b,#172236);
+  border:4px solid #34435b;
+  box-shadow:
+    0 6px 0 #101827,
+    0 9px 18px rgba(0,0,0,.28),
+    inset 0 2px 3px rgba(255,255,255,.08);
+  color:#aebbd0;
+  font-size:16px; font-weight:800;
+  transition:transform .3s ease,box-shadow .3s ease;
+}
+
+/* Past days */
+
+.path-node.past { opacity:.43; }
+
+.path-node.past .node-circle {
+  background:linear-gradient(145deg,#202b3d,#151e2d);
+  border-color:#2a3548;
+  color:#7e8ba0;
+  box-shadow:0 4px 0 #101827;
+}
+
+/* Today */
+
+.path-node.today .node-circle {
+  background:linear-gradient(145deg,#53c8f3,#168ac4);
+  border-color:#8bdfff;
+  color:#071827;
+  box-shadow:
+    0 6px 0 #12628f,
+    0 0 25px rgba(56,189,248,.28),
+    inset 0 2px 3px rgba(255,255,255,.35);
+  transform:scale(1.13);
+}
+
+/* Birthday milestones */
+
+.path-node.birthday .node-circle {
+  background:linear-gradient(145deg,#f8c96c,#d98b24);
+  border-color:#ffe0a0;
+  color:#38230b;
+  box-shadow:
+    0 6px 0 #87551d,
+    0 0 22px rgba(245,158,11,.2),
+    inset 0 2px 3px rgba(255,255,255,.4);
+  transform:scale(1.12);
+  animation:milestoneGlow 2.8s ease-in-out infinite alternate;
+}
+
+.path-node.birthday.today .node-circle {
+  background:linear-gradient(145deg,#f9d77e,#f09a32);
+  border-color:#fff0c5;
+  color:#38230b;
+}
+
+/* Names */
+
+.node-title {
+  display:block;
+  max-width:100%;
+  padding:0 3px;
+  color:#e8edf5;
+  font-size:11px;
+  line-height:1.2;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-shadow:0 1px 5px rgba(0,0,0,.5);
+}
+
+.node-sub {
+  display:block;
+  color:#8291a8;
+  font-size:9px;
+  line-height:1.15;
+  margin-top:3px;
+  white-space:nowrap;
+}
+
+.path-node.birthday .node-title {
+  color:#f7c66b; font-size:12px;
+}
+
+.path-node.birthday .node-sub { color:#c6a36d; }
+.path-node.today .node-title { color:#65cafa; }
+
+.milestone-star {
+  position:absolute;
+  right:-7px; top:-8px;
+  width:21px; height:21px;
+  border-radius:50%;
+  display:flex; align-items:center;
+  justify-content:center;
+  background:#f5b83d;
+  color:#38230b;
+  border:2px solid #182235;
+  font-size:10px;
+  box-shadow:0 2px 5px rgba(0,0,0,.3);
+}
+
+@keyframes milestoneGlow {
+  from {
+    box-shadow:0 6px 0 #87551d,
+    0 0 13px rgba(245,158,11,.16),
+    inset 0 2px 3px rgba(255,255,255,.4);
   }
+  to {
+    box-shadow:0 6px 0 #87551d,
+    0 0 25px rgba(245,158,11,.38),
+    inset 0 2px 3px rgba(255,255,255,.4);
+  }
+}
+
+/* Birthday celebration */
+
+.celebration-feature {
+  width:100%; max-width:650px;
+  text-align:center; padding:60px 40px;
+  background:radial-gradient(circle at 50% 30%,
+    rgba(245,158,11,.12),transparent 70%);
+  position:relative;
+  animation:bounceIn 1s cubic-bezier(.175,.885,.32,1.275) forwards;
+}
+
+.celebration-feature::before {
+  content:'';
+  position:absolute; top:0; left:50%;
+  transform:translateX(-50%);
+  width:120px; height:3px;
+  background:linear-gradient(90deg,transparent,#f59e0b,transparent);
+  border-radius:2px;
+}
+
+.celeb-tag {
+  font-size:13px; font-weight:700;
+  color:#f59e0b; text-transform:uppercase;
+  letter-spacing:3px; margin-bottom:20px;
+}
+
+.celeb-name-large {
+  font-size:60px; font-weight:800;
+  color:#fff; letter-spacing:-1px;
+  margin-bottom:14px; line-height:1.1;
+}
+
+.celeb-age-badge {
+  display:inline-block;
+  background:rgba(245,158,11,.15);
+  border:1px solid rgba(245,158,11,.3);
+  color:#f59e0b; font-size:15px;
+  font-weight:700; padding:6px 16px;
+  border-radius:20px; margin-bottom:20px;
+}
+
+.celeb-wish-text {
+  font-size:22px; color:#f3f4f6;
+  font-weight:500; line-height:1.5;
+}
+
+@keyframes bounceIn {
+  0% { opacity:0; transform:scale(.9) translateY(20px); }
+  60% { opacity:1; transform:scale(1.02) translateY(-5px); }
+  100% { opacity:1; transform:scale(1) translateY(0); }
+}
+
+@media (max-height:800px) {
+  .snake-grid { padding:8px 6px; row-gap:0; }
+  .node-circle {
+    width:47px; height:47px;
+    flex-basis:47px; font-size:14px;
+  }
+  .path-node { gap:5px; }
+  .node-title { font-size:10px; }
+  .path-node.birthday .node-title { font-size:10px; }
+  .node-sub { font-size:8px; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="background-shape"></div>
-<div class="background-shape two"></div>
-<div class="test-banner" id="testBanner">TESTMODUS ACTIEF</div>
+<div class="test-banner" id="testBanner">
+  Test Mode Actief (?test=true)
+</div>
 
-<div class="screen">
+<div class="bg-gradient"></div>
+<canvas id="confettiCanvas"></canvas>
 
-  <header class="header">
-    <div class="brand">
-      <div class="brand-mark">I</div>
-      <div>
-        <div class="brand-name">IPEX GROUP</div>
-        <div class="brand-sub">BUILDING CONNECTIONS</div>
-      </div>
+<div class="screen-wrapper">
+
+  <div class="header-group">
+    <div class="title-box">
+      <h1 id="mainTitle">Verjaardagen deze maand</h1>
+      <p id="subTitle">Team Overzicht</p>
     </div>
+    <div class="date-display" id="dateDisplay">--</div>
+  </div>
 
-    <div class="header-right">
-      <div class="header-label">Samen bouwen, samen vieren</div>
-      <div class="header-date" id="dateDisplay"></div>
-    </div>
-  </header>
-
-  <section class="intro" id="intro">
-    <div>
-      <h1>Verjaardagen</h1>
-      <p>Een mooie mijlpaal voor onze collega's.</p>
-    </div>
-    <div class="month-tag" id="monthTag"></div>
-  </section>
-
-  <main class="path-area" id="pathArea">
-    <div class="path-grid" id="pathGrid">
-      <svg class="path-line" id="pathLine">
-        <path id="pathDrawing"></path>
-      </svg>
-    </div>
-  </main>
-
-  <footer class="footer">
-    <div>IPEX GROUP <strong>•</strong> TEAM ENTER</div>
-    <div class="footer-mark">
-      <div class="footer-dot"></div>
-      Samen maken we het verschil
-    </div>
-  </footer>
+  <div class="main-content" id="contentArea"></div>
 
 </div>
 
 <script>
 
-/* =================================
-   VERJAARDAGEN
-================================= */
-
 const birthdays = [
-  { name: "Laila van Oversteeg", dob: "2005-01-19", month: 1, day: 19 },
-  { name: "Malgorzata Witczak", dob: "1994-02-09", month: 2, day: 9 },
-  { name: "Wendy Slag", dob: "1979-02-13", month: 2, day: 13 },
-  { name: "Robert Markvoort", dob: "1972-02-22", month: 2, day: 22 },
-  { name: "Sander Bremer", dob: "1975-03-05", month: 3, day: 5 },
-  { name: "Arjan Dijkstra", dob: "1974-03-16", month: 3, day: 16 },
-  { name: "Anja Hoevink-Zwijnenberg", dob: "1970-03-25", month: 3, day: 25 },
-  { name: "Florus van den Berge", dob: "1979-04-02", month: 4, day: 2 },
-  { name: "Remco Grondhuis", dob: "1988-04-10", month: 4, day: 10 },
-  { name: "Christoph Ahlers", dob: "1967-04-19", month: 4, day: 19 },
-  { name: "Lieke van Horssen", dob: "2000-04-23", month: 4, day: 23 },
-  { name: "Pim van Oppen", dob: "1973-05-04", month: 5, day: 4 },
-  { name: "Jeroen Schuitemaker", dob: "1991-05-09", month: 5, day: 9 },
-  { name: "Manfred Zeides", dob: "1965-05-12", month: 5, day: 12 },
-  { name: "Martijn Steunenberg", dob: "1975-05-14", month: 5, day: 14 },
-  { name: "Laurents ten Voorde", dob: "1962-05-15", month: 5, day: 15 },
-  { name: "Antoinette Geels", dob: "1968-05-25", month: 5, day: 25 },
-  { name: "Levan Hendriks", dob: "2007-06-07", month: 6, day: 7 },
-  { name: "Maud Meilink", dob: "2006-06-17", month: 6, day: 17 },
-  { name: "Linda Drost", dob: "1987-06-18", month: 6, day: 18 },
-  { name: "Tico van der Linde", dob: "1984-06-19", month: 6, day: 19 },
-  { name: "Gerald Wijnen", dob: "1970-06-19", month: 6, day: 19 },
-  { name: "Ansjelo Gerritsen", dob: "1998-07-01", month: 7, day: 1 },
-  { name: "Marwan hersi", dob: "1986-07-08", month: 7, day: 8 },
-  { name: "Edwin Hüsing", dob: "1966-07-29", month: 7, day: 29 },
-  { name: "Kevin Keizer", dob: "1995-08-03", month: 8, day: 3 },
-  { name: "Iné van Dijk", dob: "2004-08-06", month: 8, day: 6 },
-  { name: "Peter Karssies", dob: "1964-09-06", month: 9, day: 6 },
-  { name: "Gerwin Meilink", dob: "1973-09-09", month: 9, day: 9 },
-  { name: "Raymond van Dijk", dob: "1976-09-24", month: 9, day: 24 },
-  { name: "Kevin van Elven", dob: "1998-10-10", month: 10, day: 10 },
-  { name: "Tim Zwiers", dob: "1998-10-11", month: 10, day: 11 },
-  { name: "Stefan Boekhorst", dob: "1973-10-16", month: 10, day: 16 },
-  { name: "Gilbert Rada", dob: "1973-11-12", month: 11, day: 12 },
-  { name: "Desiree Wissink", dob: "1969-11-12", month: 11, day: 12 },
-  { name: "Marco Vooijs", dob: "1991-11-30", month: 11, day: 30 },
-  { name: "Roy Kienhuis", dob: "1993-12-24", month: 12, day: 24 },
-  { name: "Fenny Voortman - Lohuis", dob: "1966-12-30", month: 12, day: 30 },
-  { name: "Ilona Pigge - Maatje", dob: "1981-12-31", month: 12, day: 31 }
+  { name:"Laila van Oversteeg", dob:"2005-01-19", month:1, day:19 },
+  { name:"Malgorzata Witczak", dob:"1994-02-09", month:2, day:9 },
+  { name:"Wendy Slag", dob:"1979-02-13", month:2, day:13 },
+  { name:"Robert Markvoort", dob:"1972-02-22", month:2, day:22 },
+  { name:"Sander Bremer", dob:"1975-03-05", month:3, day:5 },
+  { name:"Arjan Dijkstra", dob:"1974-03-16", month:3, day:16 },
+  { name:"Anja Hoevink-Zwijnenberg", dob:"1970-03-25", month:3, day:25 },
+  { name:"Florus van den Berge", dob:"1979-04-02", month:4, day:2 },
+  { name:"Remco Grondhuis", dob:"1988-04-10", month:4, day:10 },
+  { name:"Christoph Ahlers", dob:"1967-04-19", month:4, day:19 },
+  { name:"Lieke van Horssen", dob:"2000-04-23", month:4, day:23 },
+  { name:"Pim van Oppen", dob:"1973-05-04", month:5, day:4 },
+  { name:"Jeroen Schuitemaker", dob:"1991-05-09", month:5, day:9 },
+  { name:"Manfred Zeides", dob:"1965-05-12", month:5, day:12 },
+  { name:"Martijn Steunenberg", dob:"1975-05-14", month:5, day:14 },
+  { name:"Laurents ten Voorde", dob:"1962-05-15", month:5, day:15 },
+  { name:"Antoinette Geels", dob:"1968-05-25", month:5, day:25 },
+  { name:"Levan Hendriks", dob:"2007-06-07", month:6, day:7 },
+  { name:"Maud Meilink", dob:"2006-06-17", month:6, day:17 },
+  { name:"Linda Drost", dob:"1987-06-18", month:6, day:18 },
+  { name:"Tico van der Linde", dob:"1984-06-19", month:6, day:19 },
+  { name:"Gerald Wijnen", dob:"1970-06-19", month:6, day:19 },
+  { name:"Ansjelo Gerritsen", dob:"1998-07-01", month:7, day:1 },
+  { name:"Marwan hersi", dob:"1986-07-08", month:7, day:8 },
+  { name:"Edwin Hüsing", dob:"1966-07-29", month:7, day:29 },
+  { name:"Kevin Keizer", dob:"1995-08-03", month:8, day:3 },
+  { name:"Iné van Dijk", dob:"2004-08-06", month:8, day:6 },
+  { name:"Peter Karssies", dob:"1964-09-06", month:9, day:6 },
+  { name:"Gerwin Meilink", dob:"1973-09-09", month:9, day:9 },
+  { name:"Raymond van Dijk", dob:"1976-09-24", month:9, day:24 },
+  { name:"Kevin van Elven", dob:"1998-10-10", month:10, day:10 },
+  { name:"Tim Zwiers", dob:"1998-10-11", month:10, day:11 },
+  { name:"Stefan Boekhorst", dob:"1973-10-16", month:10, day:16 },
+  { name:"Gilbert Rada", dob:"1973-11-12", month:11, day:12 },
+  { name:"Desiree Wissink", dob:"1969-11-12", month:11, day:12 },
+  { name:"Marco Vooijs", dob:"1991-11-30", month:11, day:30 },
+  { name:"Roy Kienhuis", dob:"1993-12-24", month:12, day:24 },
+  { name:"Fenny Voortman - Lohuis", dob:"1966-12-30", month:12, day:30 },
+  { name:"Ilona Pigge - Maatje", dob:"1981-12-31", month:12, day:31 }
 ];
 
-const months = [
-  "januari", "februari", "maart", "april",
-  "mei", "juni", "juli", "augustus",
-  "september", "oktober", "november", "december"
+const dutchMonths = [
+  "januari","februari","maart","april","mei","juni",
+  "juli","augustus","september","oktober","november","december"
 ];
 
-function calculateAge(dob, year) {
-  return year - Number(dob.substring(0, 4));
+function splitName(fullName) {
+  const parts = fullName.trim().split(" ");
+  if (parts.length === 1) return { first:parts[0], last:"" };
+  const last = parts.pop();
+  return { first:parts.join(" "), last };
 }
 
-function getMonthDays(year, month) {
-  return new Date(year, month, 0).getDate();
+function calculateAge(dobString,currentYear) {
+  return currentYear - new Date(dobString).getFullYear();
 }
 
-function splitName(name) {
-  const parts = name.trim().split(" ");
-  return parts[0];
+function getDaysInMonth(year,month) {
+  return new Date(year,month,0).getDate();
 }
 
-/* =================================
-   PATH DRAWING
-================================= */
+/* CONFETTI */
 
-function drawPath() {
-  const grid = document.getElementById("pathGrid");
-  const svg = document.getElementById("pathLine");
-  const path = document.getElementById("pathDrawing");
-  const nodes = [...grid.querySelectorAll(".day-circle")];
+function triggerConfetti() {
+  const canvas = document.getElementById("confettiCanvas");
+  const ctx = canvas.getContext("2d");
 
-  if (!nodes.length) return;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-  const rect = grid.getBoundingClientRect();
+  let particles = [];
+  const colors = [
+    "#f59e0b","#38bdf8","#f43f5e","#a855f7","#10b981"
+  ];
 
-  svg.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
+  for (let i=0;i<70;i++) {
+    particles.push({
+      x:canvas.width/2+(Math.random()-.5)*200,
+      y:canvas.height/2,
+      vx:(Math.random()-.5)*12,
+      vy:Math.random()*-14-4,
+      size:Math.random()*8+4,
+      color:colors[Math.floor(Math.random()*colors.length)],
+      rotation:Math.random()*360,
+      rotSpeed:(Math.random()-.5)*10,
+      gravity:.35,
+      opacity:1
+    });
+  }
 
-  const points = nodes.map(node => {
-    const r = node.getBoundingClientRect();
+  function update() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    particles.forEach(p => {
+      p.x+=p.vx;
+      p.y+=p.vy;
+      p.vy+=p.gravity;
+      p.rotation+=p.rotSpeed;
+      p.opacity-=.008;
+
+      if (p.opacity>0) {
+        ctx.save();
+        ctx.translate(p.x,p.y);
+        ctx.rotate(p.rotation*Math.PI/180);
+        ctx.globalAlpha=p.opacity;
+        ctx.fillStyle=p.color;
+        ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*.6);
+        ctx.restore();
+      }
+    });
+
+    if (particles.some(p=>p.opacity>0)) {
+      requestAnimationFrame(update);
+    }
+  }
+
+  update();
+}
+
+/* DRAW THE CURVED SNAKE ROUTE */
+
+function drawSnakeRoute() {
+  const grid = document.getElementById("snakeContainer");
+  const svg = document.getElementById("snakeRoute");
+
+  if (!grid || !svg) return;
+
+  const bounds = grid.getBoundingClientRect();
+  svg.setAttribute("viewBox",`0 0 ${bounds.width} ${bounds.height}`);
+
+  const circles = [...grid.querySelectorAll(".node-circle")];
+
+  const points = circles.map(circle => {
+    const r = circle.getBoundingClientRect();
     return {
-      x: r.left + r.width / 2 - rect.left,
-      y: r.top + r.height / 2 - rect.top
+      x:r.left+r.width/2-bounds.left,
+      y:r.top+r.height/2-bounds.top
     };
   });
 
+  if (points.length<2) return;
+
   let d = `M ${points[0].x} ${points[0].y}`;
 
-  for (let i = 1; i < points.length; i++) {
-    const prev = points[i - 1];
-    const current = points[i];
-    const midY = (prev.y + current.y) / 2;
+  for (let i=1;i<points.length;i++) {
+    const a=points[i-1];
+    const b=points[i];
+    const dx=b.x-a.x;
+    const dy=b.y-a.y;
 
-    d += ` Q ${prev.x} ${midY}, ${current.x} ${current.y}`;
+    if (Math.abs(dy)<2) {
+      const bend=Math.max(18,Math.abs(dx)*.34);
+      const direction=dx>=0?1:-1;
+
+      d+=` C ${a.x+bend*direction} ${a.y-15},
+               ${b.x-bend*direction} ${b.y+15},
+               ${b.x} ${b.y}`;
+    } else {
+      const midY=(a.y+b.y)/2;
+      const sway=(i%2===0?1:-1)*24;
+
+      d+=` C ${a.x+sway} ${midY-8},
+               ${b.x+sway} ${midY+8},
+               ${b.x} ${b.y}`;
+    }
   }
 
-  path.setAttribute("d", d);
+  ["routeShadow","routeLine","routeHighlight"].forEach(id=>{
+    const path=document.getElementById(id);
+    if(path) path.setAttribute("d",d);
+  });
 }
 
-/* =================================
-   CONFETTI
-================================= */
-
-function launchConfetti() {
-  const colors = [
-    "#182b50",
-    "#647da8",
-    "#9699c1",
-    "#6b9b80",
-    "#dcefe5"
-  ];
-
-  for (let i = 0; i < 100; i++) {
-    const piece = document.createElement("div");
-    piece.className = "confetti";
-
-    piece.style.left = Math.random() * 100 + "vw";
-    piece.style.background =
-      colors[Math.floor(Math.random() * colors.length)];
-
-    piece.style.animationDuration =
-      (3 + Math.random() * 4) + "s";
-
-    piece.style.animationDelay =
-      Math.random() * 2 + "s";
-
-    document.body.appendChild(piece);
-
-    setTimeout(() => piece.remove(), 8000);
-  }
-}
-
-/* =================================
-   TODAY CELEBRATION
-================================= */
-
-function renderCelebration(persons, year) {
-  document.getElementById("intro").style.display = "none";
-  document.getElementById("pathArea").style.display = "none";
-
-  const screen = document.querySelector(".screen");
-
-  const celebration = document.createElement("div");
-  celebration.className = "celebration";
-
-  celebration.innerHTML = `
-    <div class="celebration-inner">
-      <div class="celebration-symbol">🎉</div>
-      <div class="celebration-label">Vandaag in de spotlight</div>
-      ${persons.map(person => `
-        <h1>${person.name}</h1>
-        <div class="celebration-age">
-          ${calculateAge(person.dob, year)} jaar!
-        </div>
-      `).join("<div style='height:25px'></div>")}
-      <div class="celebration-message">
-        Van harte gefeliciteerd met je verjaardag!
-      </div>
-      <div class="celebration-bottom">
-        IPEX GROUP · SAMEN BOUWEN, SAMEN VIEREN
-      </div>
-    </div>
-  `;
-
-  screen.insertBefore(
-    celebration,
-    document.querySelector(".footer")
-  );
-
-  launchConfetti();
-}
-
-/* =================================
-   MAIN RENDER
-================================= */
+/* BIRTHDAY CELEBRATION */
 
 function renderPage() {
 
-  const params = new URLSearchParams(window.location.search);
-  const testMode = params.get("test") === "true";
+  const urlParams = new URLSearchParams(window.location.search);
+  const isTestMode = urlParams.get("test")==="true";
 
-  const now = new Date();
-  const year = now.getFullYear();
+  if (isTestMode) {
+    document.getElementById("testBanner").style.display="block";
+  }
 
-  const month = testMode && params.has("month")
-    ? Number(params.get("month"))
-    : now.getMonth() + 1;
+  const now=new Date();
+  const currentYear=now.getFullYear();
 
-  const day = testMode && params.has("day")
-    ? Number(params.get("day"))
+  const currentDay=isTestMode
+    ? Number(urlParams.get("day")||12)
     : now.getDate();
 
-  if (testMode) {
-    document.getElementById("testBanner").style.display = "block";
-  }
+  const currentMonth=isTestMode
+    ? Number(urlParams.get("month")||11)
+    : now.getMonth()+1;
+
+  const options={
+    weekday:"long",
+    day:"numeric",
+    month:"long"
+  };
 
   document.getElementById("dateDisplay").innerText =
-    now.toLocaleDateString("nl-NL", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric"
+    now.toLocaleDateString("nl-NL",options);
+
+  const todaysBirthdays=birthdays.filter(b=>
+    b.month===currentMonth && b.day===currentDay
+  );
+
+  const contentArea=document.getElementById("contentArea");
+
+  if (todaysBirthdays.length>0) {
+
+    document.getElementById("mainTitle").innerText="Jarig Vandaag";
+    document.getElementById("subTitle").innerText="";
+
+    let html="";
+
+    todaysBirthdays.forEach(person=>{
+      const {first,last}=splitName(person.name);
+      const age=calculateAge(person.dob,currentYear);
+
+      html+=`
+        <div class="celebration-feature">
+          <div class="celeb-tag">Vandaag in de spotlight</div>
+          <div class="celeb-name-large">
+            ${first}
+            <span style="color:#f59e0b;display:block;font-size:42px;margin-top:4px;">
+              ${last}
+            </span>
+          </div>
+          <div class="celeb-age-badge">Wordt ${age} jaar</div>
+          <div class="celeb-wish-text">
+            Van harte gefeliciteerd met je verjaardag!
+          </div>
+        </div>
+      `;
     });
 
-  document.getElementById("monthTag").innerText =
-    months[month - 1].toUpperCase();
+    contentArea.innerHTML=html;
+    setTimeout(triggerConfetti,200);
 
-  const todaysBirthdays = birthdays.filter(person =>
-    person.month === month && person.day === day
-  );
+  } else {
 
-  if (todaysBirthdays.length > 0) {
-    renderCelebration(todaysBirthdays, year);
-    return;
-  }
+    document.getElementById("mainTitle").innerText =
+      "Verjaardagen deze maand";
 
-  const monthlyBirthdays = birthdays.filter(person =>
-    person.month === month
-  );
+    document.getElementById("subTitle").innerText =
+      dutchMonths[currentMonth-1].toUpperCase();
 
-  const birthdayMap = {};
+    const monthlyBirthdays=birthdays.filter(b=>
+      b.month===currentMonth
+    );
 
-  monthlyBirthdays.forEach(person => {
-    if (!birthdayMap[person.day]) {
-      birthdayMap[person.day] = [];
-    }
-    birthdayMap[person.day].push(person);
-  });
+    const totalDays=getDaysInMonth(currentYear,currentMonth);
+    const birthdayMap={};
 
-  const totalDays = getMonthDays(year, month);
-  const grid = document.getElementById("pathGrid");
+    monthlyBirthdays.forEach(b=>{
+      if(!birthdayMap[b.day]) birthdayMap[b.day]=[];
+      birthdayMap[b.day].push(b);
+    });
 
-  grid.innerHTML = `
-    <svg class="path-line" id="pathLine">
-      <path id="pathDrawing"></path>
-    </svg>
-  `;
+    let pathHtml=`
+      <div class="snake-grid" id="snakeContainer">
 
-  for (let d = 1; d <= totalDays; d++) {
+        <svg class="snake-route" id="snakeRoute" aria-hidden="true">
+          <defs>
+            <linearGradient id="routeGradient" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#475a78"/>
+              <stop offset="48%" stop-color="#7385a1"/>
+              <stop offset="100%" stop-color="#b18b55"/>
+            </linearGradient>
+          </defs>
 
-    const persons = birthdayMap[d] || [];
-    const isPast = d < day;
-    const isToday = d === day;
-    const hasBirthday = persons.length > 0;
-
-    const row = Math.floor((d - 1) / 7);
-    const position = (d - 1) % 7;
-
-    const column = row % 2 === 0
-      ? position + 1
-      : 7 - position;
-
-    const node = document.createElement("div");
-
-    node.className =
-      "day" +
-      (isPast ? " past" : "") +
-      (isToday ? " today" : "") +
-      (hasBirthday ? " birthday" : "");
-
-    node.style.gridColumn = column;
-    node.style.gridRow = row + 1;
-
-    const birthdayNames = persons
-      .map(person => person.name)
-      .join(", ");
-
-    const ageText = persons
-      .map(person => calculateAge(person.dob, year))
-      .join(" / ");
-
-    node.innerHTML = `
-      <div class="day-circle">
-        ${d}
-        ${hasBirthday
-          ? `<div class="day-number">${persons.length}</div>`
-          : ""}
-      </div>
-
-      <div class="day-info">
-        <div class="day-name">
-          ${hasBirthday
-            ? birthdayNames
-            : isToday
-              ? "Vandaag"
-              : ""}
-        </div>
-
-        <div class="day-age">
-          ${hasBirthday
-            ? "Wordt " + ageText + " jaar"
-            : isToday
-              ? "Jouw dag!"
-              : ""}
-        </div>
-      </div>
+          <path class="route-shadow" id="routeShadow"></path>
+          <path class="route-line" id="routeLine"></path>
+          <path class="route-highlight" id="routeHighlight"></path>
+        </svg>
     `;
 
-    grid.appendChild(node);
-  }
+    const itemsPerRow=7;
 
-  requestAnimationFrame(() => {
-    drawPath();
-    setTimeout(drawPath, 100);
-  });
+    for(let day=1;day<=totalDays;day++) {
+
+      const people=birthdayMap[day]||[];
+      const isPast=day<currentDay;
+      const isToday=day===currentDay;
+      const isBirthday=people.length>0;
+
+      const row=Math.floor((day-1)/itemsPerRow);
+      const position=(day-1)%itemsPerRow;
+
+      const column=row%2===0
+        ? position+1
+        : itemsPerRow-position;
+
+      const statusClass=[
+        isPast?"past":"",
+        isToday?"today":"",
+        isBirthday?"birthday":""
+      ].filter(Boolean).join(" ");
+
+      let label=day;
+      let title=isToday?"Vandaag":"";
+      let sub="";
+
+      if(isBirthday) {
+        const names=people.map(person=>
+          splitName(person.name).first
+        ).join(" & ");
+
+        const ages=people.map(person=>
+          calculateAge(person.dob,currentYear)
+        );
+
+        title=names;
+        sub=people.length>1
+          ? `${people.length} jarigen`
+          : `Wordt ${ages[0]} jaar`;
+
+        label="✦";
+      }
+
+      pathHtml+=`
+        <div class="path-node ${statusClass}"
+             data-day="${day}"
+             style="grid-column:${column};grid-row:${row+1};">
+
+          <div class="node-circle">
+            ${label}
+            ${isBirthday
+              ? '<span class="milestone-star">★</span>'
+              : ''}
+          </div>
+
+          ${title?`
+            <div class="node-text">
+              <span class="node-title">${title}</span>
+              <span class="node-sub">${sub}</span>
+            </div>
+          `:""}
+
+        </div>
+      `;
+    }
+
+    pathHtml+="</div>";
+    contentArea.innerHTML=pathHtml;
+
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(drawSnakeRoute);
+    });
+  }
 }
 
 renderPage();
 
-window.addEventListener("resize", drawPath);
-
-setInterval(renderPage, 60000);
+window.addEventListener("resize",drawSnakeRoute);
+setInterval(renderPage,60000);
 
 </script>
 </body>
