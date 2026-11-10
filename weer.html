@@ -2,135 +2,130 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <title>NOS Weer Dashboard Enter</title>
+  <title>NOS Weer Enter</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       width: 100%;
       height: 100vh;
-      overflow-y: auto;
-      overflow-x: hidden;
+      overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: #0f131a;
+      background: #0b0f17;
       color: #ffffff;
-      padding: 24px 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
-
-    /* CUSTOM SCROLLBAR FOR DASHBOARD */
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
 
     /* TOP HERO CARD */
     .hero-card {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 24px;
+      border-radius: 18px;
+      padding: 18px 22px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
       backdrop-filter: blur(10px);
     }
 
     .hero-left h1 {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 700;
       letter-spacing: 0.5px;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .condition-title {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 600;
-      color: #e30613; /* NOS Red accent or bright white */
-      margin-bottom: 8px;
+      color: #e30613; /* NOS Red */
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .temp-large {
-      font-size: 48px;
-      font-weight: 700;
+      font-size: 42px;
+      font-weight: 800;
       line-height: 1;
       letter-spacing: -1px;
     }
 
     .feels-like {
-      font-size: 11px;
-      color: #999;
+      font-size: 10px;
+      color: #888;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-top: 6px;
+      margin-top: 4px;
     }
 
     .hero-right {
       text-align: right;
-      border-left: 1px solid rgba(255, 255, 255, 0.1);
-      padding-left: 20px;
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+      padding-left: 16px;
     }
 
     .date-text {
-      font-size: 13px;
-      color: #cccccc;
+      font-size: 12px;
+      color: #aaaaaa;
       font-weight: 500;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .time-text {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
       color: #ffffff;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .hero-sub-info {
-      font-size: 12px;
+      font-size: 11px;
       color: #888888;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 1px;
     }
 
     /* HOURLY FORECAST STRIP */
     .hourly-container {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 16px;
+      border-radius: 18px;
+      padding: 12px 14px;
       display: flex;
       justify-content: space-between;
-      overflow-x: auto;
-      margin-bottom: 16px;
     }
 
     .hourly-col {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
-      min-width: 45px;
+      gap: 4px;
     }
 
-    .hourly-time { font-size: 11px; color: #888; font-weight: 600; }
-    .hourly-icon { font-size: 18px; }
-    .hourly-temp { font-size: 14px; font-weight: 700; }
+    .hourly-time { font-size: 10px; color: #888; font-weight: 600; }
+    .hourly-icon { font-size: 15px; }
+    .hourly-temp { font-size: 13px; font-weight: 700; }
 
-    /* STATS GRID (2 COLUMNS) */
+    /* STATS GRID (2x3 Layout) */
     .stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 20px;
+      gap: 12px;
     }
 
     .stat-card {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 20px;
+      border-radius: 18px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 130px;
+      height: 105px;
     }
 
     .stat-header {
@@ -138,78 +133,77 @@
       font-weight: 700;
       color: #888888;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.8px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
     .stat-main-val {
-      font-size: 32px;
-      font-weight: 700;
+      font-size: 26px;
+      font-weight: 800;
       line-height: 1.1;
-      margin: 8px 0 4px 0;
     }
 
     .stat-footer-text {
-      font-size: 11px;
+      font-size: 10px;
       color: #999999;
     }
 
-    /* CUSTOM COMPASS WIDGET */
+    /* COMPASS */
     .compass-box {
       position: relative;
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       border: 2px dashed rgba(255, 255, 255, 0.2);
       border-radius: 50%;
       align-self: flex-end;
-      margin-top: -35px;
+      margin-top: -30px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .compass-needle {
-      width: 4px;
-      height: 24px;
+      width: 3px;
+      height: 18px;
       background: #e30613;
       border-radius: 2px;
       transform-origin: bottom center;
       position: absolute;
-      bottom: 23px;
+      bottom: 18px;
     }
 
-    /* CUSTOM SUN ARC WIDGET */
+    /* SUN ARC */
     .sun-arc-container {
       position: relative;
-      height: 35px;
-      margin-top: 10px;
+      height: 25px;
+      margin-top: 6px;
     }
     .sun-curve {
       width: 100%;
-      height: 20px;
+      height: 15px;
       border-bottom: 2px solid rgba(255,255,255,0.2);
       border-radius: 0 0 50% 50%;
     }
 
-    /* AIR QUALITY SLIDER BAR */
+    /* AQI BAR */
     .aqi-bar {
       width: 100%;
-      height: 6px;
+      height: 5px;
       background: linear-gradient(90deg, #4cd137, #fbc531, #e84118);
       border-radius: 3px;
       position: relative;
-      margin-top: 12px;
+      margin-top: 8px;
     }
     .aqi-pointer {
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
       background: #ffffff;
       border: 2px solid #0f131a;
       border-radius: 50%;
       position: absolute;
-      top: -3px;
-      left: 40%; /* Dynamic position based on AQI */
+      top: -2.5px;
+      left: 35%;
     }
   </style>
 </head>
@@ -220,12 +214,12 @@
     <div class="hero-left">
       <h1>📍 Enter</h1>
       <div class="condition-title" id="condMain">Bewolkt</div>
-      <div class="temp-large" id="tempMain">5°C</div>
-      <div class="feels-like" id="feelsMain">GEVOELSTEMPERATUUR: 5°C</div>
+      <div class="temp-large" id="tempMain">--°C</div>
+      <div class="feels-like" id="feelsMain">GEVOELSTEMPERATUUR: --°C</div>
     </div>
     <div class="hero-right">
-      <div class="date-text" id="dateText">dinsdag, 10 nov. 2026</div>
-      <div class="time-text" id="timeText">11:38 AM</div>
+      <div class="date-text" id="dateText">--</div>
+      <div class="time-text" id="timeText">--:--</div>
       <div class="hero-sub-info">
         <span id="subCond">☁️ Bewolkt</span>
         <span id="subRain">🌧️ Regen - 0%</span>
@@ -238,23 +232,23 @@
     <!-- Populated via JS -->
   </div>
 
-  <!-- STATS GRID 2x4 -->
+  <!-- STATS GRID 2x3 -->
   <div class="stats-grid">
     <!-- LUCHTVOCHTIGHEID -->
     <div class="stat-card">
       <div class="stat-header">💧 Luchtvochtigheid</div>
       <div>
-        <div class="stat-main-val" id="humidityVal">96%</div>
-        <div class="stat-footer-text" id="dewPoint">Het dauwpunt is 4°C op dit moment</div>
+        <div class="stat-main-val" id="humidityVal">--%</div>
+        <div class="stat-footer-text" id="dewPoint">Relatieve luchtvochtigheid</div>
       </div>
     </div>
 
     <!-- NEERSLAG -->
     <div class="stat-card">
-      <div class="stat-header">🌧️ Neerslag</div>
+      <div class="stat-header">🌧️ Neerslagkans</div>
       <div>
-        <div class="stat-main-val" id="precipVal">0%</div>
-        <div class="stat-footer-text">Droog weer verwacht</div>
+        <div class="stat-main-val" id="precipVal">--%</div>
+        <div class="stat-footer-text">Verwachting vandaag</div>
       </div>
     </div>
 
@@ -262,8 +256,8 @@
     <div class="stat-card">
       <div class="stat-header">💨 Wind</div>
       <div>
-        <div class="stat-main-val" id="windVal" style="font-size: 24px;">11 km/h</div>
-        <div class="stat-footer-text" id="windText">Windstoten 11 km/h bij 137° SE</div>
+        <div class="stat-main-val" id="windVal" style="font-size: 20px;">-- km/h</div>
+        <div class="stat-footer-text" id="windText">Richting: --</div>
       </div>
       <div class="compass-box">
         <div class="compass-needle" id="compassNeedle"></div>
@@ -278,9 +272,9 @@
           <div class="sun-curve"></div>
         </div>
       </div>
-      <div style="display: flex; justify-content: space-between; font-size: 10px; color: #aaa; margin-top: 4px;">
-        <span>Opkomst: <b>07:45</b></span>
-        <span>Ondergang: <b>16:49</b></span>
+      <div style="display: flex; justify-content: space-between; font-size: 9px; color: #aaa;">
+        <span>Opkomst: <b id="sunriseTime">07:45</b></span>
+        <span>Ondergang: <b id="sunsetTime">16:49</b></span>
       </div>
     </div>
 
@@ -297,9 +291,9 @@
     <div class="stat-card">
       <div class="stat-header">🍃 Luchtkwaliteit</div>
       <div>
-        <div class="stat-main-val" style="font-size: 26px;">3 <span style="font-size: 14px; font-weight: 500; color:#fbc531;">Matig</span></div>
+        <div class="stat-main-val" style="font-size: 22px;">3 <span style="font-size: 12px; font-weight: 500; color:#fbc531;">Matig</span></div>
         <div class="aqi-bar">
-          <div class="aqi-pointer" style="left: 35%;"></div>
+          <div class="aqi-pointer"></div>
         </div>
       </div>
     </div>
@@ -308,18 +302,18 @@
   <script>
     const LAT = 52.2961;
     const LON = 6.5786;
-    const API_URL = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,weather_code,precipitation_probability&daily=sunrise,sunset,uv_index_max&timezone=Europe%2FAmsterdam`;
+    const API_URL = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,weather_code&daily=sunrise,sunset,precipitation_probability_max&timezone=Europe%2FAmsterdam`;
 
     function updateClockAndDate() {
       const now = new Date();
-      const optionsDate = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+      const optionsDate = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
       document.getElementById('dateText').innerText = now.toLocaleDateString('nl-NL', optionsDate);
-      document.getElementById('timeText').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('timeText').innerText = now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
     }
     setInterval(updateClockAndDate, 1000);
     updateClockAndDate();
 
-    function getWeatherIcon(code) {
+    function getWeatherEmoji(code) {
       if (code === 0) return '☀️';
       if (code >= 1 && code <= 3) return '☁️';
       if (code >= 45 && code <= 48) return '🌫️';
@@ -346,32 +340,42 @@
         const cur = data.current;
 
         const label = getWeatherLabel(cur.weather_code);
-        const icon = getWeatherIcon(cur.weather_code);
+        const icon = getWeatherEmoji(cur.weather_code);
 
         document.getElementById('condMain').innerText = label;
         document.getElementById('tempMain').innerText = `${Math.round(cur.temperature_2m)}°C`;
         document.getElementById('feelsMain').innerText = `GEVOELSTEMPERATUUR: ${Math.round(cur.apparent_temperature)}°C`;
         document.getElementById('subCond').innerText = `${icon} ${label}`;
-        document.getElementById('subRain').innerText = `🌧️ Regen - ${cur.precipitation > 0 ? 'Ja' : '0%'}`;
+        
+        const precipProb = data.daily?.precipitation_probability_max?.[0] ?? 0;
+        document.getElementById('subRain').innerText = `🌧️ Regen - ${precipProb}%`;
+        document.getElementById('precipVal').innerText = `${precipProb}%`;
 
         document.getElementById('humidityVal').innerText = `${cur.relative_humidity_2m}%`;
         document.getElementById('windVal').innerText = `${Math.round(cur.wind_speed_10m)} km/h`;
         document.getElementById('windText').innerText = `Richting: ${cur.wind_direction_10m}°`;
         
-        // Rotate compass needle
         document.getElementById('compassNeedle').style.transform = `rotate(${cur.wind_direction_10m}deg)`;
 
-        // Hourly Strip (Next 9 hours)
+        // Sunrise & Sunset formatting
+        if (data.daily && data.daily.sunrise && data.daily.sunset) {
+          const sunriseStr = new Date(data.daily.sunrise[0]).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+          const sunsetStr = new Date(data.daily.sunset[0]).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+          document.getElementById('sunriseTime').innerText = sunriseStr;
+          document.getElementById('sunsetTime').innerText = sunsetStr;
+        }
+
+        // Hourly Strip (Next 8 hours)
         const currentHourIndex = new Date().getHours();
         const hourlyStrip = document.getElementById('hourlyStrip');
         hourlyStrip.innerHTML = '';
 
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < 8; i++) {
           const idx = currentHourIndex + i;
           if (data.hourly && data.hourly.temperature_2m[idx]) {
             const timeLabel = i === 0 ? 'Nu' : `${(currentHourIndex + i) % 24}:00`;
             const tempVal = `${Math.round(data.hourly.temperature_2m[idx])}°`;
-            const hIcon = getWeatherIcon(data.hourly.weather_code[idx]);
+            const hIcon = getWeatherEmoji(data.hourly.weather_code[idx]);
 
             hourlyStrip.innerHTML += `
               <div class="hourly-col">
