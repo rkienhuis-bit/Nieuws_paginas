@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>NOS Binnenland</title>
-  <style>
+<style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background-color: transparent;
@@ -50,15 +50,16 @@
       object-fit: cover;
     }
 
-    /* CONTENT LAYOUT - TOP ALIGNED */
+    /* CONTENT LAYOUT - BALANCED SPACING */
     .news-content {
       width: 70%;
-      padding: 50px 80px 40px 60px;
+      padding: 50px 100px 45px 60px; /* Right padding widened to keep text away from QR code */
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       overflow: hidden;
       position: relative;
+      height: 100vh;
     }
 
     .news-category {
@@ -74,16 +75,17 @@
       font-size: 36px;
       font-weight: 700;
       line-height: 1.2;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       color: #ffffff;
     }
 
-    /* BODY TEXT WRAPPER WITH PARAGRAPH RETURNS */
+    /* EXPANDED TEXT WRAPPER TO ELIMINATE EMPTY GAP */
     .news-desc-wrapper {
       position: relative;
       flex-grow: 1;
       overflow: hidden;
-      max-height: 52vh;
+      max-height: 62vh; /* Expanded height so it fills the lower area cleanly */
+      margin-bottom: 20px;
     }
 
     .news-description {
@@ -100,11 +102,11 @@
       margin-bottom: 14px;
     }
 
-    /* DYNAMIC QR CODE - BOTTOM RIGHT */
+    /* DYNAMIC QR CODE - ALIGNED BOTTOM RIGHT */
     .qr-container {
       position: absolute;
-      bottom: 40px;
-      right: 50px;
+      bottom: 45px;
+      right: 45px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -116,8 +118,8 @@
     }
 
     .qr-code {
-      width: 85px;
-      height: 85px;
+      width: 80px;
+      height: 80px;
     }
 
     .qr-label {
