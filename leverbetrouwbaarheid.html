@@ -8,20 +8,20 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <style>
     :root {
-      --bg-color: #f4f6f9;
+      --bg-color: #f8fafc;
       --card-bg: #ffffff;
-      --text-main: #333333;
-      --text-muted: #666666;
-      --line-color: #3b82f6;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --line-color: #2563eb;
       --target-color: #ef4444;
-      --grid-color: #e5e7eb;
+      --border-color: #e2e8f0;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     body {
@@ -35,16 +35,17 @@
       padding: 24px;
     }
 
-    /* Header */
+    /* Animated Header */
     header {
       text-align: center;
       margin-bottom: 16px;
+      animation: fadeInDown 0.8s ease-out;
     }
 
     h1 {
       font-size: 2.2rem;
       font-weight: 700;
-      color: #374151;
+      color: #0f172a;
       letter-spacing: -0.5px;
     }
 
@@ -56,16 +57,17 @@
       gap: 20px;
     }
 
-    /* Top Chart Section */
+    /* Top Chart Card */
     .top-chart-container {
       flex: 3;
       background: var(--card-bg);
-      border-radius: 12px;
-      padding: 16px 24px 8px 24px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      border-radius: 16px;
+      padding: 20px 24px 12px 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+      border: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
-      position: relative;
+      animation: fadeInUp 0.8s ease-out 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
     .chart-wrapper {
@@ -75,7 +77,7 @@
       height: 100%;
     }
 
-    /* Bottom Donuts Section */
+    /* Bottom Cards Grid */
     .bottom-cards-container {
       flex: 2;
       display: grid;
@@ -85,36 +87,48 @@
 
     .card {
       background: var(--card-bg);
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+      border: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:nth-child(1) { animation: fadeInUp 0.8s ease-out 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .card:nth-child(2) { animation: fadeInUp 0.8s ease-out 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .card:nth-child(3) { animation: fadeInUp 0.8s ease-out 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.07);
     }
 
     .card-title {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 600;
-      color: #4b5563;
+      color: #334155;
       text-align: center;
     }
 
     .card-subtitle {
       font-size: 0.85rem;
-      color: #9ca3af;
+      color: #94a3b8;
       margin-top: 2px;
+      text-align: center;
     }
 
     .donut-wrapper {
       position: relative;
-      width: 150px;
-      height: 150px;
+      width: 140px;
+      height: 140px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 8px 0;
+      margin: 6px 0;
     }
 
     .donut-center-text {
@@ -124,9 +138,9 @@
     }
 
     .donut-percentage {
-      font-size: 1.4rem;
+      font-size: 1.45rem;
       font-weight: 700;
-      color: #1f2937;
+      color: #0f172a;
     }
 
     .legend-container {
@@ -143,10 +157,57 @@
     }
 
     .legend-box {
-      width: 12px;
-      height: 12px;
-      border-radius: 2px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
     }
+
+    /* Keyframe Animations */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Quick Update Modal */
+    #editModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      width: 500px;
+      max-width: 90%;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-content h3 { margin-bottom: 12px; }
+    .modal-content textarea {
+      width: 100%; height: 120px;
+      margin: 10px 0; padding: 10px;
+      border: 1px solid #cbd5e1; border-radius: 6px;
+      font-family: monospace; font-size: 0.9rem;
+    }
+
+    .btn-group { display: flex; justify-content: flex-end; gap: 10px; }
+    .btn {
+      padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600;
+    }
+    .btn-primary { background: var(--line-color); color: white; }
+    .btn-secondary { background: #e2e8f0; color: #334155; }
   </style>
 </head>
 <body>
@@ -156,16 +217,14 @@
   </header>
 
   <main>
-    <!-- Top Line Graph -->
     <div class="top-chart-container">
       <div class="chart-wrapper">
         <canvas id="weeklyChart"></canvas>
       </div>
     </div>
 
-    <!-- Bottom Donut Graphs -->
     <div class="bottom-cards-container">
-      <!-- 2024 -->
+      <!-- 2024 Card -->
       <div class="card">
         <div>
           <div class="card-title">Gemiddelde LBH 2024</div>
@@ -178,12 +237,12 @@
           </div>
         </div>
         <div class="legend-container">
-          <div class="legend-item"><span class="legend-box" style="background:#3b82f6;"></span>Verzonden</div>
+          <div class="legend-item"><span class="legend-box" style="background:#2563eb;"></span>Verzonden</div>
           <div class="legend-item"><span class="legend-box" style="background:#f97316;"></span>Niet verzonden</div>
         </div>
       </div>
 
-      <!-- 2025 -->
+      <!-- 2025 Card -->
       <div class="card">
         <div>
           <div class="card-title">Gemiddelde LBH 2025</div>
@@ -196,12 +255,12 @@
           </div>
         </div>
         <div class="legend-container">
-          <div class="legend-item"><span class="legend-box" style="background:#3b82f6;"></span>Verzonden</div>
+          <div class="legend-item"><span class="legend-box" style="background:#2563eb;"></span>Verzonden</div>
           <div class="legend-item"><span class="legend-box" style="background:#f97316;"></span>Niet verzonden</div>
         </div>
       </div>
 
-      <!-- 2026 -->
+      <!-- 2026 Card -->
       <div class="card">
         <div>
           <div class="card-title">Gemiddelde LBH 2026</div>
@@ -214,19 +273,31 @@
           </div>
         </div>
         <div class="legend-container">
-          <div class="legend-item"><span class="legend-box" style="background:#3b82f6;"></span>Verzonden</div>
+          <div class="legend-item"><span class="legend-box" style="background:#2563eb;"></span>Verzonden</div>
           <div class="legend-item"><span class="legend-box" style="background:#f97316;"></span>Niet verzonden</div>
         </div>
       </div>
     </div>
   </main>
 
+  <!-- Hidden Edit Modal -->
+  <div id="editModal">
+    <div class="modal-content">
+      <h3>Quick Data Update</h3>
+      <p style="font-size: 0.85rem; color: #64748b;">Paste comma-separated weekly percentages for 2026 (weeks 1 to 52):</p>
+      <textarea id="weeklyDataInput"></textarea>
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveData()">Save & Update</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Register DataLabels Plugin
     Chart.register(ChartDataLabels);
 
-    // Dynamic Weekly Data (Weeks 1 to 52)
-    const weeklyValues = [
+    // Default Weekly Values
+    let weeklyValues = JSON.parse(localStorage.getItem('yodeck_2026_data')) || [
       98.1, 99.3, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,
       100.0, 100.0, 99.5, 98.6, 100.0, 97.8, 100.0, 100.0, 92.2, 92.0,
       98.0, 100.0, 89.8, 94.1, 85.9, 98.3, 99.2, 52.4, 92.0, 90.5,
@@ -236,9 +307,9 @@
 
     const weekLabels = Array.from({ length: 52 }, (_, i) => i + 1);
 
-    // Line Chart Initialization
+    // Setup Line Chart
     const ctxLine = document.getElementById('weeklyChart').getContext('2d');
-    new Chart(ctxLine, {
+    const lineChart = new Chart(ctxLine, {
       type: 'line',
       data: {
         labels: weekLabels,
@@ -246,17 +317,18 @@
           {
             label: 'Percentage',
             data: weeklyValues,
-            borderColor: '#3b82f6',
-            backgroundColor: '#3b82f6',
-            borderWidth: 2,
-            tension: 0,
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37, 99, 235, 0.08)',
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.1,
             spanGaps: false,
             datalabels: {
               align: 'top',
               anchor: 'end',
               font: { size: 10, weight: 'bold' },
-              color: '#374151',
-              formatter: (val) => val !== null ? val.toFixed(1) : ''
+              color: '#334155',
+              formatter: (val) => (val !== null && val !== undefined) ? val.toFixed(1) : ''
             }
           },
           {
@@ -264,6 +336,7 @@
             data: Array(52).fill(98),
             borderColor: '#ef4444',
             borderWidth: 2,
+            borderDash: [5, 5],
             pointRadius: 0,
             fill: false,
             datalabels: { display: false }
@@ -273,12 +346,15 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        animation: {
+          duration: 1800,
+          easing: 'easeOutQuart'
+        },
         plugins: {
           legend: {
             position: 'bottom',
-            labels: { boxWidth: 12, usePointStyle: true }
-          },
-          tooltip: { enabled: true }
+            labels: { boxWidth: 12, usePointStyle: true, font: { size: 12 } }
+          }
         },
         scales: {
           x: {
@@ -294,16 +370,17 @@
       }
     });
 
-    // Function to create Donut Charts
+    // Donut Chart Creator
+    let donutChart2026;
     function createDonutChart(elementId, percentage) {
       const ctx = document.getElementById(elementId).getContext('2d');
-      new Chart(ctx, {
+      return new Chart(ctx, {
         type: 'doughnut',
         data: {
           labels: ['Verzonden', 'Niet verzonden'],
           datasets: [{
-            data: [percentage, 100 - percentage],
-            backgroundColor: ['#3b82f6', '#f97316'],
+            data: [percentage, (100 - percentage).toFixed(2)],
+            backgroundColor: ['#2563eb', '#f97316'],
             borderWidth: 0
           }]
         },
@@ -311,18 +388,58 @@
           cutout: '75%',
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            datalabels: { display: false }
-          }
+          animation: { duration: 1500, easing: 'easeOutCubic' },
+          plugins: { legend: { display: false }, datalabels: { display: false } }
         }
       });
     }
 
-    // Initialize Donut Charts
     createDonutChart('donut2024', 99.35);
     createDonutChart('donut2025', 98.74);
-    createDonutChart('donut2026', 94.58);
+    donutChart2026 = createDonutChart('donut2026', calculateAverage(weeklyValues));
+
+    // Calculate Average of Valid Weeks
+    function calculateAverage(data) {
+      const validPoints = data.filter(v => v !== null && v !== undefined && !isNaN(v));
+      if (validPoints.length === 0) return 0;
+      const sum = validPoints.reduce((a, b) => a + Number(b), 0);
+      return (sum / validPoints.length).toFixed(2);
+    }
+
+    function update2026Average() {
+      const avg = calculateAverage(weeklyValues);
+      document.getElementById('val2026').innerText = `${avg.replace('.', ',')}%`;
+      donutChart2026.data.datasets[0].data = [avg, (100 - avg).toFixed(2)];
+      donutChart2026.update();
+    }
+
+    // Modal Edit Shortcuts (Press 'E' on keyboard to update)
+    window.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === 'e') {
+        document.getElementById('weeklyDataInput').value = weeklyValues.join(', ');
+        document.getElementById('editModal').style.display = 'flex';
+      }
+    });
+
+    function closeModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    function saveData() {
+      const raw = document.getElementById('weeklyDataInput').value;
+      const parsed = raw.split(',').map(item => {
+        const val = parseFloat(item.trim());
+        return isNaN(val) ? null : val;
+      });
+
+      weeklyValues = parsed;
+      localStorage.setItem('yodeck_2026_data', JSON.stringify(weeklyValues));
+      
+      lineChart.data.datasets[0].data = weeklyValues;
+      lineChart.update();
+      update2026Average();
+      closeModal();
+    }
   </script>
 </body>
 </html>
