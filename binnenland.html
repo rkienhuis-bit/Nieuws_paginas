@@ -36,11 +36,11 @@
       transition: none;
     }
 
-    /* MAIN CONTENT AREA - FULL WIDTH WITH CIRCULAR ACCENT */
+    /* MAIN CONTENT AREA */
     .news-content {
       width: 100%;
       height: 100vh;
-      padding: 50px 180px 45px 70px; /* Extra right padding so text wraps nicely around circular badge/QR area */
+      padding: 50px 70px 45px 70px;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
@@ -58,35 +58,11 @@
     }
 
     .news-title {
-      font-size: 40px;
+      font-size: 38px;
       font-weight: 700;
       line-height: 1.2;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
       color: #ffffff;
-      max-width: 75%; /* Leaves room for top right elements if needed */
-    }
-
-    /* CIRCULAR IMAGE BADGE (TOP RIGHT ACCENT) */
-    .news-image-circle {
-      position: absolute;
-      top: 55px;
-      right: 70px;
-      width: 170px;
-      height: 170px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 4px solid #e30613; /* NOS Red accent border */
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-      background-color: #0b0b0b;
-      flex-shrink: 0;
-      z-index: 5;
-    }
-
-    .news-image-circle img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center center;
     }
 
     /* TEXT WRAPPER WITH PARAGRAPH RETURNS */
@@ -94,9 +70,29 @@
       position: relative;
       flex-grow: 1;
       overflow: hidden;
-      max-height: 60vh;
+      max-height: 62vh;
       margin-bottom: 20px;
-      margin-top: 10px;
+    }
+
+    /* ENLARGED FLOATING CIRCLE WITH SHAPE WRAPPING */
+    .news-image-circle {
+      float: right;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      shape-outside: circle(50%);
+      margin: 0 0 25px 35px;
+      overflow: hidden;
+      border: 5px solid #e30613; /* NOS Red accent border */
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      background-color: #0b0b0b;
+    }
+
+    .news-image-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
     }
 
     .news-description {
@@ -146,16 +142,17 @@
 
   <div class="news-card" id="newsCard">
     <div class="news-content">
-      <!-- CIRCULAR IMAGE ACCENT (TOP RIGHT) -->
-      <div class="news-image-circle" id="imgContainer" style="display:none;">
-        <img id="newsImg" src="" alt="Afbeelding" />
-      </div>
-
       <div class="news-category" id="newsCat">BINNENLAND</div>
       <h1 class="news-title" id="newsTitle">NOS Nieuws laden...</h1>
       
       <div class="news-desc-wrapper" id="descWrapper">
-        <div class="news-description" id="newsDesc"></div>
+        <div class="news-description" id="newsDesc">
+          <!-- FLOATING CIRCULAR IMAGE BADGE -->
+          <div class="news-image-circle" id="imgContainer" style="display:none;">
+            <img id="newsImg" src="" alt="Afbeelding" />
+          </div>
+          <div id="textBody"></div>
+        </div>
       </div>
       
       <!-- QR CODE BOX (BOTTOM RIGHT) -->
@@ -235,6 +232,7 @@
         const imgEl = document.getElementById('newsImg');
         const imgContainer = document.getElementById('imgContainer');
         const descEl = document.getElementById('newsDesc');
+        const textBody = document.getElementById('textBody');
         const descWrapper = document.getElementById('descWrapper');
         const qrContainer = document.getElementById('qrContainer');
         const qrImg = document.getElementById('qrImg');
@@ -260,10 +258,10 @@
         document.getElementById('newsCat').innerText = CATEGORY_LABEL;
         document.getElementById('newsTitle').innerText = item.title;
         
-        // Reset Scroll & Insert Description
+        // Reset Scroll & Insert Description Text
         descEl.style.transition = 'none';
         descEl.style.transform = 'translateY(0px)';
-        descEl.innerHTML = formatDescription(item.description);
+        textBody.innerHTML = formatDescription(item.description);
 
         card.classList.add('slide-in');
         card.classList.remove('slide-out');
