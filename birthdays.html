@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Bedrijfsverjaardagen</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #0f131a;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* SUBTLE CELEBRATORY BACKGROUND GLOW */
+    .bg-glow {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at 50% 20%, rgba(227,6,19,0.12) 0%, rgba(15,19,26,1) 70%);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* NARROWCASTING CONTAINER */
+    .container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 480px;
+      height: 100vh;
+      max-height: 920px;
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* HEADER */
+    .header-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    .app-title {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+    .app-subtitle {
+      font-size: 13px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+    .date-badge {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ff3b30;
+      background: rgba(255, 59, 48, 0.1);
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+
+    /* CONTENT AREA */
+    .content-area {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    /* BIRTHDAY CARD (CELEBRATION STATE) */
+    .birthday-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 59, 48, 0.3);
+      border-radius: 20px;
+      padding: 30px 24px;
+      text-align: center;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 15px 35px rgba(227, 6, 19, 0.15);
+      animation: pulseGlow 4s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { border-color: rgba(255, 59, 48, 0.3); box-shadow: 0 15px 35px rgba(227, 6, 19, 0.15); }
+      100% { border-color: rgba(255, 59, 48, 0.7); box-shadow: 0 20px 45px rgba(227, 6, 19, 0.3); }
+    }
+
+    .birthday-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .wish-text {
+      font-size: 18px;
+      color: #ff3b30;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .person-name {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .custom-message {
+      font-size: 14px;
+      color: #bbb;
+      font-style: italic;
+    }
+
+    /* MONTHLY LIST VIEW (NO BIRTHDAYS TODAY STATE) */
+    .month-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 650px;
+      overflow-y: auto;
+    }
+
+    .month-item {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .month-item-name {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .month-item-date {
+      font-size: 14px;
+      color: #ff3b30;
+      font-weight: 600;
+      background: rgba(255, 59, 48, 0.1);
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+
+    .footer-brand {
+      text-align: center;
+      font-size: 11px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-glow"></div>
+
+  <div class="container">
+    <div>
+      <div class="header-box">
+        <div>
+          <div class="app-title" id="appTitle">Verjaardagen deze maand</div>
+          <div class="app-subtitle" id="appSubtitle">Overzicht</div>
+        </div>
+        <div class="date-badge" id="dateBadge">--</div>
+      </div>
+    </div>
+
+    <div class="content-area" id="contentArea">
+      <!-- Dynamic content injected here -->
+    </div>
+
+    <div class="footer-brand">Internal Corporate Signage</div>
+  </div>
+
+  <script>
+    const birthdays = [
+      { name: "Laila van Oversteeg", month: 1, day: 19 },
+      { name: "Malgorzata Witczak", month: 2, day: 9 },
+      { name: "Wendy Slag", month: 2, day: 13 },
+      { name: "Robert Markvoort", month: 2, day: 22 },
+      { name: "Sander Bremer", month: 3, day: 5 },
+      { name: "Arjan Dijkstra", month: 3, day: 16 },
+      { name: "Anja Hoevink-Zwijnenberg", month: 3, day: 25 },
+      { name: "Florus van den Berge", month: 4, day: 2 },
+      { name: "Remco Grondhuis", month: 4, day: 10 },
+      { name: "Christoph Ahlers", month: 4, day: 19 },
+      { name: "Lieke van Horssen", month: 4, day: 23 },
+      { name: "Pim van Oppen", month: 5, day: 4 },
+      { name: "Jeroen Schuitemaker", month: 5, day: 9 },
+      { name: "Manfred Zeides", month: 5, day: 12 },
+      { name: "Martijn Steunenberg", month: 5, day: 14 },
+      { name: "Laurents ten Voorde", month: 5, day: 15 },
+      { name: "Antoinette Geels", month: 5, day: 25 },
+      { name: "Levan Hendriks", month: 6, day: 7 },
+      { name: "Maud Meilink", month: 6, day: 17 },
+      { name: "Linda Drost", month: 6, day: 18 },
+      { name: "Tico van der Linde", month: 6, day: 19 },
+      { name: "Gerald Wijnen", month: 6, day: 19 },
+      { name: "Ansjelo Gerritsen", month: 7, day: 1 },
+      { name: "Marwan hersi", month: 7, day: 8 },
+      { name: "Edwin Hüsing", month: 7, day: 29 },
+      { name: "Kevin Keizer", month: 8, day: 3 },
+      { name: "Iné van Dijk", month: 8, day: 6 },
+      { name: "Peter Karssies", month: 9, day: 6 },
+      { name: "Gerwin Meilink", month: 9, day: 9 },
+      { name: "Raymond van Dijk", month: 9, day: 24 },
+      { name: "Kevin van Elven", month: 10, day: 10 },
+      { name: "Tim Zwiers", month: 10, day: 11 },
+      { name: "Stefan Boekhorst", month: 10, day: 16 },
+      { name: "Gilbert Rada", month: 11, day: 12 },
+      { name: "Desiree Wissink", month: 11, day: 12 },
+      { name: "Marco Vooijs", month: 11, day: 30 },
+      { name: "Roy Kienhuis", month: 12, day: 24 },
+      { name: "Fenny Voortman - Lohuis", month: 12, day: 30 },
+      { name: "Ilona Pigge - Maatje", month: 12, day: 31 }
+    ];
+
+    const dutchMonths = [
+      "januari", "februari", "maart", "april", "mei", "juni", 
+      "juli", "augustus", "september", "oktober", "november", "december"
+    ];
+
+    const professionalWishes = [
+      "Van harte gefeliciteerd met je verjaardag!",
+      "Een fijne verjaardag toegewenst namens het team!",
+      "Gefeliciteerd! Maak er een fantastische dag van!",
+      "Heel fijne verjaardag gewenst!"
+    ];
+
+    function renderCalendar() {
+      const now = new Date();
+      const currentDay = now.getDate();
+      const currentMonth = now.getMonth() + 1;
+
+      const options = { weekday: 'long', day: 'numeric', month: 'short' };
+      document.getElementById('dateBadge').innerText = now.toLocaleDateString('nl-NL', options);
+
+      const todaysBirthdays = birthdays.filter(b => b.month === currentMonth && b.day === currentDay);
+      const contentArea = document.getElementById('contentArea');
+
+      if (todaysBirthdays.length > 0) {
+        document.getElementById('appTitle').innerText = "Jarig Vandaag!";
+        document.getElementById('appSubtitle').innerText = "Hiep hiep hoera!";
+        
+        let html = '';
+        todaysBirthdays.forEach(person => {
+          const randomWish = professionalWishes[person.name.length % professionalWishes.length];
+          html += `
+            <div class="birthday-card">
+              <div class="birthday-icon">🎉</div>
+              <div class="wish-text">${randomWish}</div>
+              <div class="person-name">${person.name}</div>
+              <div class="custom-message">We wensen je een geweldig jaar toe!</div>
+            </div>
+          `;
+        });
+        contentArea.innerHTML = html;
+      } else {
+        document.getElementById('appTitle').innerText = "Verjaardagen deze maand";
+        document.getElementById('appSubtitle').innerText = dutchMonths[currentMonth - 1].toUpperCase();
+
+        const monthlyBirthdays = birthdays.filter(b => b.month === currentMonth);
+        monthlyBirthdays.sort((a, b) => a.day - b.day);
+
+        if (monthlyBirthdays.length === 0) {
+          contentArea.innerHTML = `
+            <div style="text-align: center; color: #888; padding: 40px;">
+              Geen verjaardagen in deze maand.
+            </div>
+          `;
+        } else {
+          let listHtml = `<div class="month-list">`;
+          monthlyBirthdays.forEach(person => {
+            listHtml += `
+              <div class="month-item">
+                <span class="month-item-name">${person.name}</span>
+                <span class="month-item-date">${person.day} ${dutchMonths[currentMonth - 1]}</span>
+              </div>
+            `;
+          });
+          listHtml += `</div>`;
+          contentArea.innerHTML = listHtml;
+        }
+      }
+    }
+
+    renderCalendar();
+    setInterval(renderCalendar, 60 * 1000);
+  </script>
+</body>
+</html>
