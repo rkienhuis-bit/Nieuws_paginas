@@ -20,11 +20,10 @@
       flex-direction: row;
       width: 100%;
       height: 100vh;
-      /* Background matches dark overlay to prevent any white flashes */
       background: #111111;
       overflow: hidden;
       opacity: 1;
-      transition: opacity 1.2s ease-in-out; /* Smooth gentle fade */
+      transition: opacity 1.2s ease-in-out;
     }
 
     .news-card.fade-out {
@@ -92,7 +91,7 @@
     }
 
     .news-description p {
-      margin-bottom: 14px; /* Proper paragraph line spacing */
+      margin-bottom: 14px;
     }
 
     /* DYNAMIC QR CODE - BOTTOM RIGHT */
@@ -150,11 +149,11 @@
   <script>
     const RSS_URL = 'https://feeds.nos.nl/nosnieuwsbinnenland'; 
     const CATEGORY_LABEL = 'BINNENLAND';
-    const STORY_DURATION = 20000; // Increased total time per story to 20 seconds for slow reading
 
     const API_URL = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS_URL);
     let items = [];
     let currentIndex = 0;
+    let timerId = null;
     let scrollTimeout = null;
 
     function extractImage(item) {
@@ -164,21 +163,39 @@
       return imgMatch ? imgMatch[1] : null;
     }
 
-    // Formats text cleanly with paragraph breaks instead of squashed text
     function formatDescription(html) {
       if (!html) return '';
       const div = document.createElement("div");
       div.innerHTML = html;
-      
-      // Look for paragraphs or split by sentences/newlines to build proper <p> elements
       const text = div.textContent || div.innerText || "";
       const paragraphs = text.split(/\r?\n\r?/);
-      
       return paragraphs
         .map(p => p.trim())
         .filter(p => p.length > 0)
         .map(p => `<p>${p}</p>`)
         .join('');
+    }
+
+    // CALCULATE SMART READING TIME (in milliseconds)
+    function calculateReadingDuration(title, descriptionHtml) {
+      const div = document.createElement("div");
+      div.innerHTML = descriptionHtml;
+      const plainText = div.textContent || div.innerText || "";
+      
+      // Count total words in title + description
+      const wordCount = (title + " " + plainText).split(/\s+/).length;
+      
+      // Base time (e.g. 8 seconds minimum to just look at a short slide)
+      let durationMs = 10000; 
+      
+      // Add ~350ms per word for a relaxed reading pace
+      durationMs += wordCount * 350; 
+      
+      // Cap limits: minimum 12 seconds, maximum 30 seconds
+      if (durationMs < 12000) durationMs = 12000;
+      if (durationMs > 30000) durationMs = 30000;
+      
+      return durationMs;
     }
 
     async function fetchRSS() {
@@ -196,6 +213,7 @@
 
     function showNextStory() {
       if (items.length === 0) return;
+      if (timerId) clearTimeout(timerId);
       
       const card = document.getElementById('newsCard');
       card.classList.add('fade-out');
@@ -219,7 +237,7 @@
           document.getElementById('imgContainer').style.display = 'none';
         }
 
-        // QR Code Handling (Bottom Right)
+        // QR Code Handling
         const storyUrl = item.link || item.guid;
         if (storyUrl) {
           qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(storyUrl);
@@ -239,7 +257,10 @@
 
         card.classList.remove('fade-out');
 
-        // Much Slower, Readable Auto-Scroll Logic for Long Body Text
+        // Calculate exact reading duration based on text length
+        const currentStoryDuration = calculateReadingDuration(item.title, item.description);
+
+        // Readable Auto-Scroll Logic tailored to the slide's duration
         if (scrollTimeout) clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
           const textHeight = descEl.offsetHeight;
@@ -247,19 +268,21 @@
           
           if (textHeight > containerHeight) {
             const scrollDistance = textHeight - containerHeight + 20;
-            // Takes 12 full seconds just to perform the gentle crawl
-            const scrollTime = 12; 
+            // Tailor scroll speed so it finishes crawling before the slide ends
+            const scrollTime = Math.max(6, (currentStoryDuration - 6000) / 1000); 
             descEl.style.transition = `transform ${scrollTime}s linear`;
             descEl.style.transform = `translateY(-${scrollDistance}px)`;
           }
-        }, 2500); // Wait 2.5s before crawling starts so users can read the top lines first
+        }, 2000); // Wait 2s before scrolling starts
 
         currentIndex = (currentIndex + 1) % items.length;
-      }, 1200); // Matches the 1.2s dark crossfade duration
+
+        // Schedule next story using its unique dynamic reading time
+        timerId = setTimeout(showNextStory, currentStoryDuration);
+      }, 1200);
     }
 
     fetchRSS();
-    setInterval(showNextStory, STORY_DURATION);
     setInterval(fetchRSS, 15 * 60 * 1000);
   </script>
 
