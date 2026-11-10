@@ -231,4 +231,21 @@
           const containerHeight = descWrapper.offsetHeight;
           
           if (textHeight > containerHeight) {
-            const scrollDistance = textHeight - container
+            const scrollDistance = textHeight - containerHeight + 30;
+            const scrollTime = (STORY_DURATION - 5000) / 1000; // Smooth slow crawl duration
+            descEl.style.transition = `transform ${scrollTime}s linear`;
+            descEl.style.transform = `translateY(-${scrollDistance}px)`;
+          }
+        }, 2000); // Wait 2s before scrolling starts
+
+        currentIndex = (currentIndex + 1) % items.length;
+      }, 600);
+    }
+
+    fetchRSS();
+    setInterval(showNextStory, STORY_DURATION);
+    setInterval(fetchRSS, 15 * 60 * 1000);
+  </script>
+
+</body>
+</html>
