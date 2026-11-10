@@ -706,11 +706,6 @@ const testPeople = [
   { name:"Desiree Wissink", dob:"1969-11-12" }
 ];
 
-// Test person for milestone birthday (e.g. turning 50)
-const testSpecial = [
-  { name:"Robert Markvoort", dob:"1976-02-22" }
-];
-
 /* STATE */
 // testMode can be: 'off', 'birthday', 'special'
 let testMode = 'off';
@@ -730,7 +725,6 @@ function calculateAge(dob, year) {
 }
 
 function isMilestoneAge(age) {
-  // Milestone / special birthdays ending in 0 or 5 (e.g., 30, 40, 50, 60, etc.)
   return age > 0 && age % 5 === 0;
 }
 
@@ -1047,7 +1041,7 @@ function renderPage() {
     currentMonth = 11;
   } else if (testMode === 'special') {
     currentDay = 22;
-    currentMonth = 2; // Robert Markvoort born 1972-02-22 -> turns 54 or similar, let's force age to 50 for testing if needed or keep DOB. Let's make testSpecial have a DOB that hits a milestone like 50.
+    currentMonth = 2;
   }
 
   document.getElementById("dateDisplay").innerText =
@@ -1063,7 +1057,6 @@ function renderPage() {
   document.getElementById("testButton").innerText = btnText;
 
   if (testMode === 'special') {
-    // Force a milestone age for testing preview
     const milestonePerson = [{ name: "Robert Markvoort", dob: (currentYear - 50) + "-02-22" }];
     renderCelebration(milestonePerson, currentYear);
     return;
