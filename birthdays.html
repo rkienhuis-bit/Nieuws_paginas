@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -323,12 +322,12 @@ body::before {
   }
 }
 
-/* INDIVIDUAL PERSON ORBS */
+/* INDIVIDUAL PERSON SATELLITE ORBS */
 
 .satellite {
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   z-index: 4;
 
@@ -350,15 +349,11 @@ body::before {
   animation: satelliteAppear .7s cubic-bezier(.2,.8,.3,1.2) both;
 }
 
-/* Satellites on past birthdays remain blue with gold edges */
-
 .path-node.past .satellite {
   background: linear-gradient(145deg, #6592bd, #315b8d);
   border-color: var(--gold-light);
   color: white;
 }
-
-/* Satellite connector */
 
 .satellite-line {
   position: absolute;
@@ -384,18 +379,18 @@ body::before {
 
 .node-text {
   width: 100%;
-  max-width: 100%;
-  padding: 0 5px;
+  max-width: 120%;
+  padding: 0 2px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .node-title {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 650;
   color: #cbd4e1;
-  line-height: 1.25;
+  line-height: 1.2;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -403,10 +398,10 @@ body::before {
 }
 
 .node-sub {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
   color: #78879e;
-  margin-top: 4px;
+  margin-top: 2px;
   white-space: nowrap;
 }
 
@@ -421,8 +416,6 @@ body::before {
 .path-node.today .node-title {
   color: #83c6ee;
 }
-
-/* SMALL BIRTHDAY MARKER FOR SINGLE BIRTHDAYS */
 
 .milestone-star {
   position: absolute;
@@ -612,53 +605,42 @@ body::before {
   .screen-wrapper {
     padding: 22px 35px 18px;
   }
-
   .header-group {
     padding-bottom: 15px;
   }
-
   .title-box h1 {
     font-size: 29px;
   }
-
   .main-content {
     padding-top: 10px;
   }
-
   .node-circle {
     width: 43px;
     height: 43px;
     font-size: 14px;
   }
-
   .orb-cluster {
     width: 43px;
     height: 43px;
   }
-
   .path-node {
     gap: 5px;
   }
-
   .node-title {
-    font-size: 11px;
+    font-size: 10px;
   }
-
   .node-sub {
-    font-size: 9px;
+    font-size: 8px;
     margin-top: 2px;
   }
-
   .satellite {
     width: 18px;
     height: 18px;
     font-size: 8px;
   }
-
   .celeb-heading {
     margin-bottom: 22px;
   }
-
   .celeb-person {
     padding: 25px 20px;
   }
@@ -670,7 +652,6 @@ body::before {
     animation-iteration-count: 1 !important;
   }
 }
-
 </style>
 </head>
 
@@ -682,7 +663,6 @@ body::before {
 <div class="screen-wrapper">
 
   <div class="header-group">
-
     <div class="title-box">
       <h1 id="mainTitle">Verjaardagen deze maand</h1>
       <p id="subTitle">Team Overzicht</p>
@@ -694,7 +674,6 @@ body::before {
         Test verjaardag
       </button>
     </div>
-
   </div>
 
   <div class="main-content" id="contentArea"></div>
@@ -736,7 +715,7 @@ const birthdays = [
   { name:"Kevin Keizer", dob:"1995-08-03", month:8, day:3 },
   { name:"Iné van Dijk", dob:"2004-08-06", month:8, day:6 },
   { name:"Peter Karssies", dob:"1964-09-06", month:9, day:6 },
-  { name:"Gerwin Meilink", dob:"1973-09-09", month:9, day:9 },
+  { name: "Gerwin Meilink", dob:"1973-09-09", month:9, day:9 },
   { name:"Raymond van Dijk", dob:"1976-09-24", month:9, day:24 },
   { name:"Kevin van Elven", dob:"1998-10-10", month:10, day:10 },
   { name:"Tim Zwiers", dob:"1998-10-11", month:10, day:11 },
@@ -754,17 +733,22 @@ const dutchMonths = [
   "juli","augustus","september","oktober","november","december"
 ];
 
-/* TEST PEOPLE */
-
+// Test people using actual double date matching (Nov 12 -> Gilbert Rada & Desiree Wissink)
 const testPeople = [
-  { name:"Voorbeeld Persoon", dob:"1994-11-12" },
-  { name:"Tweede Jarige", dob:"1988-11-12" }
+  { name:"Gilbert Rada", dob:"1973-11-12" },
+  { name:"Desiree Wissink", dob:"1969-11-12" }
 ];
 
 /* STATE */
 
 let previewMode = false;
 let confettiStarted = false;
+
+// Check URL parameters for ?test=true automatically
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('test') === 'true') {
+  previewMode = true;
+}
 
 /* HELPERS */
 
@@ -775,12 +759,12 @@ function splitName(fullName) {
   return { first:parts.join(" "), last };
 }
 
-function calculateAge(dob,year) {
+function calculateAge(dob, year) {
   return year - Number(dob.substring(0,4));
 }
 
-function getDaysInMonth(year,month) {
-  return new Date(year,month,0).getDate();
+function getDaysInMonth(year, month) {
+  return new Date(year, month, 0).getDate();
 }
 
 /* =====================================
@@ -794,39 +778,24 @@ function toggleTestMode() {
 }
 
 /* =====================================
-   INDIVIDUAL ORBS
+   INDIVIDUAL ORBS / SATELLITES FOR MULTIPLE BIRTHDAYS
 ===================================== */
 
 function createSatellites(people) {
-
   if (!people || people.length <= 1) return "";
 
   let html = "";
-
   const count = people.length;
+  const startAngle = -60;
+  const endAngle = 60;
+  const radius = 44;
 
-  // Fan out the satellites around the main circle.
-  // Each person receives their own orb and initial.
-
-  const startAngle = -55;
-  const endAngle = 55;
-  const radius = 43;
-
-  people.forEach((person,index) => {
-
-    const angle = count === 1
-      ? 0
-      : startAngle + (endAngle-startAngle) * (index/(count-1));
-
+  people.forEach((person, index) => {
+    const angle = startAngle + (endAngle - startAngle) * (index / (count - 1));
     const radians = angle * Math.PI / 180;
-
-    const x = 26.5 + Math.cos(radians)*radius - 10;
-    const y = 26.5 + Math.sin(radians)*radius - 10;
-
+    const x = 26.5 + Math.cos(radians) * radius - 11;
+    const y = 26.5 + Math.sin(radians) * radius - 11;
     const initial = person.name.trim().charAt(0).toUpperCase();
-
-    // Small connector between the main orb and the person orb.
-
     const lineLength = radius - 10;
 
     html += `
@@ -838,7 +807,6 @@ function createSatellites(people) {
           transform:rotate(${angle}deg);
         ">
       </span>
-
       <span class="satellite"
         title="${person.name}"
         style="
@@ -859,39 +827,31 @@ function createSatellites(people) {
 ===================================== */
 
 function drawSnakeRoute() {
-
   const grid = document.getElementById("snakeContainer");
   const svg = document.getElementById("snakeRoute");
 
   if (!grid || !svg) return;
 
   const bounds = grid.getBoundingClientRect();
+  if (bounds.width === 0 || bounds.height === 0) return;
 
-  svg.setAttribute(
-    "viewBox",
-    `0 0 ${bounds.width} ${bounds.height}`
-  );
+  svg.setAttribute("viewBox", `0 0 ${bounds.width} ${bounds.height}`);
 
   const circles = [...grid.querySelectorAll(".node-circle")];
-
   const points = circles.map(circle => {
     const r = circle.getBoundingClientRect();
-
     return {
-      x:r.left + r.width/2 - bounds.left,
-      y:r.top + r.height/2 - bounds.top
+      x: r.left + r.width/2 - bounds.left,
+      y: r.top + r.height/2 - bounds.top
     };
   });
 
-  const pointString = points
-    .map(p => `${p.x},${p.y}`)
-    .join(" ");
+  const pointString = points.map(p => `${p.x},${p.y}`).join(" ");
 
   ["routeShadow","routeLine","routeHighlight"].forEach(id => {
     const path = document.getElementById(id);
-
     if (path) {
-      path.setAttribute("points",pointString);
+      path.setAttribute("points", pointString);
     }
   });
 }
@@ -901,64 +861,52 @@ function drawSnakeRoute() {
 ===================================== */
 
 function triggerConfetti() {
-
   const canvas = document.getElementById("confettiCanvas");
+  if (!canvas) return;
   const ctx = canvas.getContext("2d");
 
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
   let particles = [];
+  const colors = ["#d9aa60", "#f1d29b", "#3b82b9", "#647da8", "#a9b8ce"];
 
-  const colors = [
-    "#d9aa60",
-    "#f1d29b",
-    "#3b82b9",
-    "#647da8",
-    "#a9b8ce"
-  ];
-
-  for (let i=0;i<100;i++) {
-
+  for (let i=0; i<100; i++) {
     particles.push({
-      x:canvas.width/2+(Math.random()-.5)*300,
-      y:canvas.height/2,
-      vx:(Math.random()-.5)*12,
-      vy:Math.random()*-14-4,
-      size:Math.random()*7+3,
-      color:colors[Math.floor(Math.random()*colors.length)],
-      rotation:Math.random()*360,
-      rotSpeed:(Math.random()-.5)*10,
-      gravity:.35,
-      opacity:1
+      x: canvas.width/2 + (Math.random()-.5)*300,
+      y: canvas.height/2,
+      vx: (Math.random()-.5)*12,
+      vy: Math.random()*-14-4,
+      size: Math.random()*7+3,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      rotation: Math.random()*360,
+      rotSpeed: (Math.random()-.5)*10,
+      gravity: .35,
+      opacity: 1
     });
   }
 
   function update() {
-
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += p.gravity;
+      p.rotation += p.rotSpeed;
+      p.opacity -= .008;
 
-      p.x+=p.vx;
-      p.y+=p.vy;
-      p.vy+=p.gravity;
-      p.rotation+=p.rotSpeed;
-      p.opacity-=.008;
-
-      if (p.opacity>0) {
-
+      if (p.opacity > 0) {
         ctx.save();
-        ctx.translate(p.x,p.y);
+        ctx.translate(p.x, p.y);
         ctx.rotate(p.rotation*Math.PI/180);
-        ctx.globalAlpha=p.opacity;
-        ctx.fillStyle=p.color;
-        ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*.6);
+        ctx.globalAlpha = p.opacity;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size*.6);
         ctx.restore();
       }
     });
 
-    if (particles.some(p=>p.opacity>0)) {
+    if (particles.some(p => p.opacity > 0)) {
       requestAnimationFrame(update);
     }
   }
@@ -970,71 +918,45 @@ function triggerConfetti() {
    CELEBRATION MODE
 ===================================== */
 
-function renderCelebration(persons,year) {
-
+function renderCelebration(persons, year) {
   const contentArea = document.getElementById("contentArea");
 
   document.getElementById("mainTitle").innerText =
-    persons.length > 1
-      ? "Vandaag is het feest"
-      : "Jarig Vandaag";
+    persons.length > 1 ? "Vandaag is het feest" : "Jarig Vandaag";
 
-  document.getElementById("subTitle").innerText =
-    "Een bijzondere dag";
+  document.getElementById("subTitle").innerText = "Een bijzondere dag";
 
   let cards = "";
-
-  persons.forEach((person,index) => {
-
-    const age = calculateAge(person.dob,year);
-
+  persons.forEach((person, index) => {
+    const age = calculateAge(person.dob, year);
     cards += `
-      <div class="celeb-person"
-           style="animation-delay:${index*.15}s">
-
+      <div class="celeb-person" style="animation-delay:${index*.15}s">
         <div class="celeb-number">
           ${persons.length > 1 ? `Jarige ${index+1}` : "Vandaag in de spotlight"}
         </div>
-
         <div class="celeb-name">
           ${person.name}
         </div>
-
         <div class="celeb-age">
-          ${age} jaar
+          Wordt ${age} jaar
         </div>
-
       </div>
     `;
   });
 
   contentArea.innerHTML = `
     <div class="celebration-screen">
-
-      <div class="celeb-tag">
-        Een bijzondere mijlpaal
-      </div>
-
-      <div class="celeb-heading">
-        Van harte gefeliciteerd!
-      </div>
-
+      <div class="celeb-tag">Een bijzondere mijlpaal</div>
+      <div class="celeb-heading">Van harte gefeliciteerd!</div>
       <div class="celebration-decoration">✦</div>
-
-      <div class="celeb-people">
-        ${cards}
-      </div>
-
-      <div class="celeb-wish">
-        We wensen jullie een fantastische verjaardag!
-      </div>
-
+      <div class="celeb-people">${cards}</div>
+      <div class="celeb-wish">We wensen je een fantastische verjaardag!</div>
     </div>
   `;
 
   if (!confettiStarted) {
     confettiStarted = true;
-    setTimeout(triggerConfetti,400);
+    setTimeout(triggerConfetti, 400);
   }
 }
 
@@ -1042,34 +964,21 @@ function renderCelebration(persons,year) {
    CALENDAR
 ===================================== */
 
-function renderCalendar(currentMonth,currentDay,currentYear) {
+function renderCalendar(currentMonth, currentDay, currentYear) {
+  document.getElementById("mainTitle").innerText = "Verjaardagen deze maand";
+  document.getElementById("subTitle").innerText = dutchMonths[currentMonth-1].toUpperCase();
 
-  document.getElementById("mainTitle").innerText =
-    "Verjaardagen deze maand";
-
-  document.getElementById("subTitle").innerText =
-    dutchMonths[currentMonth-1].toUpperCase();
-
-  const monthlyBirthdays = birthdays.filter(b =>
-    b.month === currentMonth
-  );
-
-  const totalDays = getDaysInMonth(currentYear,currentMonth);
+  const monthlyBirthdays = birthdays.filter(b => b.month === currentMonth);
+  const totalDays = getDaysInMonth(currentYear, currentMonth);
 
   const birthdayMap = {};
-
   monthlyBirthdays.forEach(b => {
-
-    if (!birthdayMap[b.day]) {
-      birthdayMap[b.day] = [];
-    }
-
+    if (!birthdayMap[b.day]) birthdayMap[b.day] = [];
     birthdayMap[b.day].push(b);
   });
 
   let pathHtml = `
     <div class="snake-grid" id="snakeContainer">
-
       <svg class="snake-route" id="snakeRoute">
         <polyline class="route-shadow" id="routeShadow"></polyline>
         <polyline class="route-line" id="routeLine"></polyline>
@@ -1079,156 +988,6 @@ function renderCalendar(currentMonth,currentDay,currentYear) {
 
   const itemsPerRow = 7;
 
-  for (let day=1;day<=totalDays;day++) {
-
+  for (let day=1; day<=totalDays; day++) {
     const people = birthdayMap[day] || [];
-
     const isPast = day < currentDay;
-    const isToday = day === currentDay;
-    const hasBirthday = people.length > 0;
-
-    const row = Math.floor((day-1)/itemsPerRow);
-    const position = (day-1)%itemsPerRow;
-
-    const column = row%2===0
-      ? position+1
-      : itemsPerRow-position;
-
-    const statusClass = [
-      isPast ? "past" : "",
-      isToday ? "today" : "",
-      hasBirthday ? "birthday" : ""
-    ].filter(Boolean).join(" ");
-
-    let title = "";
-    let sub = "";
-
-    if (hasBirthday) {
-
-      if (people.length === 1) {
-        title = splitName(people[0].name).first;
-        sub = `Wordt ${calculateAge(people[0].dob,currentYear)} jaar`;
-      } else {
-        title = `${people.length} jarigen`;
-        sub = "Iedereen in de spotlight";
-      }
-
-    } else if (isToday) {
-      title = "Vandaag";
-    }
-
-    const satelliteHtml = hasBirthday
-      ? createSatellites(people)
-      : "";
-
-    pathHtml += `
-      <div class="path-node ${statusClass}"
-           style="grid-column:${column};grid-row:${row+1};">
-
-        <div class="orb-cluster">
-
-          <div class="node-circle">
-            ${day}
-
-            ${hasBirthday && people.length===1
-              ? '<span class="milestone-star">★</span>'
-              : ''
-            }
-          </div>
-
-          ${satelliteHtml}
-
-        </div>
-
-        ${title ? `
-          <div class="node-text">
-            <span class="node-title">${title}</span>
-            <span class="node-sub">${sub}</span>
-          </div>
-        ` : ""}
-
-      </div>
-    `;
-  }
-
-  pathHtml += `</div>`;
-
-  document.getElementById("contentArea").innerHTML = pathHtml;
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(drawSnakeRoute);
-  });
-}
-
-/* =====================================
-   MAIN RENDER
-===================================== */
-
-function renderPage() {
-
-  const now = new Date();
-
-  const currentYear = now.getFullYear();
-
-  const currentDay = now.getDate();
-  const currentMonth = now.getMonth()+1;
-
-  document.getElementById("dateDisplay").innerText =
-    now.toLocaleDateString("nl-NL",{
-      weekday:"long",
-      day:"numeric",
-      month:"long"
-    });
-
-  document.getElementById("testButton").innerText =
-    previewMode
-      ? "Terug naar kalender"
-      : "Test verjaardag";
-
-  /* TEST MODE */
-
-  if (previewMode) {
-
-    renderCelebration(testPeople,currentYear);
-    return;
-  }
-
-  /* REAL BIRTHDAY */
-
-  const todaysBirthdays = birthdays.filter(b =>
-    b.month===currentMonth && b.day===currentDay
-  );
-
-  if (todaysBirthdays.length>0) {
-
-    renderCelebration(todaysBirthdays,currentYear);
-    return;
-  }
-
-  /* NORMAL CALENDAR */
-
-  confettiStarted = false;
-
-  document.getElementById("confettiCanvas")
-    .getContext("2d")
-    .clearRect(0,0,window.innerWidth,window.innerHeight);
-
-  renderCalendar(currentMonth,currentDay,currentYear);
-}
-
-/* INITIALIZE */
-
-renderPage();
-
-window.addEventListener("resize",drawSnakeRoute);
-
-setInterval(() => {
-  if (!previewMode) {
-    renderPage();
-  }
-},60000);
-
-</script>
-
-</body>
-</html>
