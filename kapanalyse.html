@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kap Analyse September 2026</title>
+  <title>Kap Analyse</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <style>
@@ -73,7 +73,7 @@
       width: 100%;
     }
 
-    /* Middle Column: Exact Original Text Restored */
+    /* Middle Column: Dynamic Text from Google Sheet */
     .middle-column {
       flex: 0.95;
       background: var(--card-bg);
@@ -107,7 +107,19 @@
       margin-bottom: 10px;
     }
 
-    /* Right Column: Exact Original Panel Restored */
+    /* Extra Info Box inside Middle Column for additional room */
+    .extra-info-box {
+      margin-top: auto;
+      background: #f1f5f9;
+      border-left: 4px solid var(--primary-blue);
+      padding: 12px 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.85rem;
+      color: #334155;
+      line-height: 1.4;
+    }
+
+    /* Right Column: Educational Info Panel */
     .right-column {
       flex: 1.1;
       background: var(--right-panel-bg);
@@ -161,19 +173,23 @@
     </div>
   </div>
 
-  <!-- Middle Column: Exact Original Text -->
+  <!-- Middle Column: Dynamic Text from Sheet -->
   <div class="middle-column">
-    <h2 id="mainTitle">Kap Analyse September 2026</h2>
-    <p>Onderstaande de Kap Analyse van September 2026.</p>
-    <p><strong>In totaal 5 Kaps.</strong></p>
-    <p>Kaps hebben betrekking op een periode ervoor, 3 à 6 weken.</p>
+    <h2 id="sheetTitle">Kap Analyse</h2>
+    <p id="sheetIntro">Laadt gegevens...</p>
+    <p><strong id="sheetTotal"></strong></p>
+    <p id="sheetPeriod"></p>
     <ul>
-      <li>Monitoring acties ter oplossing van openstaande klachten.</li>
-      <li>Focus op preventie in volgende productiecycli.</li>
+      <li id="sheetBullet1"></li>
+      <li id="sheetBullet2"></li>
     </ul>
+    <!-- Extra Room utilized for additional information from the sheet -->
+    <div id="sheetExtraBox" class="extra-info-box" style="display: none;">
+      <strong>Extra Inzicht:</strong> <span id="sheetExtraText"></span>
+    </div>
   </div>
 
-  <!-- Right Column: Exact Original Info Panel -->
+  <!-- Right Column: Original Info Panel -->
   <div class="right-column">
     <h3>Wat is een KAP?</h3>
     <p><strong>KAP</strong> staat voor <strong>Klachten Actie Plan</strong>.</p>
@@ -310,41 +326,61 @@
         const response = await fetch(TAB2_CSV_URL + '&t=' + new Date().getTime());
         const text = await response.text();
         
-        const lines = text.split('\n').slice(1);
+        const lines = text.split('\n');
         const labels = [];
         const facturenData = [];
         const regelsData = [];
+        const meta = {};
 
-        for (let line of lines) {
+        // Parse CSV lines
+        lines.forEach(line => {
           if (line.trim() !== '') {
-            const cols = line.split(',');
-            if (cols.length >= 3) {
-              const rawMonth = cols[0];
-              const formattedMonth = formatConsistentMonth(rawMonth);
-              
-              const fVal = parseFloat(cols[1].replace(/"/g, '').replace('%', '').replace(',', '.').trim());
-              const rVal = parseFloat(cols[2].replace(/"/g, '').replace('%', '').replace(',', '.').trim());
+            const cols = line.split(',').map(c => c.replace(/"/g, '').trim());
+            
+            // Collect chart data (Columns A, B, C)
+            if (cols.length >= 3 && cols[0] && !isNaN(parseFloat(cols[1]))) {
+              const formattedMonth = formatConsistentMonth(cols[0]);
+              const fVal = parseFloat(cols[1].replace('%', '').replace(',', '.'));
+              const rVal = parseFloat(cols[2].replace('%', '').replace(',', '.'));
 
-              if (!formattedMonth || formattedMonth === 'undefined') break;
+              if (formattedMonth && formattedMonth !== 'undefined') {
+                labels.push(formattedMonth);
+                facturenData.push(!isNaN(fVal) ? fVal : null);
+                regelsData.push(!isNaN(rVal) ? rVal : null);
+              }
+            }
 
-              labels.push(formattedMonth);
-              facturenData.push(!isNaN(fVal) ? fVal : null);
-              regelsData.push(!isNaN(rVal) ? rVal : null);
+            // Collect text meta data (Columns E & F)
+            if (cols.length >= 6 && cols[4]) {
+              meta[cols[4].toLowerCase()] = cols[5];
             }
           }
-        }
+        });
 
-        // Update Facturen Chart
+        // Update Charts
         facturenChart.data.labels = labels;
         facturenChart.data.datasets[0].data = facturenData;
         facturenChart.data.datasets[1].data = Array(labels.length).fill(1.5);
         facturenChart.update();
 
-        // Update Regels Chart
         regelsChart.data.labels = labels;
         regelsChart.data.datasets[0].data = regelsData;
         regelsChart.data.datasets[1].data = Array(labels.length).fill(0.7);
         regelsChart.update();
+
+        // Update Middle Text dynamically from Sheet
+        if (meta['title']) document.getElementById('sheetTitle').innerText = meta['title'];
+        if (meta['intro']) document.getElementById('sheetIntro').innerText = meta['intro'];
+        if (meta['totalkaps']) document.getElementById('sheetTotal').innerText = meta['totalkaps'];
+        if (meta['period']) document.getElementById('sheetPeriod').innerText = meta['period'];
+        if (meta['bullet1']) document.getElementById('sheetBullet1').innerText = meta['bullet1'];
+        if (meta['bullet2']) document.getElementById('sheetBullet2').innerText = meta['bullet2'];
+        
+        // Handle Extra Room Content if provided in Sheet
+        if (meta['extrainfo']) {
+          document.getElementById('sheetExtraText').innerText = meta['extrainfo'];
+          document.getElementById('sheetExtraBox').style.display = 'block';
+        }
 
       } catch (err) {
         console.error('Error loading KAP data:', err);
