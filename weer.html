@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <title>NOS Weer Enter - Live Ambiance</title>
+  <title>NOS Weer Enter - Digital Signage</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -11,6 +11,10 @@
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #080c14;
     }
 
     /* BACKGROUND ATMOSPHERIC ANIMATION CANVAS */
@@ -23,26 +27,29 @@
       z-index: 1;
     }
 
-    /* UI FROSTED GLASS CONTAINER - TIGHT STACK */
+    /* PERFECTLY CENTERED SIGNAGE WRAPPER */
     .dashboard-container {
       position: relative;
       z-index: 2;
       width: 100%;
+      max-width: 480px; /* Optimal quarter-width narrowcasting constraint */
       height: 100vh;
-      padding: 12px;
+      max-height: 920px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px; /* Consistent tight spacing between all rows */
+      justify-content: center;
+      gap: 10px;
     }
 
     /* FROSTED GLASS MIXIN */
     .glass-card {
-      background: rgba(18, 23, 38, 0.65);
+      background: rgba(16, 22, 36, 0.65);
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
     }
 
     /* TOP HERO CARD */
@@ -54,14 +61,14 @@
     }
 
     .hero-left h1 {
-      font-size: 19px;
+      font-size: 18px;
       font-weight: 700;
       letter-spacing: 0.5px;
       margin-bottom: 2px;
     }
 
     .condition-title {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       color: #ff3b30;
       margin-bottom: 2px;
@@ -70,7 +77,7 @@
     }
 
     .temp-large {
-      font-size: 34px;
+      font-size: 36px;
       font-weight: 800;
       line-height: 1;
       letter-spacing: -1px;
