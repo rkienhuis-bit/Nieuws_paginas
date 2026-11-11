@@ -4,24 +4,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leverbetrouwbaarheid | IPEX</title>
+<title>Leverbetrouwbaarheid 2026 | IPEX</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <style>
 :root {
   --navy: #142b45;
-  --navy-light: #203c5b;
+  --navy-light: #203d5c;
   --blue: #397bd5;
-  --blue-light: #eaf2fc;
+  --blue-light: #e8f1fc;
   --gold: #c9a66b;
-  --gold-light: #f5efe4;
   --bg: #edf1f6;
   --white: #ffffff;
   --text: #182c43;
-  --muted: #8190a3;
-  --border: #e4eaf1;
+  --muted: #73839a;
+  --border: #e1e7ef;
 }
 
 * {
@@ -40,7 +40,7 @@ html, body {
 }
 
 body {
-  padding: 22px 28px;
+  padding: 22px 26px;
 }
 
 .app {
@@ -54,89 +54,64 @@ body {
 /* HEADER */
 
 .header {
-  min-height: 70px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  height: 70px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 17px;
 }
 
 .brand-mark {
-  width: 51px;
-  height: 51px;
+  width: 55px;
+  height: 55px;
+  border-radius: 12px;
   background: var(--navy);
-  border-radius: 13px;
   color: white;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   font-size: 19px;
   font-weight: 850;
   letter-spacing: -1px;
-  box-shadow: 0 5px 15px rgba(20,43,69,.17);
-  position: relative;
-  overflow: hidden;
-}
-
-.brand-mark::after {
-  content: "";
-  position: absolute;
-  width: 65px;
-  height: 65px;
-  border: 1px solid rgba(255,255,255,.13);
-  border-radius: 50%;
-  right: -38px;
-  bottom: -38px;
 }
 
 .brand-text h1 {
-  font-size: 27px;
+  font-size: 30px;
   font-weight: 800;
-  letter-spacing: -.7px;
   color: var(--navy);
+  letter-spacing: -.7px;
 }
 
 .brand-text p {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
-  margin-top: 5px;
-  letter-spacing: 1.1px;
-  text-transform: uppercase;
-  font-weight: 650;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+  margin-top: 4px;
 }
 
 .status {
-  display: flex;
-  align-items: center;
-  gap: 9px;
   background: white;
   border: 1px solid var(--border);
-  padding: 11px 16px;
+  padding: 12px 17px;
   border-radius: 9px;
-  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
   font-weight: 650;
-  color: #718197;
+  color: var(--muted);
 }
 
 .status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: 9px;
+  height: 9px;
   background: #70a88d;
-  box-shadow: 0 0 0 4px rgba(112,168,141,.12);
-  animation: statusPulse 3s infinite;
+  border-radius: 50%;
 }
 
 /* MAIN */
@@ -149,30 +124,29 @@ main {
   gap: 16px;
 }
 
-/* WEEKLY CHART */
+/* WEEKLY GRAPH */
 
 .chart-panel {
-  flex: 1.65;
+  flex: 1.7;
   min-height: 0;
   background: white;
   border: 1px solid var(--border);
   border-radius: 15px;
-  padding: 22px 25px 14px;
+  padding: 23px 27px 17px;
   display: flex;
   flex-direction: column;
   position: relative;
+  box-shadow: 0 4px 16px rgba(20,43,69,.035);
   overflow: hidden;
-  box-shadow: 0 4px 18px rgba(20,43,69,.035);
-  animation: fadeUp .7s ease both;
 }
 
 .chart-panel::before {
   content: "";
   position: absolute;
   top: 0;
-  left: 25px;
+  left: 27px;
   width: 65px;
-  height: 3px;
+  height: 4px;
   background: var(--gold);
   border-radius: 0 0 4px 4px;
 }
@@ -182,101 +156,85 @@ main {
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .chart-heading h2 {
-  color: var(--navy);
-  font-size: 17px;
+  font-size: 21px;
   font-weight: 800;
-  letter-spacing: -.3px;
+  color: var(--navy);
 }
 
 .chart-heading p {
+  font-size: 14px;
   color: var(--muted);
-  font-size: 11px;
   margin-top: 5px;
 }
 
-.chart-meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.chart-meta-item {
-  background: #f5f7fa;
-  border: 1px solid var(--border);
-  padding: 9px 13px;
-  border-radius: 8px;
+.target {
+  background: #f5efe4;
+  border: 1px solid #e9dcc5;
+  padding: 11px 18px;
+  border-radius: 9px;
   text-align: center;
 }
 
-.chart-meta-item span {
+.target span {
   display: block;
-  color: var(--muted);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
+  color: #92764b;
   text-transform: uppercase;
-  letter-spacing: .7px;
+  letter-spacing: .8px;
 }
 
-.chart-meta-item strong {
+.target strong {
   display: block;
-  color: var(--navy);
-  font-size: 16px;
-  margin-top: 3px;
-}
-
-.chart-meta-item.gold {
-  background: var(--gold-light);
-  border-color: #eee2ce;
-}
-
-.chart-meta-item.gold strong {
-  color: #947548;
+  font-size: 24px;
+  color: #92764b;
+  margin-top: 2px;
 }
 
 .chart-legend {
   display: flex;
-  gap: 19px;
   align-items: center;
-  margin: 5px 0 2px;
+  gap: 24px;
+  margin-bottom: 5px;
   flex-shrink: 0;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 7px;
-  color: #7d8ca0;
-  font-size: 10px;
+  gap: 9px;
+  font-size: 13px;
   font-weight: 600;
+  color: var(--muted);
 }
 
 .legend-line {
-  width: 20px;
-  height: 3px;
-  border-radius: 5px;
+  width: 25px;
+  height: 4px;
   background: var(--blue);
+  border-radius: 5px;
 }
 
 .legend-target {
-  width: 20px;
-  border-top: 2px dashed var(--gold);
+  width: 25px;
+  border-top: 3px dashed var(--gold);
 }
 
 .chart-wrapper {
   flex: 1;
   min-height: 0;
-  position: relative;
   width: 100%;
+  position: relative;
 }
 
-/* YEARLY COMPARISON */
+/* YEAR OVERVIEW */
 
 .year-section {
-  flex: 0.85;
+  flex: .9;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -284,22 +242,22 @@ main {
 }
 
 .section-heading {
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-shrink: 0;
 }
 
 .section-heading h2 {
-  font-size: 12px;
-  color: var(--navy);
+  font-size: 15px;
   font-weight: 800;
+  color: var(--navy);
   letter-spacing: 1px;
   text-transform: uppercase;
 }
 
 .section-heading span {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--muted);
 }
 
@@ -307,7 +265,7 @@ main {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -315,76 +273,91 @@ main {
   background: white;
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 17px 22px;
+  padding: 20px 25px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-width: 0;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(20,43,69,.025);
-  animation: fadeUp .7s ease both;
+  box-shadow: 0 4px 14px rgba(20,43,69,.035);
 }
 
-.year-card:nth-child(2) { animation-delay: .12s; }
-.year-card:nth-child(3) { animation-delay: .24s; }
-
-.year-card::after {
-  content: "";
-  position: absolute;
-  width: 125px;
-  height: 125px;
-  border: 1px solid rgba(57,123,213,.055);
-  border-radius: 50%;
-  right: -55px;
-  bottom: -75px;
-  pointer-events: none;
+.year-card.current {
+  background: var(--navy);
+  border-color: var(--navy);
+  box-shadow: 0 6px 20px rgba(20,43,69,.15);
 }
 
 .year-info {
-  position: relative;
+  min-width: 0;
   z-index: 1;
 }
 
-.year-number {
-  color: #b4c0ce;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
+.year-label {
+  font-size: 13px;
+  font-weight: 750;
+  color: #91a0b2;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+}
+
+.year-card.current .year-label {
+  color: #91b9e3;
 }
 
 .year-title {
-  color: var(--navy);
-  font-size: 15px;
+  font-size: 23px;
   font-weight: 800;
-  margin-top: 5px;
+  color: var(--navy);
+  margin-top: 4px;
+}
+
+.year-card.current .year-title {
+  color: white;
 }
 
 .year-company {
-  color: var(--muted);
-  font-size: 10px;
-  margin-top: 5px;
-}
-
-.year-percentage {
-  font-size: 25px;
-  color: var(--navy);
-  font-weight: 850;
-  letter-spacing: -1px;
-  margin-top: 12px;
-}
-
-.year-caption {
-  font-size: 9px;
+  font-size: 12px;
   color: var(--muted);
   margin-top: 3px;
 }
 
+.year-card.current .year-company {
+  color: #b1c2d5;
+}
+
+.year-percentage {
+  font-size: clamp(29px, 2.7vw, 43px);
+  font-weight: 850;
+  letter-spacing: -1.5px;
+  color: var(--navy);
+  margin-top: 15px;
+  white-space: nowrap;
+}
+
+.year-card.current .year-percentage {
+  color: white;
+}
+
+.year-caption {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.year-card.current .year-caption {
+  color: #a9bacd;
+}
+
+/* DONUT */
+
 .donut-wrapper {
-  width: 112px;
-  height: 112px;
-  flex-shrink: 0;
   position: relative;
-  z-index: 1;
+  width: clamp(105px, 11vw, 155px);
+  height: clamp(105px, 11vw, 155px);
+  flex-shrink: 0;
+  margin-left: 12px;
 }
 
 .donut-wrapper canvas {
@@ -396,70 +369,56 @@ main {
   position: absolute;
   inset: 0;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   pointer-events: none;
 }
 
 .donut-center span {
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 850;
   color: var(--navy);
 }
 
-.year-card.current {
-  background: var(--navy);
-  border-color: var(--navy);
-  box-shadow: 0 8px 22px rgba(20,43,69,.13);
-}
-
-.year-card.current .year-number {
-  color: #91b7df;
-}
-
-.year-card.current .year-title {
+.year-card.current .donut-center span {
   color: white;
-}
-
-.year-card.current .year-company {
-  color: #aebed0;
-}
-
-.year-card.current .year-percentage {
-  color: white;
-}
-
-.year-card.current .year-caption {
-  color: #9fb0c4;
-}
-
-.year-card.current::after {
-  border-color: rgba(255,255,255,.08);
 }
 
 /* FOOTER */
 
 .footer {
+  height: 20px;
   flex-shrink: 0;
-  min-height: 19px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #96a3b3;
-  font-size: 10px;
+  font-size: 12px;
+  color: #8493a5;
 }
 
 .footer strong {
   color: #526780;
-  letter-spacing: .5px;
 }
 
-/* ANIMATIONS */
+/* ANIMATION */
 
-@keyframes fadeUp {
+.chart-panel,
+.year-card {
+  animation: appear .7s ease both;
+}
+
+.year-card:nth-child(2) {
+  animation-delay: .12s;
+}
+
+.year-card:nth-child(3) {
+  animation-delay: .24s;
+}
+
+@keyframes appear {
   from {
     opacity: 0;
-    transform: translateY(13px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -467,27 +426,66 @@ main {
   }
 }
 
-@keyframes statusPulse {
-  0%, 100% { box-shadow: 0 0 0 4px rgba(112,168,141,.12); }
-  50% { box-shadow: 0 0 0 7px rgba(112,168,141,.04); }
+/* SMALLER SCREENS */
+
+@media (max-height: 850px) {
+  body {
+    padding: 14px 20px;
+  }
+
+  .app {
+    gap: 10px;
+  }
+
+  .header {
+    height: 55px;
+  }
+
+  .brand-mark {
+    width: 44px;
+    height: 44px;
+  }
+
+  .brand-text h1 {
+    font-size: 24px;
+  }
+
+  .chart-panel {
+    padding: 16px 20px 12px;
+  }
+
+  .year-card {
+    padding: 12px 17px;
+  }
+
+  .donut-wrapper {
+    width: 105px;
+    height: 105px;
+  }
+
+  .year-percentage {
+    margin-top: 8px;
+  }
 }
 
-@media (max-height: 800px) {
-  body { padding: 13px 20px; }
-  .app { gap: 10px; }
-  .header { min-height: 52px; }
-  .brand-mark { width: 42px; height: 42px; }
-  .brand-text h1 { font-size: 22px; }
-  .chart-panel { padding: 15px 20px 10px; }
-  .year-card { padding: 11px 17px; }
-  .donut-wrapper { width: 90px; height: 90px; }
-  .year-percentage { font-size: 21px; margin-top: 7px; }
+@media (max-width: 850px) {
+  .year-card {
+    padding: 12px;
+  }
+
+  .donut-wrapper {
+    width: 85px;
+    height: 85px;
+  }
+
+  .year-company {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation: none !important;
-    transition: none !important;
   }
 }
 </style>
@@ -506,42 +504,29 @@ main {
       </div>
     </div>
 
-    <div class="header-right">
-      <div class="status">
-        <span class="status-dot"></span>
-        Live gegevens
-      </div>
+    <div class="status">
+      <span class="status-dot"></span>
+      Live gegevens
     </div>
   </header>
 
 
   <main>
 
-    <!-- WEEKLY DEVELOPMENT -->
+    <!-- WEEKLY CHART -->
 
     <section class="chart-panel">
 
       <div class="chart-header">
-
         <div class="chart-heading">
           <h2>Wekelijkse leverbetrouwbaarheid</h2>
-          <p>Ontwikkeling van het leverpercentage per week · 2026</p>
+          <p>Ontwikkeling per week gedurende 2026</p>
         </div>
 
-        <div class="chart-meta">
-
-          <div class="chart-meta-item">
-            <span>Doelstelling</span>
-            <strong>98%</strong>
-          </div>
-
-          <div class="chart-meta-item gold">
-            <span>Meetperiode</span>
-            <strong>52 weken</strong>
-          </div>
-
+        <div class="target">
+          <span>Doelstelling</span>
+          <strong>98%</strong>
         </div>
-
       </div>
 
       <div class="chart-legend">
@@ -552,7 +537,7 @@ main {
 
         <div class="legend-item">
           <span class="legend-target"></span>
-          Doelstelling 98%
+          Doelstelling
         </div>
       </div>
 
@@ -563,7 +548,7 @@ main {
     </section>
 
 
-    <!-- YEARLY OVERVIEW -->
+    <!-- YEARLY COMPARISON -->
 
     <section class="year-section">
 
@@ -574,12 +559,10 @@ main {
 
       <div class="year-cards">
 
-        <!-- 2024 -->
-
         <article class="year-card">
 
           <div class="year-info">
-            <div class="year-number">01 / HISTORISCH</div>
+            <div class="year-label">Historisch overzicht</div>
             <div class="year-title">2024</div>
             <div class="year-company">IPEX-Group International BV</div>
 
@@ -597,12 +580,10 @@ main {
         </article>
 
 
-        <!-- 2025 -->
-
         <article class="year-card">
 
           <div class="year-info">
-            <div class="year-number">02 / HISTORISCH</div>
+            <div class="year-label">Historisch overzicht</div>
             <div class="year-title">2025</div>
             <div class="year-company">IPEX-Group International BV</div>
 
@@ -620,12 +601,10 @@ main {
         </article>
 
 
-        <!-- 2026 -->
-
         <article class="year-card current">
 
           <div class="year-info">
-            <div class="year-number">03 / ACTUEEL</div>
+            <div class="year-label">Actueel overzicht</div>
             <div class="year-title">2026</div>
             <div class="year-company">IPEX-Group International BV</div>
 
@@ -675,10 +654,8 @@ const REMAINDER = '#edf1f6';
 
 Chart.register(ChartDataLabels);
 
-Chart.defaults.font.family =
-  "'Segoe UI', Arial, sans-serif";
-
-Chart.defaults.color = '#8190a3';
+Chart.defaults.font.family = "'Segoe UI', Arial, sans-serif";
+Chart.defaults.color = '#73839a';
 
 
 /* HELPERS */
@@ -690,12 +667,26 @@ function formatPercent(value, decimals = 2) {
   }) + '%';
 }
 
-function calculateAverage(data) {
+function parseNumber(value) {
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
 
+  let cleaned = String(value).replace(/"/g, '').trim();
+
+  if (cleaned.includes(',') && cleaned.includes('.')) {
+    cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+  } else {
+    cleaned = cleaned.replace(',', '.');
+  }
+
+  const result = parseFloat(cleaned);
+  return Number.isFinite(result) ? result : null;
+}
+
+function calculateAverage(data) {
   const valid = data.filter(v =>
-    v !== null &&
-    v !== undefined &&
-    Number.isFinite(Number(v))
+    v !== null && Number.isFinite(Number(v))
   );
 
   if (!valid.length) return null;
@@ -708,82 +699,66 @@ function calculateAverage(data) {
 
 function createDonutChart(elementId, percentage, current = false) {
 
-  const ctx = document.getElementById(elementId).getContext('2d');
+  return new Chart(
+    document.getElementById(elementId).getContext('2d'),
+    {
+      type: 'doughnut',
 
-  const chart = new Chart(ctx, {
+      data: {
+        labels: ['Verzonden', 'Niet verzonden'],
 
-    type: 'doughnut',
+        datasets: [{
+          data: [
+            percentage,
+            Math.max(0, 100 - percentage)
+          ],
 
-    data: {
-      labels: ['Verzonden', 'Niet verzonden'],
+          backgroundColor: [
+            current ? '#82b6ed' : BLUE,
+            current ? 'rgba(255,255,255,.16)' : REMAINDER
+          ],
 
-      datasets: [{
-        data: [
-          percentage,
-          Math.max(0, 100 - percentage)
-        ],
-
-        backgroundColor: [
-          current ? '#82b6ed' : BLUE,
-          current ? 'rgba(255,255,255,.14)' : REMAINDER
-        ],
-
-        borderWidth: 0,
-        hoverOffset: 2
-      }]
-    },
-
-    options: {
-      cutout: '82%',
-      responsive: true,
-      maintainAspectRatio: false,
-
-      rotation: -90,
-
-      animation: {
-        duration: 1300,
-        easing: 'easeOutQuart'
+          borderWidth: 0,
+          hoverOffset: 0
+        }]
       },
 
-      plugins: {
-        legend: { display: false },
-        tooltip: { enabled: false },
-        datalabels: { display: false }
+      options: {
+        cutout: '82%',
+        responsive: true,
+        maintainAspectRatio: false,
+        rotation: -90,
+
+        animation: {
+          duration: 1200,
+          easing: 'easeOutQuart'
+        },
+
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false },
+          datalabels: { display: false }
+        }
       }
     }
-
-  });
-
-  return chart;
+  );
 }
 
 
-const donut2024 = createDonutChart('donut2024', 99.35);
-const donut2025 = createDonutChart('donut2025', 98.74);
+createDonutChart('donut2024', 99.35);
+createDonutChart('donut2025', 98.74);
+
 const donut2026 = createDonutChart('donut2026', 0, true);
 
 
 /* WEEKLY CHART */
 
-const canvas = document.getElementById('weeklyChart');
-const ctx = canvas.getContext('2d');
-
-const gradient = ctx.createLinearGradient(0, 0, 0, 450);
-
-gradient.addColorStop(0, 'rgba(57,123,213,.22)');
-gradient.addColorStop(.65, 'rgba(57,123,213,.055)');
-gradient.addColorStop(1, 'rgba(57,123,213,0)');
-
+let weeklyValues = Array(52).fill(null);
 
 const weekLabels = Array.from(
   { length: 52 },
-  (_, i) => 'W' + String(i + 1).padStart(2, '0')
+  (_, i) => 'Week ' + (i + 1)
 );
-
-let weeklyValues = Array(52).fill(null);
-
-
-/* LAST AVAILABLE WEEK */
 
 function getLastValidIndex(data) {
   for (let i = data.length - 1; i >= 0; i--) {
@@ -794,15 +769,18 @@ function getLastValidIndex(data) {
   return -1;
 }
 
+const ctx = document.getElementById('weeklyChart').getContext('2d');
 
-/* LINE CHART */
+const gradient = ctx.createLinearGradient(0, 0, 0, 500);
+gradient.addColorStop(0, 'rgba(57,123,213,.23)');
+gradient.addColorStop(1, 'rgba(57,123,213,0)');
+
 
 const lineChart = new Chart(ctx, {
 
   type: 'line',
 
   data: {
-
     labels: weekLabels,
 
     datasets: [
@@ -815,42 +793,37 @@ const lineChart = new Chart(ctx, {
         borderColor: BLUE,
         backgroundColor: gradient,
 
-        borderWidth: 3,
-
+        borderWidth: 4,
         fill: true,
-        tension: .35,
+        tension: .3,
 
         spanGaps: false,
 
-        pointRadius: (context) => {
-          const index = context.dataIndex;
-          return index === getLastValidIndex(weeklyValues) ? 5 : 2;
+        pointRadius: context => {
+          return context.dataIndex === getLastValidIndex(weeklyValues) ? 6 : 0;
         },
 
-        pointHoverRadius: 7,
-
-        pointBackgroundColor: '#ffffff',
-        pointBorderColor: BLUE,
-        pointBorderWidth: 2,
+        pointHoverRadius: 8,
+        pointBackgroundColor: BLUE,
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 3,
 
         datalabels: {
 
           display: context => {
-            const index = context.dataIndex;
-            const last = getLastValidIndex(weeklyValues);
-
+            const i = context.dataIndex;
             return context.raw !== null &&
-              (index % 4 === 0 || index === last);
+              (i % 4 === 0 || i === getLastValidIndex(weeklyValues));
           },
 
           align: 'top',
           anchor: 'end',
-          offset: 7,
+          offset: 9,
 
-          color: '#405772',
+          color: '#344c68',
 
           font: {
-            size: 10,
+            size: 13,
             weight: 'bold'
           },
 
@@ -860,19 +833,18 @@ const lineChart = new Chart(ctx, {
       },
 
       {
-        label: 'Doelstelling 98%',
+        label: 'Doelstelling',
 
         data: Array(52).fill(TARGET),
 
         borderColor: GOLD,
-        borderWidth: 2,
-        borderDash: [7, 6],
+        borderWidth: 2.5,
+        borderDash: [8, 7],
 
         pointRadius: 0,
         pointHoverRadius: 0,
 
         fill: false,
-
         tension: 0,
 
         datalabels: {
@@ -881,7 +853,6 @@ const lineChart = new Chart(ctx, {
       }
 
     ]
-
   },
 
 
@@ -891,7 +862,7 @@ const lineChart = new Chart(ctx, {
     maintainAspectRatio: false,
 
     animation: {
-      duration: 1300,
+      duration: 1200,
       easing: 'easeOutQuart'
     },
 
@@ -902,9 +873,9 @@ const lineChart = new Chart(ctx, {
 
     layout: {
       padding: {
-        top: 24,
-        left: 5,
-        right: 12,
+        top: 27,
+        left: 8,
+        right: 15,
         bottom: 0
       }
     },
@@ -918,13 +889,11 @@ const lineChart = new Chart(ctx, {
       tooltip: {
 
         backgroundColor: '#142b45',
-
         titleColor: '#ffffff',
         bodyColor: '#d8e5f2',
 
-        padding: 12,
+        padding: 13,
         cornerRadius: 8,
-
         displayColors: false,
 
         callbacks: {
@@ -932,22 +901,16 @@ const lineChart = new Chart(ctx, {
           title: items => 'Week ' + (items[0].dataIndex + 1),
 
           label: context => {
-
-            if (context.datasetIndex === 0) {
-              return 'Leverbetrouwbaarheid: ' +
-                formatPercent(context.raw);
-            }
-
-            return 'Doelstelling: 98%';
+            return context.datasetIndex === 0
+              ? 'Leverbetrouwbaarheid: ' + formatPercent(context.raw)
+              : 'Doelstelling: 98%';
           }
-
         }
       },
 
       datalabels: {
         clip: false
       }
-
     },
 
 
@@ -965,63 +928,54 @@ const lineChart = new Chart(ctx, {
 
         ticks: {
 
-          color: '#8997a9',
+          color: '#657991',
 
           font: {
-            size: 10,
-            weight: '600'
+            size: 13,
+            weight: '650'
           },
 
-          autoSkip: false,
-
           maxRotation: 0,
+          autoSkip: false,
 
           callback: (value, index) => {
             return index % 4 === 0
-              ? weekLabels[index]
+              ? 'W' + String(index + 1).padStart(2, '0')
               : '';
           }
-
         }
-
       },
 
 
       y: {
 
         min: 90,
-        max: 100,
+        max: 101,
 
         border: {
           display: false
         },
 
         grid: {
-
-          color: context =>
-            context.tick.value === TARGET
-              ? 'rgba(201,166,107,.18)'
-              : '#edf1f5',
-
+          color: '#e9eef4',
           drawTicks: false
         },
 
         ticks: {
 
-          stepSize: 2,
+          stepSize: 5,
+          padding: 12,
 
-          padding: 10,
-
-          color: '#8796a9',
+          color: '#657991',
 
           font: {
-            size: 10
+            size: 13,
+            weight: '600'
           },
 
           callback: value =>
             value.toLocaleString('nl-NL') + '%'
         }
-
       }
 
     }
@@ -1045,38 +999,32 @@ async function fetchLiveData() {
       throw new Error('Spreadsheet niet beschikbaar');
     }
 
-    const text = await response.text();
+    const csvText = await response.text();
 
-    const lines = text.split(/\r?\n/).slice(1);
+    const parsed = Papa.parse(csvText, {
+      skipEmptyLines: true
+    });
 
+    const rows = parsed.data;
     const parsedData = Array(52).fill(null);
 
+    rows.slice(1).forEach(cols => {
 
-    lines.forEach(line => {
-
-      if (!line.trim()) return;
-
-      const cols = line.split(',');
-
-      if (cols.length < 2) return;
+      if (!cols || cols.length < 2) return;
 
       const weekNum = parseInt(
-        cols[0].replace(/"/g, '').trim()
+        String(cols[0]).trim(),
+        10
       );
 
-      const cleanVal = cols[1]
-        .replace(/"/g, '')
-        .replace(',', '.')
-        .trim();
-
-      const val = parseFloat(cleanVal);
+      const value = parseNumber(cols[1]);
 
       if (
         weekNum >= 1 &&
         weekNum <= 52 &&
-        Number.isFinite(val)
+        value !== null
       ) {
-        parsedData[weekNum - 1] = val;
+        parsedData[weekNum - 1] = value;
       }
 
     });
@@ -1085,32 +1033,34 @@ async function fetchLiveData() {
     weeklyValues = parsedData;
 
 
-    /* UPDATE WEEKLY GRAPH */
+    /* UPDATE GRAPH */
 
     lineChart.data.datasets[0].data = weeklyValues;
+
+    const validValues = weeklyValues.filter(v => v !== null);
+
+    if (validValues.length) {
+      const highest = Math.max(...validValues);
+      lineChart.options.scales.y.max = Math.max(
+        101,
+        Math.ceil(highest + 1)
+      );
+    }
 
     lineChart.update();
 
 
-    /* CALCULATE 2026 AVERAGE */
+    /* UPDATE YEARLY AVERAGE */
 
     const avg = calculateAverage(weeklyValues);
-
 
     if (avg !== null) {
 
       const roundedAvg = Number(avg.toFixed(2));
-
       const formatted = formatPercent(roundedAvg);
 
-      document.getElementById('val2026').innerText =
-        formatted;
-
-      document.getElementById('donutCenter2026').innerText =
-        formatted;
-
-
-      /* UPDATE 2026 DONUT */
+      document.getElementById('val2026').innerText = formatted;
+      document.getElementById('donutCenter2026').innerText = formatted;
 
       donut2026.data.datasets[0].data = [
         roundedAvg,
@@ -1118,11 +1068,10 @@ async function fetchLiveData() {
       ];
 
       donut2026.update();
-
     }
 
 
-    /* UPDATE TIMESTAMP */
+    /* TIMESTAMP */
 
     document.getElementById('lastUpdated').innerText =
       'Laatst bijgewerkt: ' +
