@@ -130,14 +130,23 @@ body {
   border-radius: 50%;
 }
 
-/* KPI STRIP */
-
-.kpi-strip {
+/* UNIFIED GRID STRUCTURE FOR PERFECT ALIGNMENT */
+.grid-container {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(330px, 0.85fr);
   gap: 14px;
   flex-shrink: 0;
 }
+
+.dashboard-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(330px, 0.85fr);
+  gap: 14px;
+}
+
+/* KPI CARDS */
 
 .kpi {
   background: white;
@@ -185,23 +194,6 @@ body {
   font-size: 18px;
   font-weight: 700;
   flex-shrink: 0;
-}
-
-/* DASHBOARD */
-
-.dashboard {
-  flex: 1;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1.85fr) minmax(330px, .85fr);
-  gap: 14px;
-}
-
-.charts-area {
-  min-height: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
 }
 
 /* CHART CARDS */
@@ -438,16 +430,25 @@ body {
   color: #c1cfdf;
 }
 
+/* FOOTER */
+
+.footer {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  color: #8291a5;
+  font-size: 10px;
+  padding: 0 2px;
+}
+
 /* RESPONSIVE */
 
 @media(max-width:1100px) {
   body { padding: 15px; }
 
-  .dashboard {
-    grid-template-columns: minmax(0,1.5fr) minmax(280px,.9fr);
-  }
-
-  .charts-area {
+  .grid-container,
+  .dashboard-grid {
     grid-template-columns: 1fr;
     overflow-y: auto;
   }
@@ -479,15 +480,15 @@ body {
       <div class="period-badge" id="currentMonthBadge">Analyse: --</div>
       <div class="live-indicator">
         <span class="live-dot"></span>
-        <span id="lastUpdated">Automatische gegevensupdate</span>
+        <span>Automatische gegevensupdate</span>
       </div>
     </div>
   </header>
 
 
-  <!-- KPI SUMMARY -->
+  <!-- KPI SUMMARY (3 columns matching the bottom dashboard grid) -->
 
-  <section class="kpi-strip">
+  <section class="grid-container">
 
     <div class="kpi">
       <div>
@@ -519,102 +520,75 @@ body {
   </section>
 
 
-  <main class="dashboard">
+  <!-- DASHBOARD GRID (2 Charts + 1 Info Panel matching top 3 columns) -->
 
-    <section class="charts-area">
+  <main class="dashboard-grid">
 
-      <article class="chart-card">
-
-        <div class="chart-header">
-
-          <div class="chart-heading">
-            <div class="chart-title">Verkoopfacturen</div>
-            <div class="target-label">Doel: max. 1,5%</div>
-          </div>
-
-          <div class="chart-subtitle">
-            Aandeel verkoopfacturen waarvoor een klacht is geregistreerd
-          </div>
-
-          <div class="chart-key">
-            <span class="key-item">
-              <span class="key-dot" style="background:#397bd5"></span>
-              KAP percentage
-            </span>
-            <span class="key-item">
-              <span class="key-line"></span>
-              Doelstelling
-            </span>
-          </div>
-
+    <article class="chart-card">
+      <div class="chart-header">
+        <div class="chart-heading">
+          <div class="chart-title">Verkoopfacturen</div>
+          <div class="target-label">Doel: max. 1,5%</div>
         </div>
-
-        <div class="chart-wrapper">
-          <canvas id="facturenChart"></canvas>
+        <div class="chart-subtitle">
+          Aandeel verkoopfacturen waarvoor een klacht is geregistreerd
         </div>
-
-      </article>
-
-
-      <article class="chart-card">
-
-        <div class="chart-header">
-
-          <div class="chart-heading">
-            <div class="chart-title">Verkoopregels</div>
-            <div class="target-label">Doel: max. 0,7%</div>
-          </div>
-
-          <div class="chart-subtitle">
-            Aandeel verkoopregels waarvoor een klacht is geregistreerd
-          </div>
-
-          <div class="chart-key">
-            <span class="key-item">
-              <span class="key-dot" style="background:#397bd5"></span>
-              KAP percentage
-            </span>
-            <span class="key-item">
-              <span class="key-line"></span>
-              Doelstelling
-            </span>
-          </div>
-
+        <div class="chart-key">
+          <span class="key-item">
+            <span class="key-dot" style="background:#397bd5"></span>
+            KAP percentage
+          </span>
+          <span class="key-item">
+            <span class="key-line"></span>
+            Doelstelling
+          </span>
         </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="facturenChart"></canvas>
+      </div>
+    </article>
 
-        <div class="chart-wrapper">
-          <canvas id="regelsChart"></canvas>
+    <article class="chart-card">
+      <div class="chart-header">
+        <div class="chart-heading">
+          <div class="chart-title">Verkoopregels</div>
+          <div class="target-label">Doel: max. 0,7%</div>
         </div>
-
-      </article>
-
-    </section>
-
-
-    <!-- EXPLANATION -->
+        <div class="chart-subtitle">
+          Aandeel verkoopregels waarvoor een klacht is geregistreerd
+        </div>
+        <div class="chart-key">
+          <span class="key-item">
+            <span class="key-dot" style="background:#397bd5"></span>
+            KAP percentage
+          </span>
+          <span class="key-item">
+            <span class="key-line"></span>
+            Doelstelling
+          </span>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="regelsChart"></canvas>
+      </div>
+    </article>
 
     <aside class="info-panel">
-
       <div class="info-top">
-
         <div class="info-eyebrow">Wat betekent dit?</div>
-
         <h2>
           Inzicht in klachten.<br>
           <span>Aandacht voor verbetering.</span>
         </h2>
-
         <p class="info-intro">
           Een KAP staat voor Klachten Actie Plan.
           Het geeft structuur aan de manier waarop we klachten
           onderzoeken, vastleggen en opvolgen.
         </p>
-
       </div>
 
-
       <div class="process">
-
         <div class="process-step">
           <div class="step-number">01</div>
           <div class="step-content">
@@ -622,7 +596,6 @@ body {
             <p>Een klant ervaart een probleem met een product, levering of dienstverlening.</p>
           </div>
         </div>
-
         <div class="process-step">
           <div class="step-number">02</div>
           <div class="step-content">
@@ -630,7 +603,6 @@ body {
             <p>We brengen in kaart wat er precies is gebeurd en wat de mogelijke oorzaak is.</p>
           </div>
         </div>
-
         <div class="process-step">
           <div class="step-number">03</div>
           <div class="step-content">
@@ -638,7 +610,6 @@ body {
             <p>We registreren welke stappen nodig zijn en welke afdeling hiervoor betrokken is.</p>
           </div>
         </div>
-
         <div class="process-step">
           <div class="step-number">04</div>
           <div class="step-content">
@@ -646,29 +617,29 @@ body {
             <p>De informatie helpt ons processen te evalueren en waar mogelijk te verbeteren.</p>
           </div>
         </div>
-
       </div>
 
-
       <div class="goal-box">
-
         <div class="goal-box-heading">
           <span>◎</span>
           Wat laten de grafieken zien?
         </div>
-
         <p>
           De grafieken tonen het aandeel klachten ten opzichte
           van het aantal verkoopfacturen en verkoopregels.
           De stippellijn geeft de vastgestelde doelstelling weer.
           Zo ontstaat inzicht in de ontwikkeling door de tijd.
         </p>
-
       </div>
-
     </aside>
 
   </main>
+
+
+  <!-- FOOTER WITH ONLY THE REFRESH TIMESTAMP ON THE RIGHT -->
+  <footer class="footer">
+    <span id="lastUpdated">Gegevens laden...</span>
+  </footer>
 
 </div>
 
@@ -1127,7 +1098,7 @@ async function fetchKapData() {
     );
 
     document.getElementById('lastUpdated').innerText =
-      'Bijgewerkt: ' +
+      'Laatst bijgewerkt: ' +
       new Date().toLocaleTimeString('nl-NL',{
         hour:'2-digit',
         minute:'2-digit'
