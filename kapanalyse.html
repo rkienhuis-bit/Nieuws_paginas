@@ -10,11 +10,11 @@
     :root {
       --bg-color: #f8fafc;
       --card-bg: #ffffff;
-      --text-main: #1e293b;
-      --text-muted: #475569;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
       --border-color: #e2e8f0;
       --primary-blue: #2563eb;
-      --target-line: #f59e0b;
+      --target-amber: #d97706;
       --right-panel-bg: #1e293b;
       --right-panel-text: #f1f5f9;
     }
@@ -39,7 +39,7 @@
 
     /* Left Column: Charts */
     .left-column {
-      flex: 1.35;
+      flex: 1.4;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -50,21 +50,37 @@
       flex: 1;
       background: var(--card-bg);
       border-radius: 16px;
-      padding: 16px 20px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+      padding: 18px 24px 14px 24px;
+      box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.04);
       border: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
       position: relative;
     }
 
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
     .chart-title {
-      font-size: 0.9rem;
-      font-weight: 700;
+      font-size: 0.88rem;
+      font-weight: 800;
       color: #334155;
-      margin-bottom: 6px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
+    }
+
+    .target-badge {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #b45309;
+      background: #fef3c7;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid #fde68a;
     }
 
     .chart-wrapper {
@@ -75,11 +91,11 @@
 
     /* Middle Column */
     .middle-column {
-      flex: 0.95;
+      flex: 0.9;
       background: var(--card-bg);
       border-radius: 16px;
       padding: 28px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.04);
       border: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
@@ -88,11 +104,11 @@
     }
 
     .middle-column h2 {
-      font-size: 1.9rem;
+      font-size: 1.85rem;
       font-weight: 800;
       color: #0f172a;
       margin-bottom: 18px;
-      line-height: 1.2;
+      line-height: 1.25;
     }
 
     .middle-column p {
@@ -118,7 +134,7 @@
     }
 
     .right-column h3 {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       font-weight: 700;
       margin-bottom: 16px;
       color: #ffffff;
@@ -140,16 +156,22 @@
 </head>
 <body>
 
-  <!-- Left Column: Two Bar Graphs -->
+  <!-- Left Column: Two Redesigned Clean Charts -->
   <div class="left-column">
     <div class="chart-card">
-      <div class="chart-title">KAP t.o.v Verkoop Facturen - met 1,5% doel</div>
+      <div class="chart-header">
+        <div class="chart-title">KAP t.o.v Verkoop Facturen</div>
+        <div class="target-badge">Doel: max 1,5%</div>
+      </div>
       <div class="chart-wrapper">
         <canvas id="facturenChart"></canvas>
       </div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">KAP t.o.v Verkoop Regels - met 0,7% doel</div>
+      <div class="chart-header">
+        <div class="chart-title">KAP t.o.v Verkoop Regels</div>
+        <div class="target-badge">Doel: max 0,7%</div>
+      </div>
       <div class="chart-wrapper">
         <canvas id="regelsChart"></canvas>
       </div>
@@ -210,7 +232,15 @@
       return cleaned;
     }
 
-    // Setup Facturen Chart (Line dataset placed second so it renders ON TOP of the bars)
+    // Helper to build gradient background for bars
+    function createGradient(ctx, colorTop, colorBottom) {
+      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+      gradient.addColorStop(0, colorTop);
+      gradient.addColorStop(1, colorBottom);
+      return gradient;
+    }
+
+    // Facturen Chart Setup
     const ctxFacturen = document.getElementById('facturenChart').getContext('2d');
     const facturenChart = new Chart(ctxFacturen, {
       type: 'bar',
@@ -218,43 +248,67 @@
         labels: [],
         datasets: [
           {
-            label: 'Facturen KAP %',
-            data: [],
-            backgroundColor: '#2563eb',
-            borderRadius: 4,
-            order: 2,
-            datalabels: {
-              align: 'top',
-              anchor: 'end',
-              font: { size: 10, weight: 'bold' },
-              color: '#334155',
-              formatter: (val) => val !== null ? val.toFixed(2).replace('.', ',') + '%' : ''
-            }
-          },
-          {
             label: 'Doel 1.5%',
             data: [],
             type: 'line',
-            borderColor: '#f59e0b',
-            borderWidth: 3,
+            borderColor: '#d97706',
+            borderWidth: 2,
+            borderDash: [6, 4],
             pointRadius: 0,
             order: 1,
             datalabels: { display: false }
+          },
+          {
+            label: 'Facturen KAP %',
+            data: [],
+            backgroundColor: '#3b82f6',
+            hoverBackgroundColor: '#1d4ed8',
+            borderRadius: 6,
+            barPercentage: 0.55,
+            categoryPercentage: 0.7,
+            order: 2,
+            datalabels: {
+              align: (ctx) => {
+                const val = ctx.dataset.data[ctx.dataIndex];
+                // Offset labels down if they collide directly with the 1.5% target line
+                return (val >= 1.35 && val <= 1.65) ? 'bottom' : 'top';
+              },
+              anchor: (ctx) => {
+                const val = ctx.dataset.data[ctx.dataIndex];
+                return (val >= 1.35 && val <= 1.65) ? 'center' : 'end';
+              },
+              offset: (ctx) => {
+                const val = ctx.dataset.data[ctx.dataIndex];
+                return (val >= 1.35 && val <= 1.65) ? 0 : 4;
+              },
+              font: { size: 10, weight: 'bold' },
+              color: '#1e293b',
+              formatter: (val) => val !== null ? val.toFixed(2).replace('.', ',') + '%' : ''
+            }
           }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: { padding: { top: 22, bottom: 0 } },
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } },
-          y: { min: 0, max: 4.5, ticks: { stepSize: 1, callback: (v) => v.toFixed(1).replace('.', ',') + '%' } }
+          x: { 
+            grid: { display: false }, 
+            ticks: { font: { size: 10, weight: '600' }, color: '#64748b', maxRotation: 0 } 
+          },
+          y: { 
+            min: 0, 
+            max: 4.2, 
+            grid: { color: '#f1f5f9' },
+            ticks: { stepSize: 1, font: { size: 10 }, color: '#94a3b8', callback: (v) => v.toFixed(1).replace('.', ',') + '%' } 
+          }
         }
       }
     });
 
-    // Setup Regels Chart (Line dataset placed second so it renders ON TOP of the bars)
+    // Regels Chart Setup
     const ctxRegels = document.getElementById('regelsChart').getContext('2d');
     const regelsChart = new Chart(ctxRegels, {
       type: 'bar',
@@ -262,38 +316,61 @@
         labels: [],
         datasets: [
           {
-            label: 'Regels KAP %',
-            data: [],
-            backgroundColor: '#2563eb',
-            borderRadius: 4,
-            order: 2,
-            datalabels: {
-              align: 'top',
-              anchor: 'end',
-              font: { size: 10, weight: 'bold' },
-              color: '#334155',
-              formatter: (val) => val !== null ? val.toFixed(2).replace('.', ',') + '%' : ''
-            }
-          },
-          {
             label: 'Doel 0.7%',
             data: [],
             type: 'line',
-            borderColor: '#f59e0b',
-            borderWidth: 3,
+            borderColor: '#d97706',
+            borderWidth: 2,
+            borderDash: [6, 4],
             pointRadius: 0,
             order: 1,
             datalabels: { display: false }
+          },
+          {
+            label: 'Regels KAP %',
+            data: [],
+            backgroundColor: '#3b82f6',
+            hoverBackgroundColor: '#1d4ed8',
+            borderRadius: 6,
+            barPercentage: 0.55,
+            categoryPercentage: 0.7,
+            order: 2,
+            datalabels: {
+              align: (ctx) => {
+                const val = ctx.dataset.data[ctx.dataIndex];
+                return (val >= 0.62 && val <= 0.78) ? 'bottom' : 'top';
+              },
+              anchor: (ctx) => {
+                const val = ctx.dataset.data[ctx.dataIndex];
+                return (val >= 0.62 && val <= 0.78) ? 'center' : 'end';
+              },
+              offset: (ctx) => {
+                const val = ctx.dataset.data[ctx.dataIndex];
+                return (val >= 0.62 && val <= 0.78) ? 0 : 4;
+              },
+              font: { size: 10, weight: 'bold' },
+              color: '#1e293b',
+              formatter: (val) => val !== null ? val.toFixed(2).replace('.', ',') + '%' : ''
+            }
           }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: { padding: { top: 22, bottom: 0 } },
         plugins: { legend: { display: false } },
         scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } },
-          y: { min: 0, max: 1.8, ticks: { stepSize: 0.4, callback: (v) => v.toFixed(1).replace('.', ',') + '%' } }
+          x: { 
+            grid: { display: false }, 
+            ticks: { font: { size: 10, weight: '600' }, color: '#64748b', maxRotation: 0 } 
+          },
+          y: { 
+            min: 0, 
+            max: 1.8, 
+            grid: { color: '#f1f5f9' },
+            ticks: { stepSize: 0.4, font: { size: 10 }, color: '#94a3b8', callback: (v) => v.toFixed(1).replace('.', ',') + '%' } 
+          }
         }
       }
     });
@@ -333,16 +410,19 @@
           }
         });
 
+        // Update Facturen Chart
         facturenChart.data.labels = labels;
-        facturenChart.data.datasets[0].data = facturenData;
-        facturenChart.data.datasets[1].data = Array(labels.length).fill(1.5);
+        facturenChart.data.datasets[0].data = Array(labels.length).fill(1.5);
+        facturenChart.data.datasets[1].data = facturenData;
         facturenChart.update();
 
+        // Update Regels Chart
         regelsChart.data.labels = labels;
-        regelsChart.data.datasets[0].data = regelsData;
-        regelsChart.data.datasets[1].data = Array(labels.length).fill(0.7);
+        regelsChart.data.datasets[0].data = Array(labels.length).fill(0.7);
+        regelsChart.data.datasets[1].data = regelsData;
         regelsChart.update();
 
+        // Update Dynamic Text
         if (meta['title']) document.getElementById('sheetTitle').innerText = meta['title'];
         if (meta['intro']) document.getElementById('sheetIntro').innerText = meta['intro'];
         if (meta['totalkaps']) document.getElementById('sheetTotal').innerText = meta['totalkaps'];
