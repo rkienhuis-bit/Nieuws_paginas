@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -99,6 +98,16 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+.period-badge {
+  background: var(--blue-light);
+  color: var(--navy);
+  padding: 10px 16px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 750;
+  border: 1px solid #d0e1f7;
 }
 
 .live-indicator {
@@ -493,12 +502,13 @@ body {
     <div class="brand">
       <div class="brand-mark">KAP</div>
       <div class="brand-text">
-        <h1>Klachten & Verbetering</h1>
-        <p>Inzicht in kwaliteit, processen en klanttevredenheid</p>
+        <h1 id="headerTitle">Klachten & Verbetering</h1>
+        <p id="headerSubtitle">Inzicht in kwaliteit, processen en klanttevredenheid</p>
       </div>
     </div>
 
     <div class="header-right">
+      <div class="period-badge" id="currentMonthBadge">Analyse: --</div>
       <div class="live-indicator">
         <span class="live-dot"></span>
         <span>Automatische gegevensupdate</span>
@@ -515,7 +525,7 @@ body {
       <div>
         <div class="kpi-label">KAP t.o.v. verkoopfacturen</div>
         <div class="kpi-value" id="latestFacturen">--</div>
-        <div class="kpi-description" id="facturenStatus">Doelstelling: maximaal 1,5%</div>
+        <div class="kpi-description" id="facturenStatus">Laatste maand (Doel: max 1,5%)</div>
       </div>
       <div class="kpi-icon">%</div>
     </div>
@@ -524,7 +534,7 @@ body {
       <div>
         <div class="kpi-label">KAP t.o.v. verkoopregels</div>
         <div class="kpi-value" id="latestRegels">--</div>
-        <div class="kpi-description" id="regelsStatus">Doelstelling: maximaal 0,7%</div>
+        <div class="kpi-description" id="regelsStatus">Laatste maand (Doel: max 0,7%)</div>
       </div>
       <div class="kpi-icon">%</div>
     </div>
@@ -657,7 +667,7 @@ body {
           <div class="step-number">03</div>
           <div class="step-content">
             <h3>Acties worden vastgelegd</h3>
-            <p>We registreren welke stappen nodig zijn en welke afdeling hierbij betrokken is.</p>
+            <p>We registreren welke stappen nodig zijn en welke afdeling hiervoor betrokken is.</p>
           </div>
         </div>
 
@@ -1012,6 +1022,8 @@ function updateKpis(labels,facturen,regels,meta) {
   const latestRegels = [...regels].reverse()
     .find(v => v !== null);
 
+  const latestMonth = labels.length ? labels[labels.length - 1] : '';
+
   document.getElementById('latestFacturen').innerText =
     formatPercent(latestFacturen);
 
@@ -1019,16 +1031,27 @@ function updateKpis(labels,facturen,regels,meta) {
     formatPercent(latestRegels);
 
   document.getElementById('facturenStatus').innerText =
-    'Doelstelling: maximaal 1,5%';
+    latestMonth ? `${latestMonth} (Doel: max 1,5%)` : 'Doelstelling: maximaal 1,5%';
 
   document.getElementById('regelsStatus').innerText =
-    'Doelstelling: maximaal 0,7%';
+    latestMonth ? `${latestMonth} (Doel: max 0,7%)` : 'Doelstelling: maximaal 0,7%';
 
   document.getElementById('totalKaps').innerText =
     meta['totalkaps'] || '--';
 
   document.getElementById('periodDescription').innerText =
-    meta['period'] || 'Huidige analyseperiode';
+    meta['intro'] || meta['period'] || 'Huidige analyseperiode';
+
+  // Dynamic Header Month Badge
+  if (meta['title']) {
+    document.getElementById('headerTitle').innerText = meta['title'];
+  }
+  
+  if (latestMonth) {
+    document.getElementById('currentMonthBadge').innerText = `Analyse: ${latestMonth}`;
+  } else if (meta['title']) {
+    document.getElementById('currentMonthBadge').innerText = meta['title'];
+  }
 
 }
 
