@@ -73,7 +73,7 @@
       width: 100%;
     }
 
-    /* Middle Column: Larger fonts & spacing for high legibility */
+    /* Middle Column */
     .middle-column {
       flex: 0.95;
       background: var(--card-bg);
@@ -95,19 +95,14 @@
       line-height: 1.2;
     }
 
-    .middle-column p, .middle-column li {
+    .middle-column p {
       font-size: 1.05rem;
       color: var(--text-muted);
       line-height: 1.65;
       margin-bottom: 14px;
     }
 
-    .middle-column ul {
-      margin-left: 20px;
-      margin-bottom: 14px;
-    }
-
-    /* Right Column: Larger fonts & spacing for panel readability */
+    /* Right Column */
     .right-column {
       flex: 1.1;
       background: var(--right-panel-bg);
@@ -167,10 +162,6 @@
     <p id="sheetIntro">Laadt gegevens...</p>
     <p><strong id="sheetTotal"></strong></p>
     <p id="sheetPeriod"></p>
-    <ul>
-      <li id="sheetBullet1"></li>
-      <li id="sheetBullet2"></li>
-    </ul>
   </div>
 
   <!-- Right Column: Original Info Panel -->
@@ -219,7 +210,7 @@
       return cleaned;
     }
 
-    // Setup Facturen Chart
+    // Setup Facturen Chart (Line dataset placed second so it renders ON TOP of the bars)
     const ctxFacturen = document.getElementById('facturenChart').getContext('2d');
     const facturenChart = new Chart(ctxFacturen, {
       type: 'bar',
@@ -231,6 +222,7 @@
             data: [],
             backgroundColor: '#2563eb',
             borderRadius: 4,
+            order: 2,
             datalabels: {
               align: 'top',
               anchor: 'end',
@@ -244,8 +236,9 @@
             data: [],
             type: 'line',
             borderColor: '#f59e0b',
-            borderWidth: 2.5,
+            borderWidth: 3,
             pointRadius: 0,
+            order: 1,
             datalabels: { display: false }
           }
         ]
@@ -261,7 +254,7 @@
       }
     });
 
-    // Setup Regels Chart
+    // Setup Regels Chart (Line dataset placed second so it renders ON TOP of the bars)
     const ctxRegels = document.getElementById('regelsChart').getContext('2d');
     const regelsChart = new Chart(ctxRegels, {
       type: 'bar',
@@ -273,6 +266,7 @@
             data: [],
             backgroundColor: '#2563eb',
             borderRadius: 4,
+            order: 2,
             datalabels: {
               align: 'top',
               anchor: 'end',
@@ -286,8 +280,9 @@
             data: [],
             type: 'line',
             borderColor: '#f59e0b',
-            borderWidth: 2.5,
+            borderWidth: 3,
             pointRadius: 0,
+            order: 1,
             datalabels: { display: false }
           }
         ]
@@ -352,8 +347,6 @@
         if (meta['intro']) document.getElementById('sheetIntro').innerText = meta['intro'];
         if (meta['totalkaps']) document.getElementById('sheetTotal').innerText = meta['totalkaps'];
         if (meta['period']) document.getElementById('sheetPeriod').innerText = meta['period'];
-        if (meta['bullet1']) document.getElementById('sheetBullet1').innerText = meta['bullet1'];
-        if (meta['bullet2']) document.getElementById('sheetBullet2').innerText = meta['bullet2'];
 
       } catch (err) {
         console.error('Error loading KAP data:', err);
