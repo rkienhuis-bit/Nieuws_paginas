@@ -15,13 +15,9 @@
   --bg: #f1f4f8;
   --white: #ffffff;
   --navy: #142b45;
-  --navy2: #203c5b;
-  --blue: #3779d8;
-  --blue-soft: #eaf1fb;
-  --green: #159879;
-  --green-soft: #e5f5ef;
-  --amber: #d99130;
-  --amber-soft: #fff2df;
+  --blue: #397bd5;
+  --blue-light: #eaf1fb;
+  --gold: #d6a04b;
   --text: #172a40;
   --muted: #73839a;
   --line: #e3e9f0;
@@ -46,10 +42,6 @@ body {
   padding: 22px 28px;
 }
 
-/* =========================
-   MAIN LAYOUT
-========================= */
-
 .app {
   width: 100%;
   height: 100%;
@@ -58,9 +50,7 @@ body {
   gap: 17px;
 }
 
-/* =========================
-   HEADER
-========================= */
+/* HEADER */
 
 .header {
   display: flex;
@@ -127,14 +117,11 @@ body {
 .live-dot {
   width: 8px;
   height: 8px;
-  background: var(--green);
+  background: #8b9bad;
   border-radius: 50%;
-  box-shadow: 0 0 0 4px var(--green-soft);
 }
 
-/* =========================
-   KPI STRIP
-========================= */
+/* KPI STRIP */
 
 .kpi-strip {
   display: grid;
@@ -181,6 +168,8 @@ body {
   width: 42px;
   height: 42px;
   border-radius: 11px;
+  background: var(--blue-light);
+  color: var(--blue);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -189,13 +178,7 @@ body {
   flex-shrink: 0;
 }
 
-.icon-blue { background: var(--blue-soft); color: var(--blue); }
-.icon-green { background: var(--green-soft); color: var(--green); }
-.icon-amber { background: var(--amber-soft); color: var(--amber); }
-
-/* =========================
-   DASHBOARD GRID
-========================= */
+/* DASHBOARD */
 
 .dashboard {
   flex: 1;
@@ -205,16 +188,14 @@ body {
   gap: 16px;
 }
 
-/* =========================
-   CHARTS
-========================= */
-
 .charts-area {
   min-height: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 15px;
 }
+
+/* CHART CARDS */
 
 .chart-card {
   background: white;
@@ -260,8 +241,8 @@ body {
 .target-label {
   font-size: 10px;
   font-weight: 750;
-  color: #99601b;
-  background: var(--amber-soft);
+  color: #926b2e;
+  background: #faf3e6;
   padding: 6px 9px;
   border-radius: 6px;
   white-space: nowrap;
@@ -292,7 +273,7 @@ body {
 .key-line {
   width: 17px;
   height: 2px;
-  border-top: 2px dashed var(--amber);
+  border-top: 2px dashed var(--gold);
 }
 
 .chart-wrapper {
@@ -302,9 +283,7 @@ body {
   width: 100%;
 }
 
-/* =========================
-   EXPLANATION PANEL
-========================= */
+/* INFORMATION PANEL */
 
 .info-panel {
   background: var(--navy);
@@ -450,9 +429,7 @@ body {
   color: #c1cfdf;
 }
 
-/* =========================
-   BOTTOM STATUS
-========================= */
+/* FOOTER */
 
 .footer {
   flex-shrink: 0;
@@ -468,19 +445,20 @@ body {
   color: #526780;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* RESPONSIVE */
 
 @media(max-width:1100px) {
   body { padding: 15px; }
+
   .dashboard {
     grid-template-columns: minmax(0,1.5fr) minmax(280px,.9fr);
   }
+
   .charts-area {
     grid-template-columns: 1fr;
     overflow-y: auto;
   }
+
   .chart-card { min-height: 330px; }
   .info-panel { padding: 20px; }
 }
@@ -511,21 +489,19 @@ body {
 
 <div class="app">
 
-  <!-- HEADER -->
-
   <header class="header">
     <div class="brand">
       <div class="brand-mark">KAP</div>
       <div class="brand-text">
         <h1>Klachten & Verbetering</h1>
-        <p>Inzicht in kwaliteit, prestaties en klanttevredenheid</p>
+        <p>Inzicht in kwaliteit, processen en klanttevredenheid</p>
       </div>
     </div>
 
     <div class="header-right">
       <div class="live-indicator">
         <span class="live-dot"></span>
-        <span>Gegevens worden automatisch bijgewerkt</span>
+        <span>Automatische gegevensupdate</span>
       </div>
     </div>
   </header>
@@ -539,18 +515,18 @@ body {
       <div>
         <div class="kpi-label">KAP t.o.v. verkoopfacturen</div>
         <div class="kpi-value" id="latestFacturen">--</div>
-        <div class="kpi-description" id="facturenStatus">Doel: maximaal 1,5%</div>
+        <div class="kpi-description" id="facturenStatus">Doelstelling: maximaal 1,5%</div>
       </div>
-      <div class="kpi-icon icon-blue">%</div>
+      <div class="kpi-icon">%</div>
     </div>
 
     <div class="kpi">
       <div>
         <div class="kpi-label">KAP t.o.v. verkoopregels</div>
         <div class="kpi-value" id="latestRegels">--</div>
-        <div class="kpi-description" id="regelsStatus">Doel: maximaal 0,7%</div>
+        <div class="kpi-description" id="regelsStatus">Doelstelling: maximaal 0,7%</div>
       </div>
-      <div class="kpi-icon icon-green">%</div>
+      <div class="kpi-icon">%</div>
     </div>
 
     <div class="kpi">
@@ -559,17 +535,13 @@ body {
         <div class="kpi-value" id="totalKaps">--</div>
         <div class="kpi-description" id="periodDescription">Huidige analyseperiode</div>
       </div>
-      <div class="kpi-icon icon-amber">↗</div>
+      <div class="kpi-icon">↗</div>
     </div>
 
   </section>
 
 
-  <!-- MAIN DASHBOARD -->
-
   <main class="dashboard">
-
-    <!-- GRAPHS -->
 
     <section class="charts-area">
 
@@ -579,7 +551,7 @@ body {
 
           <div class="chart-heading">
             <div class="chart-title">Verkoopfacturen</div>
-            <div class="target-label">Doel: ≤ 1,5%</div>
+            <div class="target-label">Doel: max. 1,5%</div>
           </div>
 
           <div class="chart-subtitle">
@@ -588,12 +560,8 @@ body {
 
           <div class="chart-key">
             <span class="key-item">
-              <span class="key-dot" style="background:#159879"></span>
-              Binnen doel
-            </span>
-            <span class="key-item">
-              <span class="key-dot" style="background:#d99130"></span>
-              Boven doel
+              <span class="key-dot" style="background:#397bd5"></span>
+              KAP percentage
             </span>
             <span class="key-item">
               <span class="key-line"></span>
@@ -616,7 +584,7 @@ body {
 
           <div class="chart-heading">
             <div class="chart-title">Verkoopregels</div>
-            <div class="target-label">Doel: ≤ 0,7%</div>
+            <div class="target-label">Doel: max. 0,7%</div>
           </div>
 
           <div class="chart-subtitle">
@@ -625,12 +593,8 @@ body {
 
           <div class="chart-key">
             <span class="key-item">
-              <span class="key-dot" style="background:#159879"></span>
-              Binnen doel
-            </span>
-            <span class="key-item">
-              <span class="key-dot" style="background:#d99130"></span>
-              Boven doel
+              <span class="key-dot" style="background:#397bd5"></span>
+              KAP percentage
             </span>
             <span class="key-item">
               <span class="key-line"></span>
@@ -658,27 +622,25 @@ body {
         <div class="info-eyebrow">Wat betekent dit?</div>
 
         <h2>
-          Van klacht<br>
-          naar <span>verbetering.</span>
+          Inzicht in klachten.<br>
+          <span>Aandacht voor verbetering.</span>
         </h2>
 
         <p class="info-intro">
           Een KAP staat voor Klachten Actie Plan.
-          Het is een manier om klachten niet alleen op te lossen,
-          maar vooral om ervan te leren.
+          Het geeft structuur aan de manier waarop we klachten
+          onderzoeken, vastleggen en opvolgen.
         </p>
 
       </div>
 
-
-      <!-- FOUR STEPS -->
 
       <div class="process">
 
         <div class="process-step">
           <div class="step-number">01</div>
           <div class="step-content">
-            <h3>Er gaat iets mis</h3>
+            <h3>Een klacht wordt gemeld</h3>
             <p>Een klant ervaart een probleem met een product, levering of dienstverlening.</p>
           </div>
         </div>
@@ -686,44 +648,42 @@ body {
         <div class="process-step">
           <div class="step-number">02</div>
           <div class="step-content">
-            <h3>We zoeken de oorzaak</h3>
-            <p>We onderzoeken wat er precies fout is gegaan en waarom.</p>
+            <h3>De oorzaak wordt onderzocht</h3>
+            <p>We brengen in kaart wat er precies is gebeurd en wat de mogelijke oorzaak is.</p>
           </div>
         </div>
 
         <div class="process-step">
           <div class="step-number">03</div>
           <div class="step-content">
-            <h3>We spreken actie af</h3>
-            <p>We leggen vast wat er moet gebeuren en welke afdeling hiervoor verantwoordelijk is.</p>
+            <h3>Acties worden vastgelegd</h3>
+            <p>We registreren welke stappen nodig zijn en welke afdeling hierbij betrokken is.</p>
           </div>
         </div>
 
         <div class="process-step">
           <div class="step-number">04</div>
           <div class="step-content">
-            <h3>We voorkomen herhaling</h3>
-            <p>Door de oorzaak aan te pakken, proberen we dezelfde klacht in de toekomst te voorkomen.</p>
+            <h3>Inzichten worden benut</h3>
+            <p>De informatie helpt ons processen te evalueren en waar mogelijk te verbeteren.</p>
           </div>
         </div>
 
       </div>
 
 
-      <!-- GOAL -->
-
       <div class="goal-box">
 
         <div class="goal-box-heading">
           <span>◎</span>
-          Waarom meten we dit?
+          Wat laten de grafieken zien?
         </div>
 
         <p>
-          De grafieken laten zien hoe vaak klachten voorkomen
-          ten opzichte van onze verkoop. Hoe lager het percentage,
-          hoe beter. De stippellijn geeft het gewenste maximum aan.
-          Zo zien we of onze verbeteracties resultaat opleveren.
+          De grafieken tonen het aandeel klachten ten opzichte
+          van het aantal verkoopfacturen en verkoopregels.
+          De stippellijn geeft de vastgestelde doelstelling weer.
+          Zo ontstaat inzicht in de ontwikkeling door de tijd.
         </p>
 
       </div>
@@ -733,10 +693,8 @@ body {
   </main>
 
 
-  <!-- FOOTER -->
-
   <footer class="footer">
-    <span><strong>IPEX</strong> · Kwaliteit begint bij verbeteren</span>
+    <span><strong>IPEX</strong> · Kwaliteit begint bij inzicht</span>
     <span id="lastUpdated">Gegevens laden...</span>
   </footer>
 
@@ -745,30 +703,30 @@ body {
 
 <script>
 
-/* ==========================================
-   GOOGLE SHEETS CONNECTION
-========================================== */
+/* GOOGLE SHEETS */
 
 const TAB2_CSV_URL =
 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQtxKzOmH_pFkFCD60zVlU8tXQd2aW8B92eY-iMdstxibnAYtxESxC3cS-5peclfntJhRrLIGWKPg5/pub?gid=762908038&single=true&output=csv';
 
 
-/* ==========================================
-   SETTINGS
-========================================== */
+/* SETTINGS */
 
 const TARGET_FACTUREN = 1.5;
 const TARGET_REGELS = 0.7;
 
+const BAR_COLOR = '#397bd5';
+const BAR_HOVER = '#285fae';
+const TARGET_COLOR = '#d6a04b';
+
 Chart.register(ChartDataLabels);
 
-Chart.defaults.font.family = "'Segoe UI', Arial, sans-serif";
+Chart.defaults.font.family =
+  "'Segoe UI', Arial, sans-serif";
+
 Chart.defaults.color = '#73839a';
 
 
-/* ==========================================
-   HELPERS
-========================================== */
+/* HELPERS */
 
 function formatMonth(raw) {
 
@@ -825,7 +783,6 @@ function parseNumber(value) {
     .replace('%','')
     .trim();
 
-  // Support Dutch decimal commas and regular decimal points.
   if (cleaned.includes(',') && cleaned.includes('.')) {
     cleaned = cleaned.replace(/\./g,'').replace(',','.');
   } else {
@@ -849,19 +806,7 @@ function formatPercent(value) {
 }
 
 
-function getStatus(value,target) {
-
-  if (value === null || value === undefined) return '--';
-
-  return value <= target
-    ? 'Binnen de doelstelling'
-    : 'Boven de doelstelling';
-}
-
-
-/* ==========================================
-   CHART CONFIGURATION
-========================================== */
+/* CHART CREATION */
 
 function createChart(canvasId,target,maximum) {
 
@@ -880,7 +825,7 @@ function createChart(canvasId,target,maximum) {
           type:'line',
           label:'Doelstelling',
           data:[],
-          borderColor:'#d99130',
+          borderColor:TARGET_COLOR,
           borderWidth:2,
           borderDash:[7,5],
           pointRadius:0,
@@ -893,35 +838,12 @@ function createChart(canvasId,target,maximum) {
           type:'bar',
           label:'KAP percentage',
           data:[],
-
-          backgroundColor: context => {
-
-            const value = context.raw;
-
-            if (value === null || value === undefined) {
-              return '#dce4ed';
-            }
-
-            return value <= target
-              ? '#159879'
-              : '#d99130';
-          },
-
-          hoverBackgroundColor: context => {
-
-            const value = context.raw;
-
-            return value <= target
-              ? '#0d765d'
-              : '#b8781f';
-          },
-
+          backgroundColor:BAR_COLOR,
+          hoverBackgroundColor:BAR_HOVER,
           borderRadius:5,
           borderSkipped:false,
-
           barPercentage:.65,
           categoryPercentage:.8,
-
           order:2,
 
           datalabels: {
@@ -941,9 +863,7 @@ function createChart(canvasId,target,maximum) {
             },
 
             formatter:value =>
-              value !== null
-                ? formatPercent(value)
-                : ''
+              value !== null ? formatPercent(value) : ''
           }
         }
 
@@ -993,7 +913,7 @@ function createChart(canvasId,target,maximum) {
             label:context =>
               context.datasetIndex === 1
                 ? `KAP: ${formatPercent(context.raw)}`
-                : `Doel: ${formatPercent(target)}`
+                : `Doelstelling: ${formatPercent(target)}`
           }
         },
 
@@ -1046,7 +966,6 @@ function createChart(canvasId,target,maximum) {
           ticks:{
 
             color:'#8594a7',
-
             padding:9,
 
             font:{
@@ -1068,9 +987,7 @@ function createChart(canvasId,target,maximum) {
 }
 
 
-/* ==========================================
-   CREATE CHARTS
-========================================== */
+/* CREATE CHARTS */
 
 const facturenChart = createChart(
   'facturenChart',
@@ -1085,9 +1002,7 @@ const regelsChart = createChart(
 );
 
 
-/* ==========================================
-   UPDATE KPI CARDS
-========================================== */
+/* KPI UPDATE */
 
 function updateKpis(labels,facturen,regels,meta) {
 
@@ -1104,10 +1019,10 @@ function updateKpis(labels,facturen,regels,meta) {
     formatPercent(latestRegels);
 
   document.getElementById('facturenStatus').innerText =
-    getStatus(latestFacturen,TARGET_FACTUREN);
+    'Doelstelling: maximaal 1,5%';
 
   document.getElementById('regelsStatus').innerText =
-    getStatus(latestRegels,TARGET_REGELS);
+    'Doelstelling: maximaal 0,7%';
 
   document.getElementById('totalKaps').innerText =
     meta['totalkaps'] || '--';
@@ -1118,9 +1033,7 @@ function updateKpis(labels,facturen,regels,meta) {
 }
 
 
-/* ==========================================
-   UPDATE GRAPHS
-========================================== */
+/* CHART UPDATE */
 
 function updateChart(chart,labels,data,target) {
 
@@ -1143,13 +1056,9 @@ function updateChart(chart,labels,data,target) {
 }
 
 
-/* ==========================================
-   FETCH GOOGLE SHEETS DATA
-========================================== */
+/* FETCH DATA */
 
 async function fetchKapData() {
-
-  if (!TAB2_CSV_URL) return;
 
   try {
 
@@ -1183,8 +1092,6 @@ async function fetchKapData() {
       const fVal = parseNumber(cols[1]);
       const rVal = parseNumber(cols[2]);
 
-      // Monthly data rows
-
       if (
         cols.length >= 3 &&
         first &&
@@ -1202,8 +1109,6 @@ async function fetchKapData() {
         }
       }
 
-      // Metadata rows
-
       if (cols.length >= 6 && cols[4]) {
 
         meta[String(cols[4]).toLowerCase().trim()] =
@@ -1212,13 +1117,9 @@ async function fetchKapData() {
 
     });
 
-
     if (!labels.length) {
       throw new Error('Geen maandgegevens gevonden');
     }
-
-
-    // Update charts
 
     updateChart(
       facturenChart,
@@ -1234,9 +1135,6 @@ async function fetchKapData() {
       TARGET_REGELS
     );
 
-
-    // Update KPI cards
-
     updateKpis(
       labels,
       facturenData,
@@ -1244,16 +1142,12 @@ async function fetchKapData() {
       meta
     );
 
-
-    // Footer
-
     document.getElementById('lastUpdated').innerText =
       'Laatst bijgewerkt: ' +
       new Date().toLocaleTimeString('nl-NL',{
         hour:'2-digit',
         minute:'2-digit'
       });
-
 
   } catch(error) {
 
@@ -1267,9 +1161,7 @@ async function fetchKapData() {
 }
 
 
-/* ==========================================
-   INITIALIZE
-========================================== */
+/* INITIALIZE */
 
 fetchKapData();
 
