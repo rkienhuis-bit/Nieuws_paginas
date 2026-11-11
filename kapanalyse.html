@@ -1,440 +1,1281 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kap Analyse</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-  <style>
-    :root {
-      --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --border-color: #e2e8f0;
-      --primary-blue: #2563eb;
-      --target-amber: #d97706;
-      --right-panel-bg: #1e293b;
-      --right-panel-text: #f1f5f9;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KAP | Inzicht & Verbetering</title>
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      padding: 24px;
-      gap: 20px;
-    }
+<style>
+:root {
+  --bg: #f1f4f8;
+  --white: #ffffff;
+  --navy: #142b45;
+  --navy2: #203c5b;
+  --blue: #3779d8;
+  --blue-soft: #eaf1fb;
+  --green: #159879;
+  --green-soft: #e5f5ef;
+  --amber: #d99130;
+  --amber-soft: #fff2df;
+  --text: #172a40;
+  --muted: #73839a;
+  --line: #e3e9f0;
+}
 
-    /* Left Column: Charts */
-    .left-column {
-      flex: 1.4;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      height: 100%;
-    }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    .chart-card {
-      flex: 1;
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 18px 24px 14px 24px;
-      box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.04);
-      border: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
 
-    .chart-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
+body {
+  padding: 22px 28px;
+}
 
-    .chart-title {
-      font-size: 0.88rem;
-      font-weight: 800;
-      color: #334155;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-    }
+/* =========================
+   MAIN LAYOUT
+========================= */
 
-    .target-badge {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #b45309;
-      background: #fef3c7;
-      padding: 3px 10px;
-      border-radius: 20px;
-      border: 1px solid #fde68a;
-    }
+.app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
 
-    .chart-wrapper {
-      position: relative;
-      flex: 1;
-      width: 100%;
-    }
+/* =========================
+   HEADER
+========================= */
 
-    /* Middle Column */
-    .middle-column {
-      flex: 0.9;
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.04);
-      border: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      height: 100%;
-    }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  min-height: 65px;
+}
 
-    .middle-column h2 {
-      font-size: 1.85rem;
-      font-weight: 800;
-      color: #0f172a;
-      margin-bottom: 18px;
-      line-height: 1.25;
-    }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
 
-    .middle-column p {
-      font-size: 1.05rem;
-      color: var(--text-muted);
-      line-height: 1.65;
-      margin-bottom: 14px;
-    }
+.brand-mark {
+  width: 48px;
+  height: 48px;
+  background: var(--navy);
+  color: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  box-shadow: 0 5px 12px rgba(20,43,69,.17);
+}
 
-    /* Right Column */
-    .right-column {
-      flex: 1.1;
-      background: var(--right-panel-bg);
-      color: var(--right-panel-text);
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      height: 100%;
-      overflow-y: auto;
-    }
+.brand-text h1 {
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -.6px;
+}
 
-    .right-column h3 {
-      font-size: 1.35rem;
-      font-weight: 700;
-      margin-bottom: 16px;
-      color: #ffffff;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-      padding-bottom: 10px;
-    }
+.brand-text p {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 4px;
+  font-weight: 500;
+  letter-spacing: .3px;
+}
 
-    .right-column p {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin-bottom: 12px;
-      color: #cbd5e1;
-    }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
 
-    .right-column strong {
-      color: #ffffff;
-    }
-  </style>
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  padding: 10px 15px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px var(--green-soft);
+}
+
+/* =========================
+   KPI STRIP
+========================= */
+
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.kpi {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 0;
+  box-shadow: 0 3px 10px rgba(20,43,69,.025);
+}
+
+.kpi-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+}
+
+.kpi-value {
+  font-size: 27px;
+  font-weight: 800;
+  color: var(--navy);
+  margin-top: 5px;
+  letter-spacing: -.7px;
+}
+
+.kpi-description {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.kpi-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.icon-blue { background: var(--blue-soft); color: var(--blue); }
+.icon-green { background: var(--green-soft); color: var(--green); }
+.icon-amber { background: var(--amber-soft); color: var(--amber); }
+
+/* =========================
+   DASHBOARD GRID
+========================= */
+
+.dashboard {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.85fr) minmax(330px, .85fr);
+  gap: 16px;
+}
+
+/* =========================
+   CHARTS
+========================= */
+
+.charts-area {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.chart-card {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 19px 19px 15px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  box-shadow: 0 3px 12px rgba(20,43,69,.035);
+}
+
+.chart-header {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  flex-shrink: 0;
+  margin-bottom: 12px;
+}
+
+.chart-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 7px;
+}
+
+.chart-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: .45px;
+}
+
+.chart-subtitle {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.target-label {
+  font-size: 10px;
+  font-weight: 750;
+  color: #99601b;
+  background: var(--amber-soft);
+  padding: 6px 9px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.chart-key {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+
+.key-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.key-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 3px;
+}
+
+.key-line {
+  width: 17px;
+  height: 2px;
+  border-top: 2px dashed var(--amber);
+}
+
+.chart-wrapper {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+/* =========================
+   EXPLANATION PANEL
+========================= */
+
+.info-panel {
+  background: var(--navy);
+  color: white;
+  border-radius: 14px;
+  padding: 26px 25px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.info-panel::after {
+  content: "";
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: rgba(74,130,190,.10);
+  right: -140px;
+  bottom: -140px;
+  pointer-events: none;
+}
+
+.info-top {
+  position: relative;
+  z-index: 1;
+}
+
+.info-eyebrow {
+  color: #8fb6df;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 9px;
+}
+
+.info-panel h2 {
+  font-size: 25px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -.6px;
+}
+
+.info-panel h2 span {
+  color: #8fb6df;
+}
+
+.info-intro {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #c5d1df;
+  margin-top: 12px;
+}
+
+/* PROCESS */
+
+.process {
+  display: flex;
+  flex-direction: column;
+  margin-top: 25px;
+  position: relative;
+  z-index: 1;
+}
+
+.process-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.process-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  width: 1px;
+  background: rgba(143,182,223,.35);
+  top: 34px;
+  bottom: 3px;
+  left: 16px;
+}
+
+.step-number {
+  width: 33px;
+  height: 33px;
+  border-radius: 9px;
+  background: rgba(143,182,223,.15);
+  border: 1px solid rgba(143,182,223,.3);
+  color: #a8cff3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.step-content {
+  padding-top: 1px;
+}
+
+.step-content h3 {
+  font-size: 13px;
+  font-weight: 750;
+  margin-bottom: 4px;
+  color: #fff;
+}
+
+.step-content p {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #b8c7d8;
+}
+
+/* BOTTOM EXPLANATION */
+
+.goal-box {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(143,182,223,.24);
+  background: rgba(255,255,255,.055);
+}
+
+.goal-box-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #d6e9fc;
+  margin-bottom: 7px;
+}
+
+.goal-box p {
+  font-size: 11px;
+  line-height: 1.55;
+  color: #c1cfdf;
+}
+
+/* =========================
+   BOTTOM STATUS
+========================= */
+
+.footer {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #8291a5;
+  font-size: 10px;
+  padding: 0 2px;
+}
+
+.footer strong {
+  color: #526780;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1100px) {
+  body { padding: 15px; }
+  .dashboard {
+    grid-template-columns: minmax(0,1.5fr) minmax(280px,.9fr);
+  }
+  .charts-area {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+  .chart-card { min-height: 330px; }
+  .info-panel { padding: 20px; }
+}
+
+@media(max-height:800px) {
+  body { padding: 13px 20px; }
+  .app { gap: 10px; }
+  .header { min-height: 50px; }
+  .brand-mark { width: 40px; height: 40px; }
+  .brand-text h1 { font-size: 22px; }
+  .kpi { padding: 10px 15px; }
+  .kpi-value { font-size: 22px; }
+  .chart-card { padding: 13px; }
+  .info-panel { padding: 18px; }
+  .info-panel h2 { font-size: 21px; }
+  .process { margin-top: 15px; }
+  .process-step { padding-bottom: 12px; }
+  .goal-box { padding: 12px; }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  * { transition: none !important; }
+}
+</style>
 </head>
+
 <body>
 
-  <!-- Left Column: Two Redesigned Clean Charts -->
-  <div class="left-column">
-    <div class="chart-card">
-      <div class="chart-header">
-        <div class="chart-title">KAP t.o.v Verkoop Facturen</div>
-        <div class="target-badge">Doel: max 1,5%</div>
-      </div>
-      <div class="chart-wrapper">
-        <canvas id="facturenChart"></canvas>
-      </div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-header">
-        <div class="chart-title">KAP t.o.v Verkoop Regels</div>
-        <div class="target-badge">Doel: max 0,7%</div>
-      </div>
-      <div class="chart-wrapper">
-        <canvas id="regelsChart"></canvas>
+<div class="app">
+
+  <!-- HEADER -->
+
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark">KAP</div>
+      <div class="brand-text">
+        <h1>Klachten & Verbetering</h1>
+        <p>Inzicht in kwaliteit, prestaties en klanttevredenheid</p>
       </div>
     </div>
-  </div>
 
-  <!-- Middle Column: Dynamic Text from Sheet -->
-  <div class="middle-column">
-    <h2 id="sheetTitle">Kap Analyse</h2>
-    <p id="sheetIntro">Laadt gegevens...</p>
-    <p><strong id="sheetTotal"></strong></p>
-    <p id="sheetPeriod"></p>
-  </div>
+    <div class="header-right">
+      <div class="live-indicator">
+        <span class="live-dot"></span>
+        <span>Gegevens worden automatisch bijgewerkt</span>
+      </div>
+    </div>
+  </header>
 
-  <!-- Right Column: Original Info Panel -->
-  <div class="right-column">
-    <h3>Wat is een KAP?</h3>
-    <p><strong>KAP</strong> staat voor <strong>Klachten Actie Plan</strong>.</p>
-    <p>In de KAP worden drie items vastgelegd, namelijk:</p>
-    <p>• De soort klacht;</p>
-    <p>• Wat er fout gegaan is;</p>
-    <p>• Welke afdeling hiervoor verantwoordelijk was.</p>
-    <p>Het doel van de KAP is te monitoren welke actie er genomen is om een klacht op te lossen en te kijken hoe we de klacht in de toekomst kunnen voorkomen.</p>
-    <p>Dit moet uiteindelijk leiden tot een vermindering van het aantal klachten en daarom is een doelstelling bepaald die je terug ziet in de grafieken.</p>
-    <p>Het liefst hebben we geen klachten, maar als ze er toch zijn, is het belangrijk dat deze op een correcte en efficiënte wijze worden opgelost, zodat de klant ook tevreden is met de oplossing.</p>
-  </div>
 
-  <script>
-    Chart.register(ChartDataLabels);
+  <!-- KPI SUMMARY -->
 
-    const TAB2_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQtxKzOmH_pFkFCD60zVlU8tXQd2aW8B92eY-iMdstxibnAYtxESxC3cS-5peclfntJhRrLIGWKPg5/pub?gid=762908038&single=true&output=csv';
+  <section class="kpi-strip">
 
-    function formatConsistentMonth(rawDateStr) {
-      if (!rawDateStr) return '';
-      let cleaned = rawDateStr.replace(/"/g, '').trim();
-      const dutchMonths = {jan:'jan', feb:'feb', mrt:'mrt', apr:'apr', mei:'mei', jun:'jun', jul:'jul', aug:'aug', sep:'sep', okt:'okt', nov:'nov', dec:'dec'};
-      
-      for (let m in dutchMonths) {
-        if (cleaned.toLowerCase().includes(m)) {
-          let parts = cleaned.split(/[-/\s]/);
-          let monthPart = dutchMonths[m];
-          let yearPart = parts.find(p => p.length === 2 || p.length === 4);
-          if (yearPart) {
-            if (yearPart.length === 4) yearPart = yearPart.slice(2);
-            return `${monthPart}-${yearPart}`;
-          }
-        }
+    <div class="kpi">
+      <div>
+        <div class="kpi-label">KAP t.o.v. verkoopfacturen</div>
+        <div class="kpi-value" id="latestFacturen">--</div>
+        <div class="kpi-description" id="facturenStatus">Doel: maximaal 1,5%</div>
+      </div>
+      <div class="kpi-icon icon-blue">%</div>
+    </div>
+
+    <div class="kpi">
+      <div>
+        <div class="kpi-label">KAP t.o.v. verkoopregels</div>
+        <div class="kpi-value" id="latestRegels">--</div>
+        <div class="kpi-description" id="regelsStatus">Doel: maximaal 0,7%</div>
+      </div>
+      <div class="kpi-icon icon-green">%</div>
+    </div>
+
+    <div class="kpi">
+      <div>
+        <div class="kpi-label">Geregistreerde KAP's</div>
+        <div class="kpi-value" id="totalKaps">--</div>
+        <div class="kpi-description" id="periodDescription">Huidige analyseperiode</div>
+      </div>
+      <div class="kpi-icon icon-amber">↗</div>
+    </div>
+
+  </section>
+
+
+  <!-- MAIN DASHBOARD -->
+
+  <main class="dashboard">
+
+    <!-- GRAPHS -->
+
+    <section class="charts-area">
+
+      <article class="chart-card">
+
+        <div class="chart-header">
+
+          <div class="chart-heading">
+            <div class="chart-title">Verkoopfacturen</div>
+            <div class="target-label">Doel: ≤ 1,5%</div>
+          </div>
+
+          <div class="chart-subtitle">
+            Aandeel verkoopfacturen waarvoor een klacht is geregistreerd
+          </div>
+
+          <div class="chart-key">
+            <span class="key-item">
+              <span class="key-dot" style="background:#159879"></span>
+              Binnen doel
+            </span>
+            <span class="key-item">
+              <span class="key-dot" style="background:#d99130"></span>
+              Boven doel
+            </span>
+            <span class="key-item">
+              <span class="key-line"></span>
+              Doelstelling
+            </span>
+          </div>
+
+        </div>
+
+        <div class="chart-wrapper">
+          <canvas id="facturenChart"></canvas>
+        </div>
+
+      </article>
+
+
+      <article class="chart-card">
+
+        <div class="chart-header">
+
+          <div class="chart-heading">
+            <div class="chart-title">Verkoopregels</div>
+            <div class="target-label">Doel: ≤ 0,7%</div>
+          </div>
+
+          <div class="chart-subtitle">
+            Aandeel verkoopregels waarvoor een klacht is geregistreerd
+          </div>
+
+          <div class="chart-key">
+            <span class="key-item">
+              <span class="key-dot" style="background:#159879"></span>
+              Binnen doel
+            </span>
+            <span class="key-item">
+              <span class="key-dot" style="background:#d99130"></span>
+              Boven doel
+            </span>
+            <span class="key-item">
+              <span class="key-line"></span>
+              Doelstelling
+            </span>
+          </div>
+
+        </div>
+
+        <div class="chart-wrapper">
+          <canvas id="regelsChart"></canvas>
+        </div>
+
+      </article>
+
+    </section>
+
+
+    <!-- EXPLANATION -->
+
+    <aside class="info-panel">
+
+      <div class="info-top">
+
+        <div class="info-eyebrow">Wat betekent dit?</div>
+
+        <h2>
+          Van klacht<br>
+          naar <span>verbetering.</span>
+        </h2>
+
+        <p class="info-intro">
+          Een KAP staat voor Klachten Actie Plan.
+          Het is een manier om klachten niet alleen op te lossen,
+          maar vooral om ervan te leren.
+        </p>
+
+      </div>
+
+
+      <!-- FOUR STEPS -->
+
+      <div class="process">
+
+        <div class="process-step">
+          <div class="step-number">01</div>
+          <div class="step-content">
+            <h3>Er gaat iets mis</h3>
+            <p>Een klant ervaart een probleem met een product, levering of dienstverlening.</p>
+          </div>
+        </div>
+
+        <div class="process-step">
+          <div class="step-number">02</div>
+          <div class="step-content">
+            <h3>We zoeken de oorzaak</h3>
+            <p>We onderzoeken wat er precies fout is gegaan en waarom.</p>
+          </div>
+        </div>
+
+        <div class="process-step">
+          <div class="step-number">03</div>
+          <div class="step-content">
+            <h3>We spreken actie af</h3>
+            <p>We leggen vast wat er moet gebeuren en welke afdeling hiervoor verantwoordelijk is.</p>
+          </div>
+        </div>
+
+        <div class="process-step">
+          <div class="step-number">04</div>
+          <div class="step-content">
+            <h3>We voorkomen herhaling</h3>
+            <p>Door de oorzaak aan te pakken, proberen we dezelfde klacht in de toekomst te voorkomen.</p>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- GOAL -->
+
+      <div class="goal-box">
+
+        <div class="goal-box-heading">
+          <span>◎</span>
+          Waarom meten we dit?
+        </div>
+
+        <p>
+          De grafieken laten zien hoe vaak klachten voorkomen
+          ten opzichte van onze verkoop. Hoe lager het percentage,
+          hoe beter. De stippellijn geeft het gewenste maximum aan.
+          Zo zien we of onze verbeteracties resultaat opleveren.
+        </p>
+
+      </div>
+
+    </aside>
+
+  </main>
+
+
+  <!-- FOOTER -->
+
+  <footer class="footer">
+    <span><strong>IPEX</strong> · Kwaliteit begint bij verbeteren</span>
+    <span id="lastUpdated">Gegevens laden...</span>
+  </footer>
+
+</div>
+
+
+<script>
+
+/* ==========================================
+   GOOGLE SHEETS CONNECTION
+========================================== */
+
+const TAB2_CSV_URL =
+'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQtxKzOmH_pFkFCD60zVlU8tXQd2aW8B92eY-iMdstxibnAYtxESxC3cS-5peclfntJhRrLIGWKPg5/pub?gid=762908038&single=true&output=csv';
+
+
+/* ==========================================
+   SETTINGS
+========================================== */
+
+const TARGET_FACTUREN = 1.5;
+const TARGET_REGELS = 0.7;
+
+Chart.register(ChartDataLabels);
+
+Chart.defaults.font.family = "'Segoe UI', Arial, sans-serif";
+Chart.defaults.color = '#73839a';
+
+
+/* ==========================================
+   HELPERS
+========================================== */
+
+function formatMonth(raw) {
+
+  if (!raw) return '';
+
+  const cleaned = String(raw).replace(/"/g,'').trim();
+
+  const months = {
+    jan:'jan', feb:'feb', mrt:'mrt',
+    apr:'apr', mei:'mei', jun:'jun',
+    jul:'jul', aug:'aug', sep:'sep',
+    okt:'okt', nov:'nov', dec:'dec'
+  };
+
+  for (const key in months) {
+
+    if (cleaned.toLowerCase().includes(key)) {
+
+      const parts = cleaned.split(/[-/\s]/);
+
+      let year = parts.find(p => /^\d{2,4}$/.test(p));
+
+      if (year) {
+        if (year.length === 4) year = year.slice(2);
+        return `${months[key]}-${year}`;
       }
-
-      let parsedDate = new Date(cleaned);
-      if (!isNaN(parsedDate)) {
-        const mNames = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
-        let m = mNames[parsedDate.getMonth()];
-        let y = String(parsedDate.getFullYear()).slice(2);
-        return `${m}-${y}`;
-      }
-
-      return cleaned;
     }
+  }
 
-    // Helper to build gradient background for bars
-    function createGradient(ctx, colorTop, colorBottom) {
-      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-      gradient.addColorStop(0, colorTop);
-      gradient.addColorStop(1, colorBottom);
-      return gradient;
-    }
+  const date = new Date(cleaned);
 
-    // Facturen Chart Setup
-    const ctxFacturen = document.getElementById('facturenChart').getContext('2d');
-    const facturenChart = new Chart(ctxFacturen, {
-      type: 'bar',
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: 'Doel 1.5%',
-            data: [],
-            type: 'line',
-            borderColor: '#d97706',
-            borderWidth: 2,
-            borderDash: [6, 4],
-            pointRadius: 0,
-            order: 1,
-            datalabels: { display: false }
-          },
-          {
-            label: 'Facturen KAP %',
-            data: [],
-            backgroundColor: '#3b82f6',
-            hoverBackgroundColor: '#1d4ed8',
-            borderRadius: 6,
-            barPercentage: 0.55,
-            categoryPercentage: 0.7,
-            order: 2,
-            datalabels: {
-              align: (ctx) => {
-                const val = ctx.dataset.data[ctx.dataIndex];
-                // Offset labels down if they collide directly with the 1.5% target line
-                return (val >= 1.35 && val <= 1.65) ? 'bottom' : 'top';
-              },
-              anchor: (ctx) => {
-                const val = ctx.dataset.data[ctx.dataIndex];
-                return (val >= 1.35 && val <= 1.65) ? 'center' : 'end';
-              },
-              offset: (ctx) => {
-                const val = ctx.dataset.data[ctx.dataIndex];
-                return (val >= 1.35 && val <= 1.65) ? 0 : 4;
-              },
-              font: { size: 10, weight: 'bold' },
-              color: '#1e293b',
-              formatter: (val) => val !== null ? val.toFixed(2).replace('.', ',') + '%' : ''
+  if (!isNaN(date)) {
+
+    const names = [
+      'jan','feb','mrt','apr','mei','jun',
+      'jul','aug','sep','okt','nov','dec'
+    ];
+
+    return `${names[date.getMonth()]}-${String(date.getFullYear()).slice(2)}`;
+  }
+
+  return cleaned;
+}
+
+
+function parseNumber(value) {
+
+  if (value === undefined || value === null || value === '') {
+    return null;
+  }
+
+  let cleaned = String(value)
+    .replace(/"/g,'')
+    .replace('%','')
+    .trim();
+
+  // Support Dutch decimal commas and regular decimal points.
+  if (cleaned.includes(',') && cleaned.includes('.')) {
+    cleaned = cleaned.replace(/\./g,'').replace(',','.');
+  } else {
+    cleaned = cleaned.replace(',','.');
+  }
+
+  const result = parseFloat(cleaned);
+
+  return Number.isFinite(result) ? result : null;
+}
+
+
+function formatPercent(value) {
+
+  if (value === null || value === undefined) return '--';
+
+  return value.toLocaleString('nl-NL',{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  }) + '%';
+}
+
+
+function getStatus(value,target) {
+
+  if (value === null || value === undefined) return '--';
+
+  return value <= target
+    ? 'Binnen de doelstelling'
+    : 'Boven de doelstelling';
+}
+
+
+/* ==========================================
+   CHART CONFIGURATION
+========================================== */
+
+function createChart(canvasId,target,maximum) {
+
+  const ctx = document.getElementById(canvasId);
+
+  return new Chart(ctx, {
+
+    type:'bar',
+
+    data: {
+      labels: [],
+
+      datasets: [
+
+        {
+          type:'line',
+          label:'Doelstelling',
+          data:[],
+          borderColor:'#d99130',
+          borderWidth:2,
+          borderDash:[7,5],
+          pointRadius:0,
+          pointHoverRadius:0,
+          order:1,
+          datalabels:{display:false}
+        },
+
+        {
+          type:'bar',
+          label:'KAP percentage',
+          data:[],
+
+          backgroundColor: context => {
+
+            const value = context.raw;
+
+            if (value === null || value === undefined) {
+              return '#dce4ed';
             }
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: { padding: { top: 22, bottom: 0 } },
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { 
-            grid: { display: false }, 
-            ticks: { font: { size: 10, weight: '600' }, color: '#64748b', maxRotation: 0 } 
+
+            return value <= target
+              ? '#159879'
+              : '#d99130';
           },
-          y: { 
-            min: 0, 
-            max: 4.2, 
-            grid: { color: '#f1f5f9' },
-            ticks: { stepSize: 1, font: { size: 10 }, color: '#94a3b8', callback: (v) => v.toFixed(1).replace('.', ',') + '%' } 
+
+          hoverBackgroundColor: context => {
+
+            const value = context.raw;
+
+            return value <= target
+              ? '#0d765d'
+              : '#b8781f';
+          },
+
+          borderRadius:5,
+          borderSkipped:false,
+
+          barPercentage:.65,
+          categoryPercentage:.8,
+
+          order:2,
+
+          datalabels: {
+
+            display: context =>
+              context.dataset.data[context.dataIndex] !== null,
+
+            anchor:'end',
+            align:'top',
+            offset:5,
+
+            color:'#34465c',
+
+            font:{
+              size:11,
+              weight:'bold'
+            },
+
+            formatter:value =>
+              value !== null
+                ? formatPercent(value)
+                : ''
           }
         }
+
+      ]
+    },
+
+    options: {
+
+      responsive:true,
+      maintainAspectRatio:false,
+
+      animation:{
+        duration:900,
+        easing:'easeOutQuart'
+      },
+
+      layout:{
+        padding:{
+          top:25,
+          left:0,
+          right:4,
+          bottom:0
+        }
+      },
+
+      interaction:{
+        intersect:false,
+        mode:'index'
+      },
+
+      plugins:{
+
+        legend:{
+          display:false
+        },
+
+        tooltip:{
+
+          backgroundColor:'#142b45',
+          titleColor:'#ffffff',
+          bodyColor:'#d9e5f1',
+          padding:12,
+          cornerRadius:8,
+          displayColors:false,
+
+          callbacks:{
+            label:context =>
+              context.datasetIndex === 1
+                ? `KAP: ${formatPercent(context.raw)}`
+                : `Doel: ${formatPercent(target)}`
+          }
+        },
+
+        datalabels:{
+          clip:false
+        }
+      },
+
+      scales:{
+
+        x:{
+
+          grid:{
+            display:false
+          },
+
+          border:{
+            display:false
+          },
+
+          ticks:{
+
+            color:'#73839a',
+
+            font:{
+              size:10,
+              weight:'600'
+            },
+
+            maxRotation:0,
+            autoSkip:true,
+            maxTicksLimit:8
+          }
+        },
+
+        y:{
+
+          beginAtZero:true,
+          suggestedMax:maximum,
+
+          border:{
+            display:false
+          },
+
+          grid:{
+            color:'#edf1f5',
+            drawTicks:false
+          },
+
+          ticks:{
+
+            color:'#8594a7',
+
+            padding:9,
+
+            font:{
+              size:10
+            },
+
+            callback:value =>
+              value.toLocaleString('nl-NL',{
+                maximumFractionDigits:1
+              }) + '%'
+          }
+        }
+
       }
+    }
+
+  });
+
+}
+
+
+/* ==========================================
+   CREATE CHARTS
+========================================== */
+
+const facturenChart = createChart(
+  'facturenChart',
+  TARGET_FACTUREN,
+  4
+);
+
+const regelsChart = createChart(
+  'regelsChart',
+  TARGET_REGELS,
+  1.8
+);
+
+
+/* ==========================================
+   UPDATE KPI CARDS
+========================================== */
+
+function updateKpis(labels,facturen,regels,meta) {
+
+  const latestFacturen = [...facturen].reverse()
+    .find(v => v !== null);
+
+  const latestRegels = [...regels].reverse()
+    .find(v => v !== null);
+
+  document.getElementById('latestFacturen').innerText =
+    formatPercent(latestFacturen);
+
+  document.getElementById('latestRegels').innerText =
+    formatPercent(latestRegels);
+
+  document.getElementById('facturenStatus').innerText =
+    getStatus(latestFacturen,TARGET_FACTUREN);
+
+  document.getElementById('regelsStatus').innerText =
+    getStatus(latestRegels,TARGET_REGELS);
+
+  document.getElementById('totalKaps').innerText =
+    meta['totalkaps'] || '--';
+
+  document.getElementById('periodDescription').innerText =
+    meta['period'] || 'Huidige analyseperiode';
+
+}
+
+
+/* ==========================================
+   UPDATE GRAPHS
+========================================== */
+
+function updateChart(chart,labels,data,target) {
+
+  chart.data.labels = labels;
+
+  chart.data.datasets[0].data =
+    labels.map(() => target);
+
+  chart.data.datasets[1].data = data;
+
+  const validValues = data.filter(v => v !== null);
+
+  const maxValue = Math.max(target*1.25,...validValues);
+
+  chart.options.scales.y.suggestedMax =
+    Math.ceil(maxValue*1.2*10)/10;
+
+  chart.update();
+
+}
+
+
+/* ==========================================
+   FETCH GOOGLE SHEETS DATA
+========================================== */
+
+async function fetchKapData() {
+
+  if (!TAB2_CSV_URL) return;
+
+  try {
+
+    const response = await fetch(
+      TAB2_CSV_URL + '&t=' + Date.now()
+    );
+
+    if (!response.ok) {
+      throw new Error('Kan spreadsheet niet laden');
+    }
+
+    const csvText = await response.text();
+
+    const parsed = Papa.parse(csvText,{
+      skipEmptyLines:true
     });
 
-    // Regels Chart Setup
-    const ctxRegels = document.getElementById('regelsChart').getContext('2d');
-    const regelsChart = new Chart(ctxRegels, {
-      type: 'bar',
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: 'Doel 0.7%',
-            data: [],
-            type: 'line',
-            borderColor: '#d97706',
-            borderWidth: 2,
-            borderDash: [6, 4],
-            pointRadius: 0,
-            order: 1,
-            datalabels: { display: false }
-          },
-          {
-            label: 'Regels KAP %',
-            data: [],
-            backgroundColor: '#3b82f6',
-            hoverBackgroundColor: '#1d4ed8',
-            borderRadius: 6,
-            barPercentage: 0.55,
-            categoryPercentage: 0.7,
-            order: 2,
-            datalabels: {
-              align: (ctx) => {
-                const val = ctx.dataset.data[ctx.dataIndex];
-                return (val >= 0.62 && val <= 0.78) ? 'bottom' : 'top';
-              },
-              anchor: (ctx) => {
-                const val = ctx.dataset.data[ctx.dataIndex];
-                return (val >= 0.62 && val <= 0.78) ? 'center' : 'end';
-              },
-              offset: (ctx) => {
-                const val = ctx.dataset.data[ctx.dataIndex];
-                return (val >= 0.62 && val <= 0.78) ? 0 : 4;
-              },
-              font: { size: 10, weight: 'bold' },
-              color: '#1e293b',
-              formatter: (val) => val !== null ? val.toFixed(2).replace('.', ',') + '%' : ''
-            }
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: { padding: { top: 22, bottom: 0 } },
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { 
-            grid: { display: false }, 
-            ticks: { font: { size: 10, weight: '600' }, color: '#64748b', maxRotation: 0 } 
-          },
-          y: { 
-            min: 0, 
-            max: 1.8, 
-            grid: { color: '#f1f5f9' },
-            ticks: { stepSize: 0.4, font: { size: 10 }, color: '#94a3b8', callback: (v) => v.toFixed(1).replace('.', ',') + '%' } 
-          }
+    const rows = parsed.data;
+
+    const labels = [];
+    const facturenData = [];
+    const regelsData = [];
+    const meta = {};
+
+    rows.forEach(cols => {
+
+      if (!cols || !cols.length) return;
+
+      const first = String(cols[0] || '').trim();
+
+      const fVal = parseNumber(cols[1]);
+      const rVal = parseNumber(cols[2]);
+
+      // Monthly data rows
+
+      if (
+        cols.length >= 3 &&
+        first &&
+        fVal !== null
+      ) {
+
+        const formattedMonth = formatMonth(first);
+
+        if (formattedMonth) {
+
+          labels.push(formattedMonth);
+
+          facturenData.push(fVal);
+          regelsData.push(rVal);
         }
       }
+
+      // Metadata rows
+
+      if (cols.length >= 6 && cols[4]) {
+
+        meta[String(cols[4]).toLowerCase().trim()] =
+          String(cols[5] || '').trim();
+      }
+
     });
 
-    async function fetchKapData() {
-      if (!TAB2_CSV_URL || TAB2_CSV_URL.includes('YOUR_TAB_2_PUBLISHED_CSV_URL_HERE')) return;
 
-      try {
-        const response = await fetch(TAB2_CSV_URL + '&t=' + new Date().getTime());
-        const text = await response.text();
-        
-        const lines = text.split('\n');
-        const labels = [];
-        const facturenData = [];
-        const regelsData = [];
-        const meta = {};
-
-        lines.forEach(line => {
-          if (line.trim() !== '') {
-            const cols = line.split(',').map(c => c.replace(/"/g, '').trim());
-            
-            if (cols.length >= 3 && cols[0] && !isNaN(parseFloat(cols[1]))) {
-              const formattedMonth = formatConsistentMonth(cols[0]);
-              const fVal = parseFloat(cols[1].replace('%', '').replace(',', '.'));
-              const rVal = parseFloat(cols[2].replace('%', '').replace(',', '.'));
-
-              if (formattedMonth && formattedMonth !== 'undefined') {
-                labels.push(formattedMonth);
-                facturenData.push(!isNaN(fVal) ? fVal : null);
-                regelsData.push(!isNaN(rVal) ? rVal : null);
-              }
-            }
-
-            if (cols.length >= 6 && cols[4]) {
-              meta[cols[4].toLowerCase()] = cols[5];
-            }
-          }
-        });
-
-        // Update Facturen Chart
-        facturenChart.data.labels = labels;
-        facturenChart.data.datasets[0].data = Array(labels.length).fill(1.5);
-        facturenChart.data.datasets[1].data = facturenData;
-        facturenChart.update();
-
-        // Update Regels Chart
-        regelsChart.data.labels = labels;
-        regelsChart.data.datasets[0].data = Array(labels.length).fill(0.7);
-        regelsChart.data.datasets[1].data = regelsData;
-        regelsChart.update();
-
-        // Update Dynamic Text
-        if (meta['title']) document.getElementById('sheetTitle').innerText = meta['title'];
-        if (meta['intro']) document.getElementById('sheetIntro').innerText = meta['intro'];
-        if (meta['totalkaps']) document.getElementById('sheetTotal').innerText = meta['totalkaps'];
-        if (meta['period']) document.getElementById('sheetPeriod').innerText = meta['period'];
-
-      } catch (err) {
-        console.error('Error loading KAP data:', err);
-      }
+    if (!labels.length) {
+      throw new Error('Geen maandgegevens gevonden');
     }
 
-    fetchKapData();
-    setInterval(fetchKapData, 30 * 1000);
-  </script>
+
+    // Update charts
+
+    updateChart(
+      facturenChart,
+      labels,
+      facturenData,
+      TARGET_FACTUREN
+    );
+
+    updateChart(
+      regelsChart,
+      labels,
+      regelsData,
+      TARGET_REGELS
+    );
+
+
+    // Update KPI cards
+
+    updateKpis(
+      labels,
+      facturenData,
+      regelsData,
+      meta
+    );
+
+
+    // Footer
+
+    document.getElementById('lastUpdated').innerText =
+      'Laatst bijgewerkt: ' +
+      new Date().toLocaleTimeString('nl-NL',{
+        hour:'2-digit',
+        minute:'2-digit'
+      });
+
+
+  } catch(error) {
+
+    console.error('KAP data error:',error);
+
+    document.getElementById('lastUpdated').innerText =
+      'Gegevens tijdelijk niet beschikbaar';
+
+  }
+
+}
+
+
+/* ==========================================
+   INITIALIZE
+========================================== */
+
+fetchKapData();
+
+setInterval(fetchKapData,30*1000);
+
+</script>
+
 </body>
 </html>
