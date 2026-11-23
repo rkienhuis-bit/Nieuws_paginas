@@ -8,392 +8,647 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <style>
     :root {
-      --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-      --line-color: #2563eb;
-      --target-color: #ef4444;
-      --border-color: #e2e8f0;
+      --page: #f3f6fb;
+      --card: #ffffff;
+      --ink: #17243a;
+      --muted: #687891;
+      --line: #dce4ef;
+      --blue: #3478e5;
+      --blue-soft: rgba(52, 120, 229, .10);
+      --orange: #f29a38;
+      --target: #7b8ca6;
     }
 
-    * {
-      box-sizing: border-box;
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
       margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      overflow: hidden;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--page);
     }
 
     body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
+      padding: 18px 22px 20px;
       display: flex;
       flex-direction: column;
-      padding: 24px;
+      gap: 14px;
     }
 
     header {
-      text-align: center;
-      margin-bottom: 16px;
-      animation: fadeInDown 0.8s ease-out;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8px 2px;
+    }
+
+    .heading {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
     }
 
     h1 {
-      font-size: 2.2rem;
+      margin: 0;
+      font-size: clamp(24px, 2.2vw, 34px);
+      line-height: 1.1;
+      letter-spacing: -.7px;
+      font-weight: 800;
+    }
+
+    .header-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .2px;
+    }
+
+    .live-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #52647e;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: 12px;
       font-weight: 700;
-      color: #0f172a;
-      letter-spacing: -0.5px;
+      white-space: nowrap;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #27ae83;
+      box-shadow: 0 0 0 4px rgba(39,174,131,.12);
     }
 
     main {
+      min-height: 0;
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .top-chart-container {
-      flex: 3;
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 20px 24px 12px 24px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
-      border: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      animation: fadeInUp 0.8s ease-out 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-
-    .chart-wrapper {
-      position: relative;
-      flex: 1;
-      width: 100%;
-      height: 100%;
-    }
-
-    .bottom-cards-container {
-      flex: 2;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      grid-template-rows: minmax(0, 1.55fr) minmax(0, 1fr);
+      gap: 14px;
     }
 
-    .card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
-      border: 1px solid var(--border-color);
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 5px 18px rgba(24, 43, 74, .045);
+      min-height: 0;
+    }
+
+    .chart-panel {
       display: flex;
       flex-direction: column;
+      padding: 16px 20px 10px;
+    }
+
+    .panel-heading {
+      display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 4px;
+      flex: 0 0 auto;
+    }
+
+    .panel-heading h2 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: .25px;
+    }
+
+    .target-key {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #65758d;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .target-line {
+      display: inline-block;
+      width: 24px;
+      border-top: 2px dashed var(--target);
+    }
+
+    .chart-wrap {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+    }
+
+    .year-cards {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .year-card {
+      padding: 16px 18px 13px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      justify-items: center;
+      align-items: center;
+      text-align: center;
       position: relative;
       overflow: hidden;
     }
 
-    /* Idle Shimmer Highlight Line */
-    .card::before {
-      content: '';
+    .year-card::before {
+      content: "";
       position: absolute;
       top: 0;
-      left: -100%;
-      width: 100%;
+      left: 18px;
+      right: 18px;
       height: 3px;
-      background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.4), transparent);
-      animation: idleShimmer 6s infinite linear;
+      border-radius: 0 0 4px 4px;
+      background: linear-gradient(90deg, #b9d3fa, var(--blue), #b9d3fa);
+      opacity: .8;
     }
 
-    .card:nth-child(1) { animation: fadeInUp 0.8s ease-out 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .card:nth-child(2) { animation: fadeInUp 0.8s ease-out 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .card:nth-child(3) { animation: fadeInUp 0.8s ease-out 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
-
-    .card-title {
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: #334155;
-      text-align: center;
-    }
-
-    .card-subtitle {
-      font-size: 0.85rem;
-      color: #94a3b8;
+    .year-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -.1px;
       margin-top: 2px;
-      text-align: center;
     }
 
-    .donut-wrapper {
+    .year-subtitle {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .donut-area {
+      width: min(100%, 174px);
+      aspect-ratio: 1;
+      max-height: 174px;
       position: relative;
-      width: 140px;
-      height: 140px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 6px 0;
+      margin: 2px 0;
     }
 
-    .donut-center-text {
+    .donut-area canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .donut-center {
       position: absolute;
-      text-align: center;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       pointer-events: none;
     }
 
-    .donut-percentage {
-      font-size: 1.45rem;
-      font-weight: 700;
-      color: #0f172a;
-      animation: idlePulse 4s ease-in-out infinite;
+    .donut-value {
+      font-size: clamp(22px, 2vw, 29px);
+      font-weight: 850;
+      letter-spacing: -.8px;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
     }
 
-    .legend-container {
+    .donut-caption {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .legend {
       display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
       gap: 16px;
-      font-size: 0.85rem;
-      color: var(--text-muted);
+      color: #61718a;
+      font-size: 11px;
+      font-weight: 650;
+      padding-top: 2px;
     }
 
     .legend-item {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
     }
 
-    .legend-box {
-      width: 10px;
-      height: 10px;
+    .legend-dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
     }
 
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-15px); }
-      to { opacity: 1; transform: translateY(0); }
+    .data-note {
+      position: absolute;
+      right: 20px;
+      bottom: 9px;
+      color: #9aa7b9;
+      font-size: 9px;
+      pointer-events: none;
     }
 
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes idleShimmer {
-      0% { left: -100%; }
-      50% { left: 100%; }
-      100% { left: 100%; }
-    }
-
-    @keyframes idlePulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.03); opacity: 0.95; }
+    @media (max-width: 760px) {
+      body { padding: 12px; gap: 10px; }
+      main { grid-template-rows: minmax(0, 1.3fr) minmax(0, 1fr); gap: 10px; }
+      .year-cards { gap: 8px; }
+      .year-card { padding: 12px 7px 10px; }
+      .year-title { font-size: 12px; }
+      .year-subtitle { font-size: 9px; }
+      .donut-area { max-height: 125px; }
+      .legend { gap: 7px; font-size: 9px; }
+      .panel { border-radius: 13px; }
+      .chart-panel { padding: 12px 10px 8px; }
+      .live-label { display: none; }
     }
   </style>
 </head>
 <body>
-
   <header>
-    <h1>Leverbetrouwbaarheid 2026</h1>
+    <div class="heading">
+      <h1>Leverbetrouwbaarheid 2026</h1>
+      <div class="header-subtitle">Ipex-Group International BV</div>
+    </div>
+    <div class="live-label"><span class="live-dot"></span> Wekelijkse cijfers worden automatisch bijgewerkt</div>
   </header>
 
   <main>
-    <div class="top-chart-container">
-      <div class="chart-wrapper">
+    <section class="panel chart-panel">
+      <div class="panel-heading">
+        <h2>Leverbetrouwbaarheid per week</h2>
+        <div class="target-key"><span class="target-line"></span> Doelstelling 98%</div>
+      </div>
+      <div class="chart-wrap">
         <canvas id="weeklyChart"></canvas>
       </div>
-    </div>
+    </section>
 
-    <div class="bottom-cards-container">
-      <!-- 2024 Card -->
-      <div class="card">
+    <section class="year-cards">
+      <article class="panel year-card">
         <div>
-          <div class="card-title">Gemiddelde LBH 2024</div>
-          <div class="card-subtitle">Ipex-Group International BV</div>
+          <div class="year-title">Gemiddelde LBH 2024</div>
+          <div class="year-subtitle">Ipex-Group International BV</div>
         </div>
-        <div class="donut-wrapper">
+        <div class="donut-area">
           <canvas id="donut2024"></canvas>
-          <div class="donut-center-text">
-            <div class="donut-percentage">99,35%</div>
+          <div class="donut-center">
+            <div class="donut-value">99,35%</div>
+            <div class="donut-caption">Verzonden</div>
           </div>
         </div>
-        <div class="legend-container">
-          <div class="legend-item"><span class="legend-box" style="background:#2563eb;"></span>Verzonden</div>
-          <div class="legend-item"><span class="legend-box" style="background:#f97316;"></span>Niet verzonden</div>
+        <div class="legend">
+          <span class="legend-item"><i class="legend-dot" style="background:#3478e5"></i>Verzonden</span>
+          <span class="legend-item"><i class="legend-dot" style="background:#f29a38"></i>Niet verzonden</span>
         </div>
-      </div>
+      </article>
 
-      <!-- 2025 Card -->
-      <div class="card">
+      <article class="panel year-card">
         <div>
-          <div class="card-title">Gemiddelde LBH 2025</div>
-          <div class="card-subtitle">Ipex-Group International BV</div>
+          <div class="year-title">Gemiddelde LBH 2025</div>
+          <div class="year-subtitle">Ipex-Group International BV</div>
         </div>
-        <div class="donut-wrapper">
+        <div class="donut-area">
           <canvas id="donut2025"></canvas>
-          <div class="donut-center-text">
-            <div class="donut-percentage">98,74%</div>
+          <div class="donut-center">
+            <div class="donut-value">98,74%</div>
+            <div class="donut-caption">Verzonden</div>
           </div>
         </div>
-        <div class="legend-container">
-          <div class="legend-item"><span class="legend-box" style="background:#2563eb;"></span>Verzonden</div>
-          <div class="legend-item"><span class="legend-box" style="background:#f97316;"></span>Niet verzonden</div>
+        <div class="legend">
+          <span class="legend-item"><i class="legend-dot" style="background:#3478e5"></i>Verzonden</span>
+          <span class="legend-item"><i class="legend-dot" style="background:#f29a38"></i>Niet verzonden</span>
         </div>
-      </div>
+      </article>
 
-      <!-- 2026 Card -->
-      <div class="card">
+      <article class="panel year-card">
         <div>
-          <div class="card-title">Gemiddelde LBH 2026</div>
-          <div class="card-subtitle">Ipex-Group International BV</div>
+          <div class="year-title">Gemiddelde LBH 2026</div>
+          <div class="year-subtitle">Ipex-Group International BV</div>
         </div>
-        <div class="donut-wrapper">
+        <div class="donut-area">
           <canvas id="donut2026"></canvas>
-          <div class="donut-center-text">
-            <div class="donut-percentage" id="val2026">--%</div>
+          <div class="donut-center">
+            <div class="donut-value" id="val2026">93,72%</div>
+            <div class="donut-caption">Verzonden</div>
           </div>
         </div>
-        <div class="legend-container">
-          <div class="legend-item"><span class="legend-box" style="background:#2563eb;"></span>Verzonden</div>
-          <div class="legend-item"><span class="legend-box" style="background:#f97316;"></span>Niet verzonden</div>
+        <div class="legend">
+          <span class="legend-item"><i class="legend-dot" style="background:#3478e5"></i><span id="sent2026Legend">Verzonden 93,72%</span></span>
+          <span class="legend-item"><i class="legend-dot" style="background:#f29a38"></i><span id="notSent2026Legend">Niet verzonden 6,28%</span></span>
         </div>
-      </div>
-    </div>
+      </article>
+    </section>
   </main>
 
   <script>
     Chart.register(ChartDataLabels);
 
-    // YOUR PUBLISHED GOOGLE SHEET CSV URL
-    const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQtxKzOmH_pFkFCD60zVlU8tXQd2aW8B92eY-iMdstxibnAYtxESxC3cS-5peclfntJhRrLIGWKPg5/pub?gid=0&single=true&output=csv';
+    // Gepubliceerde Google Sheet (wekelijkse cijfers)
+    const GOOGLE_SHEET_CSV_URL =
+      'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQtxKzOmH_pFkFCD60zVlU8tXQd2aW8B92eY-iMdstxibnAYtxESxC3cS-5peclfntJhRrLIGWKPg5/pub?gid=0&single=true&output=csv';
 
-    let weeklyValues = Array(52).fill(null);
+    // Standaardwaarden. De Google Sheet overschrijft deze zodra de gelabelde rijen zijn ingevuld.
+    let official2026Sent = 93.72;
+    let official2026NotSent = 6.28;
+
     const weekLabels = Array.from({ length: 52 }, (_, i) => i + 1);
+    const weeklyValues = Array(52).fill(null);
 
-    // Setup Line Chart
-    const ctxLine = document.getElementById('weeklyChart').getContext('2d');
-    const lineChart = new Chart(ctxLine, {
-      type: 'line',
-      data: {
-        labels: weekLabels,
-        datasets: [
-          {
-            label: 'Percentage',
-            data: weeklyValues,
-            borderColor: '#2563eb',
-            backgroundColor: 'rgba(37, 99, 235, 0.08)',
-            borderWidth: 2.5,
-            fill: true,
-            tension: 0.1,
-            spanGaps: false,
-            datalabels: {
-              align: 'top',
-              anchor: 'end',
-              font: { size: 10, weight: 'bold' },
-              color: '#334155',
-              formatter: (val) => (val !== null && val !== undefined) ? val.toFixed(1).replace('.', ',') : ''
-            }
-          },
-          {
-            label: 'Doelstelling 98%',
-            data: Array(52).fill(98),
-            borderColor: '#ef4444',
-            borderWidth: 2,
-            borderDash: [5, 5],
-            pointRadius: 0,
-            fill: false,
-            datalabels: { display: false }
+    /*
+      Parse one CSV row while respecting quoted values.
+      Example: 2,"98,1" -> ["2", "98,1"]
+      Also supports semicolon-delimited CSV exports.
+    */
+    function parseCSVLine(line, delimiter) {
+      const fields = [];
+      let field = '';
+      let quoted = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+
+        if (char === '"') {
+          if (quoted && line[i + 1] === '"') {
+            field += '"';
+            i++;
+          } else {
+            quoted = !quoted;
           }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: { duration: 1200, easing: 'easeOutQuart' },
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: { boxWidth: 12, usePointStyle: true, font: { size: 12 } }
-          }
-        },
-        scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
-          y: { min: 50, max: 105, ticks: { stepSize: 10 } }
+        } else if (char === delimiter && !quoted) {
+          fields.push(field.trim());
+          field = '';
+        } else {
+          field += char;
         }
       }
-    });
 
-    // Setup Donut Charts
-    function createDonutChart(elementId, percentage) {
-      const ctx = document.getElementById(elementId).getContext('2d');
-      return new Chart(ctx, {
+      fields.push(field.trim());
+      return fields;
+    }
+
+    function detectDelimiter(headerLine) {
+      let commaCount = 0;
+      let semicolonCount = 0;
+      let quoted = false;
+
+      for (let i = 0; i < headerLine.length; i++) {
+        const char = headerLine[i];
+        if (char === '"') quoted = !quoted;
+        if (!quoted && char === ',') commaCount++;
+        if (!quoted && char === ';') semicolonCount++;
+      }
+
+      return semicolonCount > commaCount ? ';' : ',';
+    }
+
+    function parsePercentage(raw) {
+      if (raw === null || raw === undefined) return NaN;
+      const cleaned = String(raw)
+        .replace(/"/g, '')
+        .replace(/%/g, '')
+        .replace(/\s/g, '')
+        .replace(',', '.');
+
+      return cleaned === '' ? NaN : Number(cleaned);
+    }
+
+    function formatDutch(value, decimals = 1) {
+      return Number(value).toFixed(decimals).replace('.', ',');
+    }
+
+    // Weekly line chart
+    const lineChart = new Chart(
+      document.getElementById('weeklyChart').getContext('2d'),
+      {
+        type: 'line',
+        data: {
+          labels: weekLabels,
+          datasets: [
+            {
+              label: 'Leverbetrouwbaarheid',
+              data: weeklyValues,
+              borderColor: '#3478e5',
+              backgroundColor: 'rgba(52, 120, 229, 0.10)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.24,
+              spanGaps: false,
+              pointRadius: 3.5,
+              pointHoverRadius: 6,
+              pointBackgroundColor: '#ffffff',
+              pointBorderColor: '#3478e5',
+              pointBorderWidth: 2,
+              datalabels: {
+                display: (context) => context.dataset.data[context.dataIndex] !== null,
+                align: 'top',
+                anchor: 'end',
+                offset: 3,
+                clamp: true,
+                color: '#53647d',
+                font: { size: 9, weight: '700' },
+                formatter: (value) => formatDutch(value, 1)
+              }
+            },
+            {
+              label: 'Doelstelling 98%',
+              data: Array(52).fill(98),
+              borderColor: '#8292a9',
+              borderWidth: 1.8,
+              borderDash: [7, 6],
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              fill: false,
+              order: 0,
+              datalabels: { display: false }
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 850, easing: 'easeOutQuart' },
+          interaction: { mode: 'index', intersect: false },
+          layout: { padding: { top: 20, left: 3, right: 8, bottom: 0 } },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: '#17243a',
+              titleFont: { size: 12, weight: '700' },
+              bodyFont: { size: 12 },
+              padding: 11,
+              displayColors: false,
+              callbacks: {
+                title: (items) => `Week ${items[0].label}`,
+                label: (item) => `${formatDutch(item.raw, 1)}%`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              border: { display: false },
+              ticks: {
+                color: '#718099',
+                font: { size: 10, weight: '600' },
+                maxRotation: 0,
+                autoSkip: false,
+                callback: function(value, index) {
+                  const week = Number(this.getLabelForValue(value));
+                  return week === 1 || week % 2 === 0 ? week : '';
+                }
+              }
+            },
+            y: {
+              min: 60,
+              max: 103,
+              border: { display: false },
+              grid: { color: '#edf1f6', drawTicks: false },
+              ticks: {
+                stepSize: 5,
+                padding: 9,
+                color: '#718099',
+                font: { size: 10, weight: '600' },
+                callback: (value) => `${value}%`
+              }
+            }
+          }
+        }
+      }
+    );
+
+    // Donut charts: annual values are fixed reference figures.
+    function createDonutChart(elementId, sentPercentage, notSentPercentage = 100 - sentPercentage) {
+      return new Chart(document.getElementById(elementId).getContext('2d'), {
         type: 'doughnut',
         data: {
           labels: ['Verzonden', 'Niet verzonden'],
           datasets: [{
-            data: [percentage, Math.max(0, 100 - percentage)],
-            backgroundColor: ['#2563eb', '#f97316'],
-            borderWidth: 0
+            data: [sentPercentage, notSentPercentage],
+            backgroundColor: ['#3478e5', '#f29a38'],
+            borderWidth: 0,
+            hoverOffset: 3
           }]
         },
         options: {
-          cutout: '75%',
           responsive: true,
           maintainAspectRatio: false,
+          cutout: '78%',
+          rotation: -90,
           animation: { duration: 1000 },
-          plugins: { legend: { display: false }, datalabels: { display: false } }
+          plugins: {
+            legend: { display: false },
+            datalabels: { display: false },
+            tooltip: {
+              backgroundColor: '#17243a',
+              padding: 10,
+              callbacks: {
+                label: (item) => `${item.label}: ${formatDutch(item.raw, 2)}%`
+              }
+            }
+          }
         }
       });
     }
 
     createDonutChart('donut2024', 99.35);
     createDonutChart('donut2025', 98.74);
-    const donutChart2026 = createDonutChart('donut2026', 0);
+    const donutChart2026 = createDonutChart('donut2026', official2026Sent, official2026NotSent);
 
-    function calculateAverage(data) {
-      const valid = data.filter(v => v !== null && v !== undefined && !isNaN(v));
-      if (valid.length === 0) return 0;
-      return (valid.reduce((a, b) => a + Number(b), 0) / valid.length).toFixed(2);
-    }
-
-    // Fetch Live CSV Data (Handles commas, dots, and spaces)
     async function fetchLiveData() {
       try {
-        const response = await fetch(GOOGLE_SHEET_CSV_URL + '&t=' + new Date().getTime());
-        const text = await response.text();
-        
-        const lines = text.split('\n').slice(1);
+        const response = await fetch(
+          GOOGLE_SHEET_CSV_URL + '&t=' + Date.now(),
+          { cache: 'no-store' }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Google Sheet returned HTTP ${response.status}`);
+        }
+
+        const csvText = await response.text();
+        const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
+
+        if (lines.length < 2) {
+          throw new Error('Geen wekelijkse gegevens gevonden in de Google Sheet.');
+        }
+
+        const delimiter = detectDelimiter(lines[0]);
         const parsedData = Array(52).fill(null);
+        let sheetSent = null;
+        let sheetNotSent = null;
 
-        lines.forEach(line => {
-          const cols = line.split(',');
-          if (cols.length >= 2) {
-            const weekNum = parseInt(cols[0].trim());
-            const cleanVal = cols[1].replace(/"/g, '').replace(',', '.').trim();
-            const val = parseFloat(cleanVal);
+        lines.slice(1).forEach(line => {
+          const columns = parseCSVLine(line, delimiter);
+          if (columns.length < 2) return;
 
-            if (weekNum >= 1 && weekNum <= 52 && !isNaN(val)) {
-              parsedData[weekNum - 1] = val;
-            }
+          const firstCell = String(columns[0] || '').trim().toLowerCase();
+          const percentage = parsePercentage(columns[1]);
+
+          // Jaarcijfers staan als aparte, gelabelde rijen onder de weekgegevens.
+          if (firstCell === 'gemiddelde lbh 2026' || firstCell === 'verzonden 2026') {
+            if (Number.isFinite(percentage)) sheetSent = percentage;
+            return;
+          }
+          if (firstCell === 'niet verzonden 2026') {
+            if (Number.isFinite(percentage)) sheetNotSent = percentage;
+            return;
+          }
+
+          const weekNumber = parseInt(columns[0], 10);
+          if (
+            Number.isInteger(weekNumber) &&
+            weekNumber >= 1 &&
+            weekNumber <= 52 &&
+            Number.isFinite(percentage)
+          ) {
+            parsedData[weekNumber - 1] = percentage;
           }
         });
 
-        weeklyValues = parsedData;
-
-        // Update Charts
-        lineChart.data.datasets[0].data = weeklyValues;
+        lineChart.data.datasets[0].data = parsedData;
         lineChart.update();
 
-        const avg = calculateAverage(weeklyValues);
-        document.getElementById('val2026').innerText = `${avg.toString().replace('.', ',')}%`;
-        donutChart2026.data.datasets[0].data = [avg, (100 - avg).toFixed(2)];
-        donutChart2026.update();
+        // Werk de donut en de twee percentages bij zodra beide waarden in de Sheet staan.
+        if (Number.isFinite(sheetSent)) official2026Sent = sheetSent;
+        if (Number.isFinite(sheetNotSent)) official2026NotSent = sheetNotSent;
 
-      } catch (err) {
-        console.error('Failed to load Google Sheet data:', err);
+        donutChart2026.data.datasets[0].data = [official2026Sent, official2026NotSent];
+        donutChart2026.update();
+        document.getElementById('val2026').textContent = `${formatDutch(official2026Sent, 2)}%`;
+        document.getElementById('sent2026Legend').textContent = `Verzonden ${formatDutch(official2026Sent, 2)}%`;
+        document.getElementById('notSent2026Legend').textContent = `Niet verzonden ${formatDutch(official2026NotSent, 2)}%`;
+
+        console.info('Leverbetrouwbaarheid bijgewerkt:', parsedData);
+
+      } catch (error) {
+        console.error('Kon de Google Sheet niet laden:', error);
       }
     }
 
-    // Initial Fetch & Auto Refresh every 30 seconds
     fetchLiveData();
     setInterval(fetchLiveData, 30 * 1000);
   </script>
